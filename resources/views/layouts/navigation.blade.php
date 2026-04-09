@@ -11,12 +11,24 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                </div>
-            </div>
+                <<div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('makanan.index')" :active="request()->routeIs('makanan.*')">
+                            {{ __('Daftar Jajanan') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('log.create')" :active="request()->routeIs('log.create')">
+                            {{ __('Mutasi Stok') }}
+                        </x-nav-link>
+
+                        @if(Auth::user()->role === 'Pemilik')
+                        <x-nav-link :href="route('log.aktivitas')" :active="request()->routeIs('log.aktivitas')">
+                            {{ __('Laporan Log') }}
+                        </x-nav-link>
+                        @endif
+                    </div>
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">

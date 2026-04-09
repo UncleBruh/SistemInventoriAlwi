@@ -26,6 +26,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/log-aktivitas', [LogController::class, 'index'])
         ->middleware('role:Pemilik')
         ->name('log.aktivitas');
+
+    // Rute Transaksi (Barang Masuk/Keluar) - Bisa diakses Admin & Pemilik
+    Route::get('/Keluar-Masuk Barang', [LogController::class, 'create'])->name('log.create');
+    Route::post('/Keluar-Masuk Barang', [LogController::class, 'store'])->name('log.store');
+
+    // Rute Laporan: Hanya bisa diakses oleh Pemilik
+    Route::get('/log-aktivitas', [LogController::class, 'index'])
+        ->middleware('role:Pemilik')
+        ->name('log.aktivitas');
 });
 
 require __DIR__.'/auth.php';

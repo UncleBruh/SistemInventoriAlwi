@@ -10,40 +10,34 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): View
     {
         return view('auth.register');
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
+        // Validasi input
         $request->validate([
-            'username' => ['required', 'string', 'max:50', 'unique:'.User::class],
+            'username' => ['required', 'string', 'max:50', 'unique:'.User::class.',username'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'string', 'in:Admin,Pemilik'], // Validasi role
+            'role' => ['required', 'string', 'in:Admin,Pemilik'],
         ]);
 
+        // Simpan ke database
         $user = User::create([
             'username' => $request->username,
-            'password' => Hash::make($request->password),
-            'role' => $request->role, // Simpan role ke database
+            'password' => Hash::make($request->password), // Password WAJIB di-Hash
+            'role' => $request->role,
         ]);
 
         event(new Registered($user));
 
+        // Langsung login otomatis setelah daftar
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));
