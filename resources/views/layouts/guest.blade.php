@@ -77,22 +77,22 @@
                 z-index: 10;
                 width: 140px;
                 height: 140px;
-                background: rgba(255, 255, 255, 0.12);
+                background: transparent;
                 border-radius: 30px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 margin-bottom: 40px;
-                backdrop-filter: blur(25px);
-                border: 2px solid rgba(255, 255, 255, 0.2);
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), inset 0 0 20px rgba(255, 255, 255, 0.1);
+                backdrop-filter: none;
+                border: none;
+                box-shadow: none;
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             }
             .logo-container:hover {
-                background: rgba(255, 255, 255, 0.2);
-                border-color: rgba(255, 255, 255, 0.35);
-                transform: translateY(-8px);
-                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12), inset 0 0 30px rgba(255, 255, 255, 0.15);
+                background: transparent;
+                border-color: transparent;
+                transform: translateY(-5px);
+                box-shadow: none;
             }
             .logo-container img {
                 width: 95px;
@@ -150,10 +150,10 @@
                 <!-- Left Side - Logo & Title -->
                 <div class="login-left">
                     <div class="logo-container">
-                        <img src="{{ asset('foto/logoalwi.png') }}" alt="Logo Alwi" />
+                        <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo Bimbel" />
                     </div>
                     <div style="position: relative; z-index: 10; text-align: center;">
-                        <div class="login-title">Inventori Alwi</div>
+                        <div class="login-title">Kantin Alwi</div>
                         <div class="login-subtitle">
                             Sistem manajemen stok yang efisien untuk bisnis Anda. Kelola makanan dan minuman dengan mudah dan cepat.
                         </div>

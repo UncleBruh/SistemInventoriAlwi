@@ -39,6 +39,6 @@
     </form>
 
     <div class="mt-6 text-center text-sm text-gray-600">
-        <p>Belum punya akun? <a href="#" class="text-indigo-600 hover:text-indigo-700 font-semibold">Hubungi Administrator</a></p>
+        <p>Belum punya akun? <a href="{{ route('register') }}" class="text-indigo-600 hover:text-indigo-700 font-semibold">Hubungi Administrator</a></p>
     </div>
 </x-guest-layout>

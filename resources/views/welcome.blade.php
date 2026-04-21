@@ -1,6 +1,383 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ config('app.name', 'Inventori Alwi') }}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Figtree', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecf1 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 20px 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        }
+
+        .navbar {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #333;
+            text-decoration: none;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background: rgba(100, 116, 180, 0.08);
+            color: #6474b4;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: #6474b4;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(100, 116, 180, 0.15);
+        }
+
+        .btn-primary:hover {
+            background: #5a68a3;
+            box-shadow: 0 6px 20px rgba(100, 116, 180, 0.25);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+        }
+
+        .hero-container {
+            max-width: 1200px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            color: #2d3748;
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-login {
+            background: #6474b4;
+            color: white;
+            box-shadow: 0 4px 15px rgba(100, 116, 180, 0.2);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(100, 116, 180, 0.3);
+            background: #5a68a3;
+        }
+
+        .btn-features {
+            background: white;
+            color: #6474b4;
+            border: 2px solid #6474b4;
+            box-shadow: 0 2px 10px rgba(100, 116, 180, 0.1);
+        }
+
+        .btn-features:hover {
+            background: #f5f7fa;
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(100, 116, 180, 0.15);
+        }
+
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-card {
+            background: white;
+            border: 1px solid rgba(100, 116, 180, 0.1);
+            border-radius: 16px;
+            padding: 60px 40px;
+            text-align: center;
+            color: #333;
+            max-width: 350px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero-card img {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 8px rgba(100, 116, 180, 0.1));
+        }
+
+        .hero-card h3 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #2d3748;
+        }
+
+        .hero-card p {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 0;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .feature-box {
+            background: white;
+            border: 1px solid rgba(100, 116, 180, 0.08);
+            border-radius: 12px;
+            padding: 24px;
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .feature-box:hover {
+            background: #fafbfc;
+            transform: translateY(-8px);
+            border-color: rgba(100, 116, 180, 0.2);
+            box-shadow: 0 8px 25px rgba(100, 116, 180, 0.1);
+        }
+
+        .feature-box h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+
+        .feature-box p {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        footer {
+            background: white;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            text-align: center;
+            color: #999;
+            font-size: 13px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .hero-content h1 {
+                font-size: 36px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <a href="#" class="logo">
+                <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo">
+                Kantin Alwi
+            </a>
+            <nav class="nav-links">
+                @auth
+                    <a href="{{ route('dashboard') }}">Dashboard</a>
+                    <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="btn-primary" style="border: none;">Logout</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}">Masuk</a>
+                    @if (Route::has('register'))
+                        <a href="{{ route('register') }}" class="btn-primary">Daftar</a>
+                    @endif
+                @endauth
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Kelola Stok Makanan & Minuman dengan Mudah</h1>
+                <p>Sistem Inventori Alwi dirancang khusus untuk memudahkan manajemen stok barang Anda. Real-time tracking, laporan lengkap, dan interface yang user-friendly.</p>
+
+                <div class="cta-buttons">
+                    @auth
+                        <a href="{{ route('dashboard') }}" class="btn btn-login">📊 Buka Dashboard</a>
+                    @else
+                        <a href="{{ route('login') }}" class="btn btn-login">🔐 Masuk Sekarang</a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="btn btn-features">✨ Buat Akun Baru</a>
+                        @endif
+                    @endauth
+                </div>
+
+                <div class="features">
+                    <div class="feature-box">
+                        <div class="feature-icon">📦</div>
+                        <h4>Manajemen Stok</h4>
+                        <p>Pantau stok barang secara real-time dengan update otomatis.</p>
+                    </div>
+                    <div class="feature-box">
+                        <div class="feature-icon">📊</div>
+                        <h4>Laporan Terperinci</h4>
+                        <p>Dapatkan laporan lengkap tentang pergerakan stok Anda.</p>
+                    </div>
+                    <div class="feature-box">
+                        <div class="feature-icon">🔍</div>
+                        <h4>Pencarian Mudah</h4>
+                        <p>Cari barang dengan cepat menggunakan filter yang powerful.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="hero-card">
+                    <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo Bimbel">
+                    <h3>Kantin Alwi</h3>
+                    <p>Sistem Manajemen Stok Terpercaya untuk Bisnis Anda</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; {{ date('Y') }} Inventori Alwi. Semua hak dilindungi. | Sistem Manajemen Stok Modern</p>
+    </footer>
+</body>
+</html>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
