@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Daftar Jajanan') }}
+            {{ __('Daftar Barang (Jajanan & Minuman)') }}
         </h2>
     </x-slot>
 
@@ -9,11 +9,17 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                     <h3 class="text-lg font-bold text-gray-700">Manajemen Stok</h3>
-                    <a href="{{ route('makanan.create') }}" class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                        + Pendaftaran Barang Baru
-                    </a>
+                    
+                    <div class="flex flex-wrap gap-2">
+                        <a href="{{ route('makanan.create', ['type' => 'Makanan']) }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition shadow">
+                            + Tambah Makanan Baru
+                        </a>
+                        <a href="{{ route('makanan.create', ['type' => 'Minuman']) }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition shadow">
+                            + Tambah Minuman Baru
+                        </a>
+                    </div>
                 </div>
 
                 @if(session('success'))
@@ -27,7 +33,7 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="py-3 px-4 border-b text-left text-sm font-semibold text-gray-600">Barcode</th>
-                                <th class="py-3 px-4 border-b text-left text-sm font-semibold text-gray-600">Nama Makanan</th>
+                                <th class="py-3 px-4 border-b text-left text-sm font-semibold text-gray-600">Nama Barang</th>
                                 <th class="py-3 px-4 border-b text-center text-sm font-semibold text-gray-600">Kategori</th>
                                 <th class="py-3 px-4 border-b text-right text-sm font-semibold text-gray-600">Harga</th>
                                 <th class="py-3 px-4 border-b text-center text-sm font-semibold text-gray-600">Stok</th>
@@ -39,7 +45,7 @@
                                 <td class="py-3 px-4 border-b text-sm">{{ $item->barcode ?? '-' }}</td>
                                 <td class="py-3 px-4 border-b text-sm font-medium">{{ $item->nama_makanan }}</td>
                                 <td class="py-3 px-4 border-b text-sm text-center">
-                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">{{ $item->jenis_makanan }}</span>
+                                    <span class="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded-full">{{ $item->jenis_makanan }}</span>
                                 </td>
                                 <td class="py-3 px-4 border-b text-sm text-right">Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
                                 <td class="py-3 px-4 border-b text-sm text-center font-bold {{ $item->stok < 5 ? 'text-red-500' : 'text-green-600' }}">
@@ -48,7 +54,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="5" class="py-6 text-center text-gray-500 italic">Belum ada data jajanan yang terdaftar.</td>
+                                <td colspan="5" class="py-6 text-center text-gray-500 italic">Belum ada data barang yang terdaftar.</td>
                             </tr>
                             @endforelse
                         </tbody>

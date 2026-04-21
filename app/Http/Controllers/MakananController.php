@@ -7,50 +7,63 @@ use Illuminate\Http\Request;
 
 class MakananController extends Controller
 {
-    // Menampilkan halaman daftar makanan
+    // Menampilkan halaman daftar barang
     public function index()
     {
-        // Mengambil semua data makanan dari database, diurutkan dari yang terbaru
         $makanan = Makanan::latest()->get(); 
-        
-        // Nanti kita akan buat file view 'makanan.index'
         return view('makanan.index', compact('makanan'));
     }
 
     // Menampilkan halaman form pendaftaran barang baru
-    public function create()
+    public function create(Request $request)
     {
-        return view('makanan.create');
+        // Ambil daftar kategori unik yang sudah pernah diinput ke database
+        // Hanya ambil yang tidak kosong
+        $categories = Makanan::whereNotNull('jenis_makanan')
+                             ->where('jenis_makanan', '!=', '')
+                             ->distinct()
+                             ->pluck('jenis_makanan');
+        
+        // Menangkap "jenis" dari tombol yang diklik di halaman depan (Makanan/Minuman)
+        $default_type = $request->query('type'); 
+
+        return view('makanan.create', compact('categories', 'default_type'));
     }
 
     // Memproses data dari form dan menyimpannya ke database
     public function store(Request $request)
     {
-        // Validasi inputan dari form
+        // Logika: Jika user mengisi inputan 'Kategori Baru', gunakan itu. 
+        // Jika tidak, gunakan 'Kategori' yang dipilih dari dropdown.
+        $jenis_makanan = $request->jenis_makanan_baru ?: $request->jenis_makanan;
+
         $request->validate([
             'barcode' => 'nullable|string|unique:makanan,barcode',
             'nama_makanan' => 'required|string|max:50',
-            'jenis_makanan' => 'required|string|max:50',
             'harga' => 'required|integer|min:0',
             'stok' => 'required|integer|min:0',
+            // Validasi khusus: kategori dari dropdown boleh kosong ASALKAN kategori baru diisi
+            'jenis_makanan' => $request->jenis_makanan_baru ? 'nullable' : 'required|string',
+            'jenis_makanan_baru' => 'nullable|string|max:50',
         ], [
-            'barcode.unique' => 'Barcode ini sudah terdaftar pada jajanan lain!',
+            'barcode.unique' => 'Barcode ini sudah terdaftar pada barang lain!',
+            'jenis_makanan.required' => 'Kategori wajib dipilih dari daftar atau buat baru!',
         ]);
 
-        // Simpan ke database
         Makanan::create([
             'barcode' => $request->barcode,
             'nama_makanan' => $request->nama_makanan,
-            'jenis_makanan' => $request->jenis_makanan,
+            'jenis_makanan' => $jenis_makanan, // Menyimpan hasil logika
             'harga' => $request->harga,
             'stok' => $request->stok,
         ]);
 
-        // Catatan: Logika pencatatan Log Aktivitas "Barang Masuk" perdana 
-        // bisa ditambahkan di sini nanti jika diperlukan.
-
-        return redirect()->route('makanan.index')->with('success', 'Jajanan baru berhasil didaftarkan!');
+        return redirect()->route('makanan.index')->with('success', 'Barang baru berhasil didaftarkan!');
     }
 
-    // (Biarkan fungsi show, edit, update, destroy kosong untuk saat ini)
+    // Biarkan fungsi bawaan resource lainnya kosong
+    public function show($id) {}
+    public function edit($id) {}
+    public function update(Request $request, $id) {}
+    public function destroy($id) {}
 }

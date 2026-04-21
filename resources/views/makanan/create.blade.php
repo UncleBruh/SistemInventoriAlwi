@@ -19,21 +19,39 @@
                     </div>
 
                     <div class="mb-4">
-                        <x-input-label for="nama_makanan" value="Nama Makanan/Jajanan" />
+                        <x-input-label for="nama_makanan" value="Nama Barang" />
                         <x-text-input id="nama_makanan" class="block mt-1 w-full" type="text" name="nama_makanan" :value="old('nama_makanan')" required />
                         <x-input-error :messages="$errors->get('nama_makanan')" class="mt-2" />
                     </div>
 
-                    <div class="mb-4">
-                        <x-input-label for="jenis_makanan" value="Kategori" />
-                        <select id="jenis_makanan" name="jenis_makanan" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" required>
-                            <option value="">-- Pilih Kategori --</option>
-                            <option value="Makanan Berat" {{ old('jenis_makanan') == 'Makanan Berat' ? 'selected' : '' }}>Makanan Berat</option>
-                            <option value="Snack Manis" {{ old('jenis_makanan') == 'Snack Manis' ? 'selected' : '' }}>Snack Manis</option>
-                            <option value="Snack Asin" {{ old('jenis_makanan') == 'Snack Asin' ? 'selected' : '' }}>Snack Asin</option>
-                            <option value="Minuman" {{ old('jenis_makanan') == 'Minuman' ? 'selected' : '' }}>Minuman</option>
-                        </select>
+                    <div class="mb-4" x-data="{ isNew: false }">
+                        <x-input-label for="jenis_makanan" value="Kategori Barang" />
+                        
+                        <div class="flex flex-col gap-2 mt-1">
+                            <select id="jenis_makanan" name="jenis_makanan" 
+                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block w-full"
+                                    x-bind:disabled="isNew">
+                                <option value="">-- Pilih Kategori --</option>
+                                @foreach($categories as $cat)
+                                    <option value="{{ $cat }}" {{ (old('jenis_makanan') == $cat || $default_type == $cat) ? 'selected' : '' }}>
+                                        {{ $cat }}
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            <div class="flex items-center gap-2 mt-1">
+                                <input type="checkbox" id="toggle_new" x-model="isNew" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                                <label for="toggle_new" class="text-sm text-gray-600 italic cursor-pointer">Atau ketik kategori baru?</label>
+                            </div>
+
+                            <div x-show="isNew" style="display: none;" x-transition class="mt-2">
+                                <x-text-input id="jenis_makanan_baru" class="block w-full bg-yellow-50" type="text" 
+                                              name="jenis_makanan_baru" :value="old('jenis_makanan_baru')" 
+                                              placeholder="Misal: Snack Import, Minuman Dingin, dsb..." />
+                            </div>
+                        </div>
                         <x-input-error :messages="$errors->get('jenis_makanan')" class="mt-2" />
+                        <x-input-error :messages="$errors->get('jenis_makanan_baru')" class="mt-2" />
                     </div>
 
                     <div class="grid grid-cols-2 gap-4 mb-6">
