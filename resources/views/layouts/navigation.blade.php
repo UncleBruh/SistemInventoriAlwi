@@ -4,7 +4,7 @@
             <div class="flex">
                 <div class="shrink-0 flex items-center gap-2">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-                        <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo Kantin Alwi" class="h-10 w-auto">
+                        <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo Kantin Alwi" class="h-10 w-auto rounded bg-white p-0.5">
                         <span class="font-bold text-lg tracking-wider text-indigo-600">{{ config('app.name') }}</span>
                     </a>
                 </div>

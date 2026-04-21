@@ -150,7 +150,7 @@
                 <!-- Left Side - Logo & Title -->
                 <div class="login-left">
                     <div class="logo-container">
-                        <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo Bimbel" />
+                        <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo Bimbel" class="rounded bg-white p-0.5" />
                     </div>
                     <div style="position: relative; z-index: 10; text-align: center;">
                         <div class="login-title">Kantin Alwi</div>

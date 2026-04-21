@@ -307,7 +307,7 @@
     <header>
         <div class="navbar">
             <a href="#" class="logo">
-                <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo">
+                <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo" class="rounded bg-white p-1">
                 Kantin Alwi
             </a>
             <nav class="nav-links">
@@ -365,7 +365,7 @@
 
             <div class="hero-visual">
                 <div class="hero-card">
-                    <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo Bimbel">
+                    <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo Bimbel" class="rounded bg-white p-1">
                     <h3>Kantin Alwi</h3>
                     <p>Sistem Manajemen Stok Terpercaya untuk Bisnis Anda</p>
                 </div>
