@@ -64,7 +64,7 @@
                     <!-- INFO: Stok tidak bisa diedit -->
                     <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded">
                         <p class="text-sm text-blue-700">
-                            <strong>ℹ️ Catatan:</strong> Stok saat ini adalah <strong>{{ $makanan->stok }} pcs</strong>.
+                            <strong>Catatan:</strong> Stok saat ini adalah <strong>{{ $makanan->stok }} pcs</strong>.
                             Untuk mengubah stok, gunakan fitur <strong>"Mutasi Stok"</strong> di menu utama.
                         </p>
                     </div>
