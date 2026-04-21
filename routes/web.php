@@ -20,6 +20,9 @@ Route::middleware('auth')->group(function () {
     // Rute untuk Makanan (CRUD Jajanan)
     Route::resource('makanan', MakananController::class);
 
+    // API endpoint untuk scan barcode
+    Route::get('/api/makanan/find-by-barcode/{barcode}', [MakananController::class, 'findByBarcode']);
+
     // Rute buatanmu: Hanya bisa diakses oleh Pemilik
     Route::get('/log-aktivitas', [LogController::class, 'index'])
         ->middleware('role:Pemilik')

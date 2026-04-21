@@ -73,6 +73,29 @@ class MakananController extends Controller
         return redirect()->route('makanan.index')->with('success', 'Barang baru berhasil didaftarkan!');
     }
 
+    // API untuk mencari produk berdasarkan barcode (untuk fitur scan barcode)
+    public function findByBarcode($barcode)
+    {
+        $makanan = Makanan::where('barcode', $barcode)->first();
+
+        if (!$makanan) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Barcode tidak ditemukan'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'id_makanan' => $makanan->id_makanan,
+            'nama_makanan' => $makanan->nama_makanan,
+            'jenis_makanan' => $makanan->jenis_makanan,
+            'harga' => $makanan->harga,
+            'stok' => $makanan->stok,
+            'barcode' => $makanan->barcode
+        ]);
+    }
+
     // Biarkan fungsi bawaan resource lainnya kosong
     public function show($id) {}
     public function edit($id) {}

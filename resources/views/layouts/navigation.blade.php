@@ -2,9 +2,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <span class="font-bold text-xl tracking-wider text-indigo-600">INVENTORI</span>
+                <div class="shrink-0 flex items-center gap-2">
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
+                        <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo Kantin Alwi" class="h-10 w-auto">
+                        <span class="font-bold text-lg tracking-wider text-indigo-600">{{ config('app.name') }}</span>
                     </a>
                 </div>
 
@@ -16,7 +17,7 @@
                     <x-nav-link :href="route('makanan.index')" :active="request()->routeIs('makanan.*')">
                         {{ __('Daftar Jajanan') }}
                     </x-nav-link>
-                    
+
                     <x-nav-link :href="route('log.create')" :active="request()->routeIs('log.create')">
                         {{ __('Mutasi Stok') }}
                     </x-nav-link>
@@ -77,11 +78,11 @@
             <x-responsive-nav-link :href="route('makanan.index')" :active="request()->routeIs('makanan.*')">
                 {{ __('Daftar Jajanan') }}
             </x-responsive-nav-link>
-            
+
             <x-responsive-nav-link :href="route('log.create')" :active="request()->routeIs('log.create')">
                 {{ __('Mutasi Stok') }}
             </x-responsive-nav-link>
-            
+
             @if(Auth::user()->role === 'Pemilik')
             <x-responsive-nav-link :href="route('log.aktivitas')" :active="request()->routeIs('log.aktivitas')">
                 {{ __('Laporan Log') }}
