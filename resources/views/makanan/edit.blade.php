@@ -8,7 +8,7 @@
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                
+
                 <form action="{{ route('makanan.update', $makanan->id_makanan) }}" method="POST">
                     @csrf
                     @method('PATCH')
@@ -27,9 +27,9 @@
 
                     <div class="mb-4" x-data="{ isNew: false }">
                         <x-input-label for="jenis_makanan" value="Kategori Barang" />
-                        
+
                         <div class="flex flex-col gap-2 mt-1">
-                            <select id="jenis_makanan" name="jenis_makanan" 
+                            <select id="jenis_makanan" name="jenis_makanan"
                                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block w-full"
                                     x-bind:disabled="isNew">
                                 <option value="">-- Pilih Kategori --</option>
@@ -46,8 +46,8 @@
                             </div>
 
                             <div x-show="isNew" style="display: none;" x-transition class="mt-2">
-                                <x-text-input id="jenis_makanan_baru" class="block w-full bg-yellow-50" type="text" 
-                                              name="jenis_makanan_baru" :value="old('jenis_makanan_baru')" 
+                                <x-text-input id="jenis_makanan_baru" class="block w-full bg-yellow-50" type="text"
+                                              name="jenis_makanan_baru" :value="old('jenis_makanan_baru')"
                                               placeholder="Misal: Snack Import, Minuman Dingin, dsb..." />
                             </div>
                         </div>
@@ -64,7 +64,7 @@
                     <!-- INFO: Stok tidak bisa diedit -->
                     <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded">
                         <p class="text-sm text-blue-700">
-                            <strong>ℹ️ Catatan:</strong> Stok saat ini adalah <strong>{{ $makanan->stok }} pcs</strong>. 
+                            <strong>ℹ️ Catatan:</strong> Stok saat ini adalah <strong>{{ $makanan->stok }} pcs</strong>.
                             Untuk mengubah stok, gunakan fitur <strong>"Mutasi Stok"</strong> di menu utama.
                         </p>
                     </div>

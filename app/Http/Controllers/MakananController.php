@@ -125,7 +125,7 @@ class MakananController extends Controller
 
     // Biarkan fungsi bawaan resource lainnya kosong
     public function show($id) {}
-    
+
     public function edit($id)
     {
         $makanan = Makanan::findOrFail($id);
@@ -134,14 +134,14 @@ class MakananController extends Controller
                              ->distinct()
                              ->pluck('jenis_makanan')
                              ->sort();
-        
+
         return view('makanan.edit', compact('makanan', 'categories'));
     }
 
     public function update(Request $request, $id)
     {
         $makanan = Makanan::findOrFail($id);
-        
+
         // Logika: Jika user mengisi inputan 'Kategori Baru', gunakan itu.
         // Jika tidak, gunakan 'Kategori' yang dipilih dari dropdown.
         $jenis_makanan = $request->jenis_makanan_baru ?: $request->jenis_makanan;
