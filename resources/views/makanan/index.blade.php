@@ -8,10 +8,10 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                
+
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
                     <h3 class="text-lg font-bold text-gray-700">Manajemen Stok</h3>
-                    
+
                     <div class="flex flex-wrap gap-2">
                         <a href="{{ route('makanan.create', ['type' => 'Makanan']) }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition shadow">
                             + Tambah Makanan Baru
@@ -21,6 +21,41 @@
                         </a>
                     </div>
                 </div>
+
+                <!-- Search Filter Form -->
+                <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <form method="GET" action="{{ route('makanan.index') }}" class="flex flex-col sm:flex-row gap-3">
+                        <div class="flex-1">
+                            <input
+                                type="text"
+                                name="search"
+                                placeholder="Cari nama makanan, minuman, kategori, atau barcode..."
+                                value="{{ $search ?? '' }}"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                        </div>
+                        <button
+                            type="submit"
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition shadow"
+                        >
+                            Cari
+                        </button>
+                        @if($search)
+                            <a
+                                href="{{ route('makanan.index') }}"
+                                class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition shadow"
+                            >
+                                Reset
+                            </a>
+                        @endif
+                    </form>
+                </div>
+
+                @if($search)
+                    <div class="mb-4 bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded">
+                        Hasil pencarian untuk: <strong>"{{ $search }}"</strong> ({{ $makanan->count() }} item ditemukan)
+                    </div>
+                @endif
 
                 @if(session('success'))
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">

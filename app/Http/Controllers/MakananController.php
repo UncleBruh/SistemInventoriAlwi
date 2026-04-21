@@ -8,10 +8,22 @@ use Illuminate\Http\Request;
 class MakananController extends Controller
 {
     // Menampilkan halaman daftar barang
-    public function index()
+    public function index(Request $request)
     {
-        $makanan = Makanan::latest()->get(); 
-        return view('makanan.index', compact('makanan'));
+        $search = $request->query('search');
+
+        $query = Makanan::latest();
+
+        // Filter berdasarkan search query jika ada
+        if ($search) {
+            $query->where('nama_makanan', 'like', '%' . $search . '%')
+                  ->orWhere('jenis_makanan', 'like', '%' . $search . '%')
+                  ->orWhere('barcode', 'like', '%' . $search . '%');
+        }
+
+        $makanan = $query->get();
+
+        return view('makanan.index', compact('makanan', 'search'));
     }
 
     // Menampilkan halaman form pendaftaran barang baru
@@ -23,9 +35,9 @@ class MakananController extends Controller
                              ->where('jenis_makanan', '!=', '')
                              ->distinct()
                              ->pluck('jenis_makanan');
-        
+
         // Menangkap "jenis" dari tombol yang diklik di halaman depan (Makanan/Minuman)
-        $default_type = $request->query('type'); 
+        $default_type = $request->query('type');
 
         return view('makanan.create', compact('categories', 'default_type'));
     }
@@ -33,7 +45,7 @@ class MakananController extends Controller
     // Memproses data dari form dan menyimpannya ke database
     public function store(Request $request)
     {
-        // Logika: Jika user mengisi inputan 'Kategori Baru', gunakan itu. 
+        // Logika: Jika user mengisi inputan 'Kategori Baru', gunakan itu.
         // Jika tidak, gunakan 'Kategori' yang dipilih dari dropdown.
         $jenis_makanan = $request->jenis_makanan_baru ?: $request->jenis_makanan;
 
