@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Pencatatan Barang Masuk') }}
+            {{ __('Pencatatan Barang Keluar') }}
         </h2>
     </x-slot>
 
@@ -27,11 +27,11 @@
                     </div>
                 @endif
 
-                <form action="{{ route('log.store') }}" method="POST">
+                <form action="{{ route('log.keluar.store') }}" method="POST">
                     @csrf
                     
-                    <div class="mb-6 bg-green-50 p-4 rounded-lg border border-green-200">
-                        <p class="text-sm font-medium text-green-700">Mode: ➕ Tambah Stok (Barang Masuk)</p>
+                    <div class="mb-6 bg-red-50 p-4 rounded-lg border border-red-200">
+                        <p class="text-sm font-medium text-red-700">Mode: ➖ Kurangi Stok (Barang Keluar)</p>
                     </div>
 
                     <div class="mb-4">
@@ -44,12 +44,17 @@
                         </select>
                     </div>
 
-                    <div class="mb-6">
-                        <x-input-label for="jumlah_perubahan" value="Jumlah Masuk (Pcs)" />
+                    <div class="mb-4">
+                        <x-input-label for="jumlah_perubahan" value="Jumlah Keluar (Pcs)" />
                         <x-text-input id="jumlah_perubahan" class="block mt-1 w-full text-center text-2xl font-bold" type="number" min="1" name="jumlah_perubahan" value="1" required />
                     </div>
 
-                    <x-primary-button class="w-full justify-center py-3 text-lg bg-green-600 hover:bg-green-700">SIMPAN BARANG MASUK</x-primary-button>
+                    <div class="mb-6">
+                        <x-input-label for="alasan" value="Alasan Pengeluaran" />
+                        <textarea id="alasan" name="alasan" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" rows="3" required placeholder="Contoh: Rusak atau Expired"></textarea>
+                    </div>
+
+                    <x-primary-button class="w-full justify-center py-3 text-lg bg-red-600 hover:bg-red-700">SIMPAN BARANG KELUAR</x-primary-button>
                 </form>
             </div>
         </div>

@@ -56,7 +56,7 @@ class MutasiKeluarController extends Controller
             $makanan->update(['stok' => $stok_sesudah]);
 
             DB::commit();
-            return redirect()->route('mutasi_keluar.index')->with('success', 'Barang Keluar berhasil dicatat.');
+            return redirect()->back()->with('success', 'Barang Keluar berhasil dicatat. Silakan input barang selanjutnya jika ada.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menyimpan data.');
