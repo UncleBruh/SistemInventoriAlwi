@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Keluar-Masuk Stok Jajanan') }}
+            {{ $type == 'masuk' ? __('Pencatatan Barang Masuk') : __('Pencatatan Barang Keluar') }}
         </h2>
     </x-slot>
 
@@ -21,7 +21,6 @@
                     </div>
                 @endif
 
-                <!-- Tab Navigation -->
                 <div class="flex border-b border-gray-200 mb-6">
                     <button type="button" class="tab-button py-2 px-4 font-semibold text-indigo-600 border-b-2 border-indigo-600" data-tab="manual">
                         📝 Input Manual
@@ -34,7 +33,17 @@
                 <form action="{{ route('log.store') }}" method="POST">
                     @csrf
 
-                    <!-- Tab Manual Input -->
+                    <input type="hidden" name="jenis_aktivitas" value="{{ $type == 'masuk' ? 'Barang Masuk' : 'Barang Keluar' }}">
+                    
+                    <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <p class="text-sm font-medium text-gray-700">
+                            Mode Aktivitas Saat Ini: 
+                            <span class="text-lg ml-2 font-bold {{ $type == 'masuk' ? 'text-green-600' : 'text-red-600' }}">
+                                {{ $type == 'masuk' ? '➕ Tambah Stok (Barang Masuk)' : '➖ Kurangi Stok (Barang Keluar)' }}
+                            </span>
+                        </p>
+                    </div>
+
                     <div id="manual-tab" class="tab-content">
                         <div class="mb-4">
                             <x-input-label for="id_makanan" value="Pilih Jajanan (Bisa cari dari Barcode/Nama)" />
@@ -50,7 +59,6 @@
                         </div>
                     </div>
 
-                    <!-- Tab Scan Barcode -->
                     <div id="barcode-tab" class="tab-content hidden">
                         <div class="mb-4 border-2 border-dashed border-gray-300 rounded-lg p-4">
                             <div class="text-center mb-4">
@@ -61,10 +69,10 @@
                             </div>
 
                             <div class="flex justify-center gap-2 mb-4">
-                                <button type="button" id="btn-start-scan" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded font-semibold">
+                                <button type="button" id="btn-start-scan" class="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded font-semibold transition">
                                     ▶ Mulai Scan
                                 </button>
-                                <button type="button" id="btn-stop-scan" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded font-semibold hidden">
+                                <button type="button" id="btn-stop-scan" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded font-semibold hidden transition">
                                     ⏹ Hentikan Scan
                                 </button>
                             </div>
@@ -85,7 +93,6 @@
                         </div>
                     </div>
 
-                    <!-- Info Produk yang Dipilih -->
                     <div id="product-info" class="hidden mb-6 p-4 bg-blue-50 border border-blue-200 rounded">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
@@ -107,26 +114,16 @@
                         </div>
                     </div>
 
-                    <!-- Form Inputs -->
-                    <div class="mb-4">
-                        <x-input-label for="jenis_aktivitas" value="Jenis Aktivitas" />
-                        <select id="jenis_aktivitas" name="jenis_aktivitas" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full text-lg font-bold" required>
-                            <option value="Barang Keluar" class="text-red-600">➖ Barang Keluar</option>
-                            <option value="Barang Masuk" class="text-green-600">➕ Barang Masuk</option>
-                        </select>
-                        <x-input-error :messages="$errors->get('jenis_aktivitas')" class="mt-2" />
-                    </div>
-
                     <div class="mb-6">
                         <x-input-label for="jumlah_perubahan" value="Jumlah Pcs" />
-                        <x-text-input id="jumlah_perubahan" class="block mt-1 w-full text-xl font-bold" type="number" min="1" name="jumlah_perubahan" value="1" required />
+                        <x-text-input id="jumlah_perubahan" class="block mt-1 w-full text-2xl font-bold text-center text-gray-700" type="number" min="1" name="jumlah_perubahan" value="1" required />
                         <x-input-error :messages="$errors->get('jumlah_perubahan')" class="mt-2" />
                     </div>
 
                     <div class="flex items-center justify-end mt-4">
-                        <x-primary-button class="w-full justify-center text-lg py-3">
-                            Simpan Aktivitas Keluar-Masuk Barang
-                        </x-primary-button>
+                        <button type="submit" class="inline-flex items-center justify-center w-full px-4 py-3 border border-transparent rounded-md font-bold text-lg text-white tracking-widest focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150 {{ $type == 'masuk' ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500' : 'bg-red-600 hover:bg-red-700 focus:ring-red-500' }}">
+                            {{ $type == 'masuk' ? 'SIMPAN BARANG MASUK' : 'SIMPAN BARANG KELUAR' }}
+                        </button>
                     </div>
                 </form>
 
@@ -134,7 +131,6 @@
         </div>
     </div>
 
-    <!-- Load Quagga.js Library -->
     <script src="https://serratus.github.io/quaggaJS/quagga.js"></script>
 
     <script>
@@ -207,7 +203,9 @@
         };
 
         const stopScanning = () => {
-            Quagga.stop();
+            if (Quagga) {
+                try { Quagga.stop(); } catch(e) {}
+            }
             document.getElementById('btn-stop-scan').classList.add('hidden');
             document.getElementById('btn-start-scan').classList.remove('hidden');
         };
@@ -236,7 +234,7 @@
                     // Tampilkan info produk
                     showProductInfo(data);
 
-                    // Set value di hidden field
+                    // Set value di hidden field / select manual
                     makananSelect.value = data.id_makanan;
                 } else {
                     alert('❌ Barcode tidak ditemukan dalam sistem!');
@@ -245,7 +243,7 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('⚠️ Terjadi kesalahan saat mencari produk');
+                alert('⚠️ Terjadi kesalahan saat mencari produk API');
                 barcodeScanned = null;
                 startScanning();
             }
@@ -253,8 +251,12 @@
 
         const showProductInfo = (data) => {
             document.getElementById('info-nama').textContent = data.nama_makanan;
-            document.getElementById('info-kategori').textContent = data.jenis_makanan;
-            document.getElementById('info-harga-val').textContent = data.harga.toLocaleString('id-ID');
+            document.getElementById('info-kategori').textContent = data.jenis_makanan || '-';
+            
+            // Format angka secara aman
+            const harga = data.harga ? data.harga : 0;
+            document.getElementById('info-harga-val').textContent = harga.toLocaleString('id-ID');
+            
             document.getElementById('info-stok').textContent = data.stok + ' pcs';
             document.getElementById('product-info').classList.remove('hidden');
         };
@@ -274,11 +276,14 @@
 
         document.getElementById('btn-use-scanned').addEventListener('click', (e) => {
             e.preventDefault();
-            // User akan submit form dengan produk yang di-scan
             const selectedOption = makananSelect.options[makananSelect.selectedIndex];
-            if (selectedOption.value) {
-                // Auto-focus ke field jumlah
+            if (selectedOption && selectedOption.value) {
                 document.getElementById('jumlah_perubahan').focus();
+                // Animasi kecil penanda fokus
+                document.getElementById('jumlah_perubahan').classList.add('ring-2', 'ring-indigo-500');
+                setTimeout(() => {
+                    document.getElementById('jumlah_perubahan').classList.remove('ring-2', 'ring-indigo-500');
+                }, 500);
             }
         });
 
@@ -288,17 +293,25 @@
                 productInfo.classList.remove('hidden');
                 const selectedOption = this.options[this.selectedIndex];
 
-                // Parse info dari option text (untuk fallback)
                 const text = selectedOption.textContent;
-                const nameMatch = text.match(/\] (.+?) \(/);
+                // Ekstraksi teks dropdown yang formatnya: [123] Nama (Sisa Stok: 5)
+                const nameMatch = text.match(/\]? \s*(.+?) \(/) || text.match(/(.+?) \(/);
                 const stockMatch = text.match(/Sisa Stok: (\d+)/);
 
                 if (nameMatch) {
-                    document.getElementById('info-nama').textContent = nameMatch[1];
+                    let cleanName = nameMatch[1].replace(/^\[.*?\]\s*/, '');
+                    document.getElementById('info-nama').textContent = cleanName.trim();
                 }
                 if (stockMatch) {
                     document.getElementById('info-stok').textContent = stockMatch[1] + ' pcs';
                 }
+                
+                // Kategori dan Harga tidak bisa di-parse dari text dropdown, 
+                // diset standar agar UI tidak kosong.
+                document.getElementById('info-kategori').textContent = "-";
+                document.getElementById('info-harga-val').textContent = "-";
+            } else {
+                productInfo.classList.add('hidden');
             }
         });
     </script>

@@ -4,28 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class LogAktivitas extends Model
+class MutasiMasuk extends Model
 {
-    protected $table = 'log_aktivitas';
-    protected $primaryKey = 'id_log';
+    protected $table = 'mutasi_masuk';
+    protected $primaryKey = 'id_mutasi_masuk';
 
     protected $fillable = [
         'id_makanan',
         'id_pengguna',
-        'jenis_aktivitas',
-        'jumlah_perubahan',
+        'jumlah_masuk',
         'stok_sebelum',
         'stok_sesudah',
-        'tgl_aktivitas',
+        'tgl_mutasi',
     ];
 
-    // Relasi balik (Belongs To) ke tabel Makanan
     public function makanan()
     {
         return $this->belongsTo(Makanan::class, 'id_makanan', 'id_makanan');
     }
 
-    // Relasi balik (Belongs To) ke tabel Pengguna (menggunakan model User)
     public function pengguna()
     {
         return $this->belongsTo(User::class, 'id_pengguna', 'id_pengguna');

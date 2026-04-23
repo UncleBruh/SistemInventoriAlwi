@@ -2,104 +2,98 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\LogAktivitas;
-use App\Models\Makanan;
 use Illuminate\Http\Request;
+use App\Models\Makanan;
+use App\Models\MutasiMasuk;
+use App\Models\MutasiKeluar;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB; // Untuk Database Transaction
+use Illuminate\Support\Facades\DB;
 
 class LogController extends Controller
 {
-    // 1. Menampilkan Halaman Riwayat Log (Khusus Pemilik)
-    public function index(Request $request)
+    /**
+     * Menampilkan riwayat mutasi (Hanya untuk Pemilik).
+     */
+    public function index()
     {
-        // Mengambil data log beserta relasinya (makanan dan pengguna)
-        $query = LogAktivitas::with(['makanan', 'pengguna'])->latest('tgl_aktivitas');
+        $masuk = MutasiMasuk::with(['makanan', 'pengguna'])->latest()->get();
+        $keluar = MutasiKeluar::with(['makanan', 'pengguna'])->latest()->get();
 
-        // Fitur Filter: Jenis Aktivitas
-        if ($request->filled('jenis_aktivitas')) {
-            $query->where('jenis_aktivitas', $request->jenis_aktivitas);
-        }
-
-        // Fitur Filter: Rentang Tanggal
-        if ($request->filled('tanggal_awal') && $request->filled('tanggal_akhir')) {
-            $query->whereBetween('tgl_aktivitas', [
-                $request->tanggal_awal . ' 00:00:00', 
-                $request->tanggal_akhir . ' 23:59:59'
-            ]);
-        }
-
-        // Fitur Search: Cari berdasarkan nama makanan atau barcode
-        if ($request->filled('search')) {
-            $query->whereHas('makanan', function($q) use ($request) {
-                $q->where('nama_makanan', 'like', '%' . $request->search . '%')
-                  ->orWhere('barcode', $request->search);
-            });
-        }
-
-        // Gunakan pagination agar halaman tidak berat jika data sudah ribuan
-        $logs = $query->paginate(20)->withQueryString();
-
-        return view('log.index', compact('logs'));
+        return view('log.index', compact('masuk', 'keluar'));
     }
 
-    // 2. Menampilkan Form Transaksi Masuk/Keluar (Admin & Pemilik)
+    /**
+     * Menampilkan form input barang masuk atau keluar.
+     */
     public function create()
     {
-        // Ambil data makanan untuk ditampilkan di dropdown/pilihan
-        $makanan = Makanan::orderBy('nama_makanan', 'asc')->get();
+        $makanan = Makanan::all();
         return view('log.create', compact('makanan'));
     }
 
-    // 3. Memproses Transaksi (Inti Logika)
+    /**
+     * Memproses penyimpanan mutasi.
+     */
     public function store(Request $request)
     {
         $request->validate([
             'id_makanan' => 'required|exists:makanan,id_makanan',
             'jenis_aktivitas' => 'required|in:Barang Masuk,Barang Keluar',
             'jumlah_perubahan' => 'required|integer|min:1',
+            'alasan' => 'required_if:jenis_aktivitas,Barang Keluar', // Alasan wajib jika barang keluar
         ]);
 
+        $makanan = Makanan::findOrFail($request->id_makanan);
+        $stok_sebelum = $makanan->stok;
+
+        // Gunakan Database Transaction agar data aman jika terjadi error di tengah jalan
+        DB::beginTransaction();
+
         try {
-            // Gunakan DB::transaction untuk keamanan data
-            DB::transaction(function () use ($request) {
-                // 1. Kunci baris makanan ini sementara (pessimistic locking) agar tidak ada tabrakan data jika ada 2 admin input bersamaan
-                $makanan = Makanan::where('id_makanan', $request->id_makanan)->lockForUpdate()->first();
+            if ($request->jenis_aktivitas === 'Barang Masuk') {
+                // Logika Barang Masuk (Bisa dilakukan Admin/Pemilik)
+                $stok_sesudah = $stok_sebelum + $request->jumlah_perubahan;
                 
-                $stok_sebelum = $makanan->stok;
-                
-                // 2. Hitung stok sesudah
-                if ($request->jenis_aktivitas == 'Barang Masuk') {
-                    $stok_sesudah = $stok_sebelum + $request->jumlah_perubahan;
-                } else {
-                    $stok_sesudah = $stok_sebelum - $request->jumlah_perubahan;
-                }
-
-                // 3. Validasi: Stok tidak boleh minus jika barang keluar
-                if ($stok_sesudah < 0) {
-                    throw new \Exception('Gagal! Stok ' . $makanan->nama_makanan . ' saat ini hanya ' . $stok_sebelum . ', tidak cukup untuk dikeluarkan.');
-                }
-
-                // 4. Update tabel makanan
-                $makanan->update(['stok' => $stok_sesudah]);
-
-                // 5. Catat ke tabel log_aktivitas
-                LogAktivitas::create([
+                MutasiMasuk::create([
                     'id_makanan' => $makanan->id_makanan,
-                    'id_pengguna' => Auth::id(), // ID akun yang sedang login
-                    'jenis_aktivitas' => $request->jenis_aktivitas,
-                    'jumlah_perubahan' => $request->jumlah_perubahan,
+                    'id_pengguna' => Auth::id(),
+                    'jumlah_masuk' => $request->jumlah_perubahan,
                     'stok_sebelum' => $stok_sebelum,
                     'stok_sesudah' => $stok_sesudah,
-                    'tgl_aktivitas' => now(), // Tanggal dan waktu saat ini
+                    'tgl_mutasi' => now(),
                 ]);
-            });
+            } else {
+                // Logika Barang Keluar (HANYA Pemilik)
+                if (Auth::user()->role !== 'Pemilik') {
+                    return redirect()->back()->with('error', 'Akses ditolak. Hanya Pemilik yang bisa mengeluarkan barang.');
+                }
 
-            return redirect()->back()->with('success', 'Transaksi ' . $request->jenis_aktivitas . ' berhasil dicatat!');
+                if ($stok_sebelum < $request->jumlah_perubahan) {
+                    return redirect()->back()->with('error', 'Stok tidak mencukupi untuk pengeluaran ini.');
+                }
+
+                $stok_sesudah = $stok_sebelum - $request->jumlah_perubahan;
+
+                MutasiKeluar::create([
+                    'id_makanan' => $makanan->id_makanan,
+                    'id_pengguna' => Auth::id(),
+                    'jumlah_keluar' => $request->jumlah_perubahan,
+                    'stok_sebelum' => $stok_sebelum,
+                    'stok_sesudah' => $stok_sesudah,
+                    'alasan' => $request->alasan,
+                    'tgl_mutasi' => now(),
+                ]);
+            }
+
+            // Update stok di tabel makanan
+            $makanan->update(['stok' => $stok_sesudah]);
+
+            DB::commit();
+            return redirect()->route('dashboard')->with('success', 'Data mutasi berhasil disimpan.');
 
         } catch (\Exception $e) {
-            // Jika ada error (misal stok minus), kembalikan pesan error
-            return redirect()->back()->with('error', $e->getMessage());
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 }
