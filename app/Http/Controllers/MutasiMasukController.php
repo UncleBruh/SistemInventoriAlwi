@@ -10,11 +10,18 @@ use Illuminate\Support\Facades\DB;
 
 class MutasiMasukController extends Controller
 {
+    // Menampilkan riwayat barang masuk
+    public function index()
+    {
+        $data = MutasiMasuk::with(['makanan', 'pengguna'])->latest()->get();
+        return view('mutasi_masuk.index', compact('data'));
+    }
+
     public function create()
     {
         $makanan = Makanan::all();
-        // Langsung kirimkan type 'masuk' ke view agar tidak error
-        return view('log.create', compact('makanan'))->with('type', 'masuk');
+        // Mengarah ke folder mutasi_masuk
+        return view('mutasi_masuk.create', compact('makanan'));
     }
 
     public function store(Request $request)
@@ -42,10 +49,10 @@ class MutasiMasukController extends Controller
             $makanan->update(['stok' => $stok_sesudah]);
 
             DB::commit();
-            return redirect()->route('dashboard')->with('success', 'Barang Masuk berhasil dicatat.');
+            return redirect()->route('mutasi_masuk.index')->with('success', 'Barang Masuk berhasil dicatat.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menyimpan data.');
         }
     }
 }

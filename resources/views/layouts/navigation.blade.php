@@ -19,15 +19,15 @@
                         {{ __('Daftar Barang') }}
                     </x-nav-link>
                     
-                    <x-nav-link :href="route('log.create', ['type' => 'masuk'])" 
-                               :active="request()->fullUrlIs(route('log.create', ['type' => 'masuk']))">
+                    <x-nav-link :href="route('log.create')" :active="request()->routeIs('log.create')">
                         {{ __('Barang Masuk') }}
                     </x-nav-link>
-
-                    <x-nav-link :href="route('log.create', ['type' => 'keluar'])" 
-                               :active="request()->fullUrlIs(route('log.create', ['type' => 'keluar']))">
-                        {{ __('Barang Keluar') }}
-                    </x-nav-link>
+                    
+                    @if(Auth::user()->role == 'Pemilik')
+                        <x-nav-link :href="route('log.keluar.create')" :active="request()->routeIs('log.keluar.create')">
+                            {{ __('Barang Keluar') }}
+                        </x-nav-link>
+                    @endif
 
                     @if(Auth::user()->role === 'Pemilik')
                     <x-nav-link :href="route('log.aktivitas')" :active="request()->routeIs('log.aktivitas')">

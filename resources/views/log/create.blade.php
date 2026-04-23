@@ -30,10 +30,8 @@
                     </button>
                 </div>
 
-                <form action="{{ route('log.store') }}" method="POST">
+                <form action="{{ $type == 'masuk' ? route('log.store') : route('log.keluar.store') }}" method="POST">
                     @csrf
-
-                    <input type="hidden" name="jenis_aktivitas" value="{{ $type == 'masuk' ? 'Barang Masuk' : 'Barang Keluar' }}">
                     
                     <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <p class="text-sm font-medium text-gray-700">
@@ -120,6 +118,14 @@
                         <x-input-error :messages="$errors->get('jumlah_perubahan')" class="mt-2" />
                     </div>
 
+                    @if($type == 'keluar')
+                    <div class="mb-6">
+                        <x-input-label for="alasan" value="Alasan Pengeluaran Barang (Wajib Diisi)" />
+                        <textarea id="alasan" name="alasan" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" rows="3" required placeholder="Contoh: Barang kadaluarsa, rusak, atau dipakai sendiri..."></textarea>
+                        <x-input-error :messages="$errors->get('alasan')" class="mt-2" />
+                    </div>
+                    @endif
+
                     <div class="flex items-center justify-end mt-4">
                         <button type="submit" class="inline-flex items-center justify-center w-full px-4 py-3 border border-transparent rounded-md font-bold text-lg text-white tracking-widest focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150 {{ $type == 'masuk' ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500' : 'bg-red-600 hover:bg-red-700 focus:ring-red-500' }}">
                             {{ $type == 'masuk' ? 'SIMPAN BARANG MASUK' : 'SIMPAN BARANG KELUAR' }}
@@ -132,7 +138,6 @@
     </div>
 
     <script src="https://serratus.github.io/quaggaJS/quagga.js"></script>
-
     <script>
         const makananSelect = document.getElementById('id_makanan');
         const barcodeTab = document.getElementById('barcode-tab');
@@ -142,108 +147,65 @@
         const tabButtons = document.querySelectorAll('.tab-button');
         let barcodeScanned = null;
 
-        // Tab Navigation
         tabButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const tabName = this.dataset.tab;
-
-                // Hide all tabs
                 document.querySelectorAll('.tab-content').forEach(tab => {
                     tab.classList.add('hidden');
                 });
-
-                // Remove active styling from all buttons
                 tabButtons.forEach(btn => {
                     btn.classList.remove('text-indigo-600', 'border-indigo-600');
                     btn.classList.add('text-gray-600', 'border-transparent', 'hover:text-indigo-600');
                 });
-
-                // Show selected tab
                 document.getElementById(tabName + '-tab').classList.remove('hidden');
-
-                // Add active styling to clicked button
                 this.classList.remove('text-gray-600', 'border-transparent', 'hover:text-indigo-600');
                 this.classList.add('text-indigo-600', 'border-indigo-600');
-
-                // Stop scanning jika pindah ke tab manual
                 if (tabName === 'manual') {
                     stopScanning();
                 }
             });
         });
 
-        // Inisialisasi Quagga
         const startScanning = () => {
             Quagga.init({
-                inputStream: {
-                    name: "Live",
-                    type: "LiveStream",
-                    target: document.querySelector('#scanner-container'),
-                    constraints: {
-                        width: 640,
-                        height: 480,
-                        facingMode: "environment"
-                    }
-                },
-                decoder: {
-                    readers: ["ean_reader", "ean_8_reader", "code_128_reader", "code_39_reader"]
-                }
+                inputStream: { name: "Live", type: "LiveStream", target: document.querySelector('#scanner-container'), constraints: { width: 640, height: 480, facingMode: "environment" } },
+                decoder: { readers: ["ean_reader", "ean_8_reader", "code_128_reader", "code_39_reader"] }
             }, function(err) {
-                if (err) {
-                    console.log(err);
-                    alert('Gagal mengakses kamera. Pastikan browser memiliki izin kamera.');
-                    return;
-                }
+                if (err) { alert('Gagal mengakses kamera.'); return; }
                 Quagga.start();
                 document.getElementById('btn-start-scan').classList.add('hidden');
                 document.getElementById('btn-stop-scan').classList.remove('hidden');
             });
-
             Quagga.onDetected(onBarcodeDetected);
         };
 
         const stopScanning = () => {
-            if (Quagga) {
-                try { Quagga.stop(); } catch(e) {}
-            }
+            if (Quagga) { try { Quagga.stop(); } catch(e) {} }
             document.getElementById('btn-stop-scan').classList.add('hidden');
             document.getElementById('btn-start-scan').classList.remove('hidden');
         };
 
         const onBarcodeDetected = async (result) => {
             const barcode = result.codeResult.code;
-            console.log('Barcode detected:', barcode);
-
-            // Cegah double scanning dengan delay
             if (barcodeScanned === barcode) return;
             barcodeScanned = barcode;
-
-            // Hentikan scanning sementara
             stopScanning();
-
-            // Tampilkan barcode yang di-scan
             document.getElementById('scan-barcode-value').textContent = barcode;
             document.getElementById('scan-result').classList.remove('hidden');
 
             try {
-                // Fetch data produk dari API
                 const response = await fetch(`/api/makanan/find-by-barcode/${barcode}`);
                 const data = await response.json();
-
                 if (data.success) {
-                    // Tampilkan info produk
                     showProductInfo(data);
-
-                    // Set value di hidden field / select manual
                     makananSelect.value = data.id_makanan;
                 } else {
-                    alert('❌ Barcode tidak ditemukan dalam sistem!');
+                    alert('❌ Barcode tidak ditemukan!');
                     barcodeScanned = null;
                     startScanning();
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('⚠️ Terjadi kesalahan saat mencari produk API');
+                alert('⚠️ Terjadi kesalahan pencarian API');
                 barcodeScanned = null;
                 startScanning();
             }
@@ -252,62 +214,29 @@
         const showProductInfo = (data) => {
             document.getElementById('info-nama').textContent = data.nama_makanan;
             document.getElementById('info-kategori').textContent = data.jenis_makanan || '-';
-            
-            // Format angka secara aman
             const harga = data.harga ? data.harga : 0;
             document.getElementById('info-harga-val').textContent = harga.toLocaleString('id-ID');
-            
             document.getElementById('info-stok').textContent = data.stok + ' pcs';
             document.getElementById('product-info').classList.remove('hidden');
         };
 
-        // Event Listeners
-        document.getElementById('btn-start-scan').addEventListener('click', (e) => {
-            e.preventDefault();
-            barcodeScanned = null;
-            scanResult.classList.add('hidden');
-            startScanning();
-        });
-
-        document.getElementById('btn-stop-scan').addEventListener('click', (e) => {
-            e.preventDefault();
-            stopScanning();
-        });
-
+        document.getElementById('btn-start-scan').addEventListener('click', (e) => { e.preventDefault(); barcodeScanned = null; scanResult.classList.add('hidden'); startScanning(); });
+        document.getElementById('btn-stop-scan').addEventListener('click', (e) => { e.preventDefault(); stopScanning(); });
         document.getElementById('btn-use-scanned').addEventListener('click', (e) => {
             e.preventDefault();
-            const selectedOption = makananSelect.options[makananSelect.selectedIndex];
-            if (selectedOption && selectedOption.value) {
+            if (makananSelect.value) {
                 document.getElementById('jumlah_perubahan').focus();
-                // Animasi kecil penanda fokus
-                document.getElementById('jumlah_perubahan').classList.add('ring-2', 'ring-indigo-500');
-                setTimeout(() => {
-                    document.getElementById('jumlah_perubahan').classList.remove('ring-2', 'ring-indigo-500');
-                }, 500);
             }
         });
 
-        // Update product info ketika manual select berubah
         makananSelect.addEventListener('change', function() {
             if (this.value) {
                 productInfo.classList.remove('hidden');
-                const selectedOption = this.options[this.selectedIndex];
-
-                const text = selectedOption.textContent;
-                // Ekstraksi teks dropdown yang formatnya: [123] Nama (Sisa Stok: 5)
+                const text = this.options[this.selectedIndex].textContent;
                 const nameMatch = text.match(/\]? \s*(.+?) \(/) || text.match(/(.+?) \(/);
                 const stockMatch = text.match(/Sisa Stok: (\d+)/);
-
-                if (nameMatch) {
-                    let cleanName = nameMatch[1].replace(/^\[.*?\]\s*/, '');
-                    document.getElementById('info-nama').textContent = cleanName.trim();
-                }
-                if (stockMatch) {
-                    document.getElementById('info-stok').textContent = stockMatch[1] + ' pcs';
-                }
-                
-                // Kategori dan Harga tidak bisa di-parse dari text dropdown, 
-                // diset standar agar UI tidak kosong.
+                if (nameMatch) document.getElementById('info-nama').textContent = nameMatch[1].replace(/^\[.*?\]\s*/, '').trim();
+                if (stockMatch) document.getElementById('info-stok').textContent = stockMatch[1] + ' pcs';
                 document.getElementById('info-kategori').textContent = "-";
                 document.getElementById('info-harga-val').textContent = "-";
             } else {

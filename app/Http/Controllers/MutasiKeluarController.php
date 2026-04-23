@@ -10,11 +10,18 @@ use Illuminate\Support\Facades\DB;
 
 class MutasiKeluarController extends Controller
 {
+    // Menampilkan riwayat barang keluar
+    public function index()
+    {
+        $data = MutasiKeluar::with(['makanan', 'pengguna'])->latest()->get();
+        return view('mutasi_keluar.index', compact('data'));
+    }
+
     public function create()
     {
         $makanan = Makanan::all();
-        // Langsung kirimkan type 'keluar' ke view
-        return view('log.create', compact('makanan'))->with('type', 'keluar');
+        // Mengarah ke folder mutasi_keluar
+        return view('mutasi_keluar.create', compact('makanan'));
     }
 
     public function store(Request $request)
@@ -22,14 +29,14 @@ class MutasiKeluarController extends Controller
         $request->validate([
             'id_makanan' => 'required|exists:makanan,id_makanan',
             'jumlah_perubahan' => 'required|integer|min:1',
-            'alasan' => 'required|string|max:255', // Alasan wajib diisi
+            'alasan' => 'required|string|max:255',
         ]);
 
         $makanan = Makanan::findOrFail($request->id_makanan);
         $stok_sebelum = $makanan->stok;
 
         if ($stok_sebelum < $request->jumlah_perubahan) {
-            return redirect()->back()->with('error', 'Stok tidak mencukupi untuk pengeluaran ini.');
+            return redirect()->back()->with('error', 'Stok tidak mencukupi.');
         }
 
         $stok_sesudah = $stok_sebelum - $request->jumlah_perubahan;
@@ -49,10 +56,10 @@ class MutasiKeluarController extends Controller
             $makanan->update(['stok' => $stok_sesudah]);
 
             DB::commit();
-            return redirect()->route('dashboard')->with('success', 'Barang Keluar berhasil dicatat.');
+            return redirect()->route('mutasi_keluar.index')->with('success', 'Barang Keluar berhasil dicatat.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menyimpan data.');
         }
     }
 }
