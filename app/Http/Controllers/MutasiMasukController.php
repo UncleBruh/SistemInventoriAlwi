@@ -27,6 +27,7 @@ class MutasiMasukController extends Controller
         $request->validate([
             'id_makanan' => 'required|exists:makanan,id_makanan',
             'jumlah_perubahan' => 'required|integer|min:1',
+            'tgl_mutasi' => 'required|date', // Validasi tanggal wajib diisi
         ]);
 
         $makanan = Makanan::findOrFail($request->id_makanan);
@@ -41,7 +42,7 @@ class MutasiMasukController extends Controller
                 'jumlah_masuk' => $request->jumlah_perubahan,
                 'stok_sebelum' => $stok_sebelum,
                 'stok_sesudah' => $stok_sesudah,
-                'tgl_mutasi' => now(),
+                'tgl_mutasi' => $request->tgl_mutasi, // Ambil dari inputan user
             ]);
 
             $makanan->update(['stok' => $stok_sesudah]);

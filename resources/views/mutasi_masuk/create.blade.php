@@ -34,6 +34,12 @@
                     </select>
                 </div>
 
+                <div class="mb-4">
+                    <x-input-label for="tgl_mutasi" value="Tanggal Aktual Barang Datang" />
+                    <x-text-input id="tgl_mutasi" class="block mt-1 w-full text-gray-700 font-medium" type="date" name="tgl_mutasi" value="{{ date('Y-m-d') }}" required />
+                    <p class="text-xs text-gray-500 mt-1">Isi dengan tanggal kapan fisik barang benar-benar tiba di gudang.</p>
+                </div>
+
                 <div class="mb-6">
                     <x-input-label for="jumlah_perubahan" value="Jumlah Masuk (Pcs)" />
                     <x-text-input id="jumlah_perubahan" class="block mt-1 w-full text-center text-2xl font-bold" type="number" min="1" name="jumlah_perubahan" value="1" required />
