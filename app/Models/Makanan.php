@@ -11,12 +11,20 @@ class Makanan extends Model
 
     // Kolom apa saja yang boleh diisi (Mass Assignment)
     protected $fillable = [
+        'id_kategori', // <-- Tambahkan ini agar id_kategori bisa disimpan
         'barcode',
         'nama_makanan',
         'jenis_makanan',
         'harga',
         'stok',
     ];
+
+    // Relasi ke tabel Kategori (Baru Ditambahkan)
+    public function kategori()
+    {
+        // Menghubungkan Makanan ke Kategori berdasarkan id_kategori
+        return $this->belongsTo(Kategori::class, 'id_kategori', 'id_kategori');
+    }
 
     // Relasi: Satu Makanan bisa memiliki banyak Log Aktivitas
     public function logAktivitas()
