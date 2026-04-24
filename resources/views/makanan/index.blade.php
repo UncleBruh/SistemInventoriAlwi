@@ -13,11 +13,8 @@
                     <h3 class="text-lg font-bold text-gray-700">Manajemen Stok</h3>
 
                     <div class="flex flex-wrap gap-2">
-                        <a href="{{ route('makanan.create', ['type' => 'Makanan']) }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition shadow">
-                            + Tambah Makanan Baru
-                        </a>
-                        <a href="{{ route('makanan.create', ['type' => 'Minuman']) }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition shadow">
-                            + Tambah Minuman Baru
+                        <a href="{{ route('makanan.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-bold text-sm text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm">
+                            <span class="mr-2 text-lg">➕</span> Daftar Jajanan Baru
                         </a>
                     </div>
                 </div>

@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class MutasiKeluarController extends Controller
 {
-    // Menampilkan riwayat barang keluar
     public function index()
     {
         $data = MutasiKeluar::with(['makanan', 'pengguna'])->latest()->get();
@@ -20,7 +19,6 @@ class MutasiKeluarController extends Controller
     public function create()
     {
         $makanan = Makanan::all();
-        // Mengarah ke folder mutasi_keluar
         return view('mutasi_keluar.create', compact('makanan'));
     }
 
@@ -36,7 +34,7 @@ class MutasiKeluarController extends Controller
         $stok_sebelum = $makanan->stok;
 
         if ($stok_sebelum < $request->jumlah_perubahan) {
-            return redirect()->back()->with('error', 'Stok tidak mencukupi.');
+            return redirect()->back()->with('error', 'Stok tidak mencukupi untuk pengeluaran ini.');
         }
 
         $stok_sesudah = $stok_sebelum - $request->jumlah_perubahan;
@@ -54,12 +52,12 @@ class MutasiKeluarController extends Controller
             ]);
 
             $makanan->update(['stok' => $stok_sesudah]);
-
             DB::commit();
+
             return redirect()->back()->with('success', 'Barang Keluar berhasil dicatat. Silakan input barang selanjutnya jika ada.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal menyimpan data.');
+            return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
     }
 }
