@@ -24,11 +24,28 @@ class MutasiKeluarController extends Controller
 
     public function store(Request $request)
     {
+        // -------------------------------------------------------------
+        // PENENTUAN ALASAN BERDASARKAN ROLE (PENJUALAN ATAU KETIK SENDIRI)
+        // -------------------------------------------------------------
+        if (Auth::user()->role === 'Admin') {
+            // Admin dipaksa ke opsi Penjualan
+            $request->merge(['alasan' => 'Penjualan']);
+        } else {
+            // Pemilik: Cek apakah memilih "Lainnya"
+            if ($request->alasan_pilihan === 'Lainnya') {
+                // Ambil teks dari kolom ketikan
+                $request->merge(['alasan' => $request->alasan_lain]);
+            } else {
+                // Ambil teks dari dropdown bawaan
+                $request->merge(['alasan' => $request->alasan_pilihan]);
+            }
+        }
+
         $request->validate([
             'id_makanan' => 'required|exists:makanan,id_makanan',
             'jumlah_perubahan' => 'required|integer|min:1',
             'alasan' => 'required|string|max:255',
-            'tgl_mutasi' => 'required|date', // Validasi tanggal
+            'tgl_mutasi' => 'required|date', 
         ]);
 
         $makanan = Makanan::findOrFail($request->id_makanan);
@@ -49,7 +66,7 @@ class MutasiKeluarController extends Controller
                 'stok_sebelum' => $stok_sebelum,
                 'stok_sesudah' => $stok_sesudah,
                 'alasan' => $request->alasan,
-                'tgl_mutasi' => $request->tgl_mutasi, // Ambil dari inputan user
+                'tgl_mutasi' => $request->tgl_mutasi,
             ]);
 
             $makanan->update(['stok' => $stok_sesudah]);

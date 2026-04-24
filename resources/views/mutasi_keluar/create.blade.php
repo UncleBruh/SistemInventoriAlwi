@@ -46,8 +46,38 @@
                 </div>
 
                 <div class="mb-6">
-                    <x-input-label for="alasan" value="Alasan Pengeluaran" />
-                    <textarea id="alasan" name="alasan" class="border-gray-300 rounded-md shadow-sm block mt-1 w-full" rows="3" required placeholder="Contoh: Rusak atau Expired"></textarea>
+                    <x-input-label value="Alasan Pengeluaran" />
+                    
+                    @if(Auth::user()->role === 'Admin')
+                        <x-text-input id="alasan" name="alasan" type="text" class="block mt-1 w-full bg-gray-100 cursor-not-allowed text-gray-600" value="Penjualan" readonly />
+                        <p class="text-xs text-red-500 mt-1 font-medium">*Sebagai Admin, Anda hanya diizinkan mencatat mutasi keluar untuk keperluan Penjualan.</p>
+                    @else
+                        <select id="alasan_pilihan" name="alasan_pilihan" class="border-gray-300 rounded-md shadow-sm block mt-1 w-full" required onchange="toggleAlasanLain(this.value)">
+                            <option value="Penjualan">Penjualan</option>
+                            <option value="Barang Rusak">Barang Rusak</option>
+                            <option value="Kadaluarsa">Kadaluarsa</option>
+                            <option value="Konsumsi Pribadi">Konsumsi Pribadi</option>
+                            <option value="Lainnya">Lainnya (Ketik Sendiri)</option>
+                        </select>
+                        
+                        <x-text-input id="alasan_lain" name="alasan_lain" type="text" class="block mt-2 w-full hidden" placeholder="Tuliskan alasan pengeluaran barang secara spesifik..." />
+                        
+                        <p class="text-xs text-gray-500 mt-1">Pilih alasan kenapa stok barang ini dikurangi.</p>
+
+                        <script>
+                            function toggleAlasanLain(value) {
+                                const inputLain = document.getElementById('alasan_lain');
+                                if (value === 'Lainnya') {
+                                    inputLain.classList.remove('hidden'); // Memunculkan kotak ketik
+                                    inputLain.required = true;            // Menjadikannya wajib diisi
+                                } else {
+                                    inputLain.classList.add('hidden');    // Menyembunyikan kotak ketik
+                                    inputLain.required = false;           // Tidak lagi wajib diisi
+                                    inputLain.value = '';                 // Membersihkan isi teks sebelumnya
+                                }
+                            }
+                        </script>
+                    @endif
                 </div>
 
                 <x-primary-button class="w-full justify-center py-3 text-lg bg-red-600 hover:bg-red-700">SIMPAN BARANG KELUAR</x-primary-button>
