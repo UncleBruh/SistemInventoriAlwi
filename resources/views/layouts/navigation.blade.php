@@ -12,9 +12,14 @@
                 <div class="flex h-16 shrink-0 items-center px-6 bg-indigo-600 text-white font-bold text-xl">Alwi College</div>
                 <nav class="flex-1 overflow-y-auto p-4">
                     <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏠 Dashboard</a>
+                    
                     <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-gray-400 uppercase">Database</div>
+                    
+                    <a href="{{ route('kategori.index') }}" class="{{ request()->routeIs('kategori.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏷️ Kategori Barang</a>
                     <a href="{{ route('makanan.index') }}" class="{{ request()->routeIs('makanan.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">📦 Data Jajanan</a>
+                    
                     <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-gray-400 uppercase">Mutasi</div>
+                    
                     <a href="{{ route('mutasi_masuk.create') }}" class="{{ request()->routeIs('mutasi_masuk.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➕ Barang Masuk</a>
                     @if(Auth::user()->role === 'Pemilik')
                         <a href="{{ route('mutasi_keluar.create') }}" class="{{ request()->routeIs('mutasi_keluar.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➖ Barang Keluar</a>
@@ -29,9 +34,14 @@
         <div class="flex h-16 shrink-0 items-center border-b border-indigo-700 bg-indigo-600 px-6 text-white font-bold text-xl shadow-md">Alwi College</div>
         <div class="flex flex-1 flex-col overflow-y-auto px-4 py-6">
             <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏠 Dashboard</a>
+            
             <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-gray-400 uppercase">Database</div>
+            
+            <a href="{{ route('kategori.index') }}" class="{{ request()->routeIs('kategori.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏷️ Kategori Barang</a>
             <a href="{{ route('makanan.index') }}" class="{{ request()->routeIs('makanan.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">📦 Data Jajanan</a>
+            
             <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-gray-400 uppercase">Mutasi</div>
+            
             <a href="{{ route('mutasi_masuk.create') }}" class="{{ request()->routeIs('mutasi_masuk.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➕ Barang Masuk</a>
             @if(Auth::user()->role === 'Pemilik')
                 <a href="{{ route('mutasi_keluar.create') }}" class="{{ request()->routeIs('mutasi_keluar.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➖ Barang Keluar</a>

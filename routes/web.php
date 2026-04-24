@@ -5,6 +5,7 @@ use App\Http\Controllers\MakananController;
 use App\Http\Controllers\MutasiMasukController;
 use App\Http\Controllers\MutasiKeluarController;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\KategoriController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -42,6 +43,8 @@ Route::middleware('auth')->group(function () {
             Route::post('/tambah', [MutasiKeluarController::class, 'store'])->name('mutasi_keluar.store');
         });
     });
+    // --- MANAJEMEN KATEGORI ---
+    Route::resource('kategori', KategoriController::class)->only(['index', 'store', 'destroy']);
 });
 
 require __DIR__.'/auth.php';
