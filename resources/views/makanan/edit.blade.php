@@ -1,83 +1,59 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit Data Barang') }}
-        </h2>
+        {{ __('Edit Data Jajanan') }}
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+    <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-200">
+            
+            <form action="{{ route('makanan.update', $makanan->id_makanan) }}" method="POST">
+                @csrf
+                @method('PUT')
 
-                <form action="{{ route('makanan.update', $makanan->id_makanan) }}" method="POST">
-                    @csrf
-                    @method('PATCH')
+                <div class="mb-4">
+                    <x-input-label for="id_kategori" value="Kategori Jajanan" />
+                    <select id="id_kategori" name="id_kategori" class="searchable-select border-gray-300 rounded-md shadow-sm block mt-1 w-full" required>
+                        <option value=""></option>
+                        @foreach($kategori as $kat)
+                            <option value="{{ $kat->id_kategori }}" {{ $makanan->id_kategori == $kat->id_kategori ? 'selected' : '' }}>
+                                {{ $kat->nama_kategori }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <x-input-error :messages="$errors->get('id_kategori')" class="mt-2" />
+                </div>
 
-                    <div class="mb-4">
-                        <x-input-label for="barcode" value="Scan Barcode (Opsional)" />
-                        <x-text-input id="barcode" class="block mt-1 w-full bg-blue-50 focus:bg-white" type="text" name="barcode" :value="old('barcode', $makanan->barcode)" autofocus placeholder="Arahkan scanner ke sini..." />
-                        <x-input-error :messages="$errors->get('barcode')" class="mt-2" />
-                    </div>
+                <div class="mb-4">
+                    <x-input-label for="barcode" value="Barcode (Opsional)" />
+                    <x-text-input id="barcode" class="block mt-1 w-full font-mono" type="text" name="barcode" value="{{ old('barcode', $makanan->barcode) }}" />
+                    <x-input-error :messages="$errors->get('barcode')" class="mt-2" />
+                </div>
 
-                    <div class="mb-4">
-                        <x-input-label for="nama_makanan" value="Nama Barang" />
-                        <x-text-input id="nama_makanan" class="block mt-1 w-full" type="text" name="nama_makanan" :value="old('nama_makanan', $makanan->nama_makanan)" required />
-                        <x-input-error :messages="$errors->get('nama_makanan')" class="mt-2" />
-                    </div>
+                <div class="mb-4">
+                    <x-input-label for="nama_makanan" value="Nama Jajanan" />
+                    <x-text-input id="nama_makanan" class="block mt-1 w-full" type="text" name="nama_makanan" value="{{ old('nama_makanan', $makanan->nama_makanan) }}" required />
+                    <x-input-error :messages="$errors->get('nama_makanan')" class="mt-2" />
+                </div>
 
-                    <div class="mb-4" x-data="{ isNew: false }">
-                        <x-input-label for="jenis_makanan" value="Kategori Barang" />
-
-                        <div class="flex flex-col gap-2 mt-1">
-                            <select id="jenis_makanan" name="jenis_makanan"
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block w-full"
-                                    x-bind:disabled="isNew">
-                                <option value="">-- Pilih Kategori --</option>
-                                @foreach($categories as $cat)
-                                    <option value="{{ $cat }}" {{ (old('jenis_makanan', $makanan->jenis_makanan) == $cat) ? 'selected' : '' }}>
-                                        {{ $cat }}
-                                    </option>
-                                @endforeach
-                            </select>
-
-                            <div class="flex items-center gap-2 mt-1">
-                                <input type="checkbox" id="toggle_new" x-model="isNew" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                                <label for="toggle_new" class="text-sm text-gray-600 italic cursor-pointer">Atau ketik kategori baru?</label>
-                            </div>
-
-                            <div x-show="isNew" style="display: none;" x-transition class="mt-2">
-                                <x-text-input id="jenis_makanan_baru" class="block w-full bg-yellow-50" type="text"
-                                              name="jenis_makanan_baru" :value="old('jenis_makanan_baru')"
-                                              placeholder="Misal: Snack Import, Minuman Dingin, dsb..." />
-                            </div>
-                        </div>
-                        <x-input-error :messages="$errors->get('jenis_makanan')" class="mt-2" />
-                        <x-input-error :messages="$errors->get('jenis_makanan_baru')" class="mt-2" />
-                    </div>
-
-                    <div class="mb-6">
-                        <x-input-label for="harga" value="Harga Jual (Rp)" />
-                        <x-text-input id="harga" class="block mt-1 w-full" type="number" min="0" name="harga" :value="old('harga', $makanan->harga)" required />
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <x-input-label for="harga" value="Harga (Rp)" />
+                        <x-text-input id="harga" class="block mt-1 w-full" type="number" name="harga" value="{{ old('harga', $makanan->harga) }}" required min="0" />
                         <x-input-error :messages="$errors->get('harga')" class="mt-2" />
                     </div>
-
-                    <!-- INFO: Stok tidak bisa diedit -->
-                    <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded">
-                        <p class="text-sm text-blue-700">
-                            <strong>Catatan:</strong> Stok saat ini adalah <strong>{{ $makanan->stok }} pcs</strong>.
-                            Untuk mengubah stok, gunakan fitur <strong>"Mutasi Stok"</strong> di menu utama.
-                        </p>
+                    <div>
+                        <x-input-label for="stok" value="Stok Saat Ini" />
+                        <x-text-input id="stok" class="block mt-1 w-full font-bold text-indigo-700" type="number" name="stok" value="{{ old('stok', $makanan->stok) }}" required min="0" />
+                        <x-input-error :messages="$errors->get('stok')" class="mt-2" />
                     </div>
+                </div>
 
-                    <div class="flex items-center justify-end mt-4 gap-4">
-                        <a href="{{ route('makanan.index') }}" class="text-sm text-gray-600 hover:text-gray-900 underline">Batal</a>
-                        <x-primary-button>
-                            Simpan Perubahan
-                        </x-primary-button>
-                    </div>
-                </form>
-
-            </div>
+                <div class="flex items-center justify-between border-t pt-4">
+                    <a href="{{ route('makanan.index') }}" class="text-gray-500 hover:text-gray-800 font-medium transition">⬅ Batal</a>
+                    <x-primary-button class="bg-indigo-600 hover:bg-indigo-700 text-lg px-8">Simpan Perubahan</x-primary-button>
+                </div>
+            </form>
+            
         </div>
     </div>
 </x-app-layout>
