@@ -28,10 +28,7 @@
                         <x-input-label for="jenis_makanan" value="Kategori Barang" />
                         
                         <div class="flex flex-col gap-2 mt-1">
-                            <select id="jenis_makanan" name="jenis_makanan" 
-                                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block w-full"
-                                    x-bind:disabled="isNew">
-                                <option value="">-- Pilih Kategori --</option>
+                            <select id="jenis_makanan" name="jenis_makanan" class="searchable-select border-gray-300 rounded-md shadow-sm block mt-1 w-full" required>
                                 @foreach($categories as $cat)
                                     <option value="{{ $cat }}" {{ (old('jenis_makanan') == $cat || $default_type == $cat) ? 'selected' : '' }}>
                                         {{ $cat }}

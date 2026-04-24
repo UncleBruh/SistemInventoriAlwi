@@ -26,8 +26,8 @@
 
                 <div class="mb-4">
                     <x-input-label for="id_makanan" value="Pilih Jajanan" />
-                    <select id="id_makanan" name="id_makanan" class="border-gray-300 rounded-md shadow-sm block mt-1 w-full" required autofocus>
-                        <option value="">-- Pilih Barang --</option>
+                    <select id="id_makanan" name="id_makanan" class="searchable-select border-gray-300 rounded-md shadow-sm block mt-1 w-full" required autofocus>
+                        <option value=""></option>
                         @foreach($makanan as $item)
                             <option value="{{ $item->id_makanan }}">{{ $item->nama_makanan }} (Stok: {{ $item->stok }})</option>
                         @endforeach

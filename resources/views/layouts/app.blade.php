@@ -5,9 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'Alwi College') }}</title>
+    
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        .select2-container .select2-selection--single {
+            height: 42px !important;
+            border-color: #d1d5db !important;
+            border-radius: 0.375rem !important;
+            padding-top: 6px;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 40px !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #374151 !important;
+            font-weight: 500;
+        }
+    </style>
 </head>
 <body class="font-sans antialiased bg-gray-50 text-gray-900" x-data="{ sidebarOpen: window.innerWidth >= 1024 }">
     
@@ -15,9 +36,7 @@
         @include('layouts.navigation')
 
         <div :class="sidebarOpen ? 'lg:pl-64' : 'lg:pl-0'" class="flex flex-col min-h-screen transition-all duration-300 ease-in-out">
-            
             <header class="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
-                
                 <button type="button" class="-m-2.5 p-2.5 text-gray-700 hover:bg-gray-100 rounded-md transition" @click="sidebarOpen = !sidebarOpen">
                     <span class="sr-only">Toggle Sidebar</span>
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -38,7 +57,6 @@
                                         {{ strtoupper(substr(Auth::user()->username, 0, 1)) }}
                                     </div>
                                     <span class="hidden sm:block text-sm font-semibold text-gray-900">{{ Auth::user()->username }}</span>
-                                    <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" /></svg>
                                 </button>
                             </x-slot>
                             <x-slot name="content">
@@ -58,5 +76,17 @@
             </main>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.searchable-select').select2({
+                width: '100%',
+                placeholder: "Ketik untuk mencari...",
+                allowClear: true
+            });
+        });
+    </script>
 </body>
 </html>
