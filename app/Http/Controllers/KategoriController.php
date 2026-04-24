@@ -7,20 +7,21 @@ use App\Models\Kategori;
 
 class KategoriController extends Controller
 {
-    // Menampilkan halaman kategori
     public function index()
     {
         $kategori = Kategori::orderBy('nama_kategori', 'asc')->get();
-        return view('kategori.index', compact('kategori'));
+        // Memanggil file index.blade.php di dalam folder kategori
+        return view('kategori.index', compact('kategori')); 
     }
 
-    // Menyimpan kategori baru
     public function store(Request $request)
     {
+        // FITUR ANTI DUPLIKAT ADA DI SINI ("unique:kategori,nama_kategori")
         $request->validate([
             'nama_kategori' => 'required|string|max:255|unique:kategori,nama_kategori'
         ], [
-            'nama_kategori.unique' => 'Nama kategori ini sudah ada, silakan gunakan nama lain.'
+            'nama_kategori.unique' => 'Kategori ini sudah ada di database! Silakan gunakan nama lain.',
+            'nama_kategori.required' => 'Nama kategori tidak boleh kosong.'
         ]);
 
         Kategori::create([
@@ -30,7 +31,6 @@ class KategoriController extends Controller
         return redirect()->back()->with('success', 'Kategori baru berhasil ditambahkan!');
     }
 
-    // Menghapus kategori
     public function destroy($id)
     {
         $kategori = Kategori::findOrFail($id);
