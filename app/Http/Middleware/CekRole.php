@@ -4,22 +4,19 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
 class CekRole
 {
-    public function handle(Request $request, Closure $next, string $role): Response
+    /**
+     * Handle an incoming request.
+     */
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        // Pastikan user sudah login
-        if (!Auth::check()) {
-            return redirect('/login')->with('error', 'Silakan login terlebih dahulu.');
-        }
-
-        // Cek apakah role user saat ini sama dengan role yang disyaratkan di route
-        if (Auth::user()->role !== $role) {
-            // Jika admin mencoba masuk ke halaman pemilik, kembalikan 403 (Unauthorized)
-            abort(403, 'Akses ditolak. Halaman ini hanya untuk ' . $role);
+        // Periksa adakah peran user ada di dalam senarai $roles yang dibenarkan
+        if (!in_array(Auth::user()->role, $roles)) {
+            abort(403, 'Akses ditolak. Halaman ini hanya untuk ' . implode(' atau ', $roles));
         }
 
         return $next($request);

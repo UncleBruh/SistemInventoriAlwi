@@ -32,19 +32,18 @@ Route::middleware('auth')->group(function () {
         Route::post('/tambah', [MutasiMasukController::class, 'store'])->name('mutasi_masuk.store');
     });
 
-    // Mutasi Keluar & Log Gabungan (Hanya Pemilik)
-    Route::middleware('role:Pemilik')->group(function () {
-        Route::get('/log-aktivitas', [LogController::class, 'index'])->name('log.aktivitas');
-    });
-
-    // Mutasi Keluar (Pemilik & Admin)
-    Route::middleware('role:Pemilik,Admin')->group(function () {
+        Route::middleware('role:Pemilik,Admin')->group(function () {
         Route::prefix('mutasi-keluar')->group(function () {
-            Route::get('/', [MutasiKeluarController::class, 'index'])->name('mutasi_keluar.index');
-            Route::get('/tambah', [MutasiKeluarController::class, 'create'])->name('mutasi_keluar.create');
-            Route::post('/tambah', [MutasiKeluarController::class, 'store'])->name('mutasi_keluar.store');
+        Route::get('/', [MutasiKeluarController::class, 'index'])->name('mutasi_keluar.index');
+        Route::get('/tambah', [MutasiKeluarController::class, 'create'])->name('mutasi_keluar.create');
+        Route::post('/tambah', [MutasiKeluarController::class, 'store'])->name('mutasi_keluar.store');
         });
     });
+
+        // Log Aktivitas (Hanya Pemilik sahaja)
+        Route::middleware('role:Pemilik')->group(function () {
+            Route::get('/log-aktivitas', [LogController::class, 'index'])->name('log.aktivitas');
+        });
     
     // --- MANAJEMEN KATEGORI ---
     Route::resource('kategori', KategoriController::class)->only(['index', 'store', 'destroy']);

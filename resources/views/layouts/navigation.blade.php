@@ -42,6 +42,7 @@
             
             <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-gray-400 uppercase">Mutasi</div>
             
+            <a href="{{ route('mutasi_masuk.create') }}" class="{{ request()->routeIs('mutasi_masuk.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➕ Barang Masuk</a>
             @if(Auth::user()->role === 'Pemilik' || Auth::user()->role === 'Admin')
                 <a href="{{ route('mutasi_keluar.create') }}" class="{{ request()->routeIs('mutasi_keluar.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➖ Barang Keluar</a>
             @endif
