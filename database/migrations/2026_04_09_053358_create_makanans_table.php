@@ -13,12 +13,18 @@ return new class extends Migration
     {
         Schema::create('makanan', function (Blueprint $table) {
             $table->id('id_makanan');
-            $table->string('nama_makanan', 50);
-            $table->string('jenis_makanan', 50);
+            $table->string('nama_makanan');
+            
+            // INI PENGGANTI JENIS MAKANAN
+            $table->unsignedBigInteger('id_kategori')->nullable(); 
+            
+            $table->string('barcode')->nullable()->unique();
             $table->integer('harga');
-            $table->integer('stok');
-            $table->string('barcode', 100)->unique()->nullable();
+            $table->integer('stok')->default(0);
             $table->timestamps();
+
+            // Hubungkan ke tabel kategori
+            $table->foreign('id_kategori')->references('id_kategori')->on('kategori')->onDelete('set null');
         });
     }
 
