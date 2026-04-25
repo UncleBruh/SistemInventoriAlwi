@@ -6,6 +6,7 @@ use App\Http\Controllers\MutasiMasukController;
 use App\Http\Controllers\MutasiKeluarController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\PenjualanController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -15,7 +16,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    
+
     // Profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -32,19 +33,22 @@ Route::middleware('auth')->group(function () {
         Route::post('/tambah', [MutasiMasukController::class, 'store'])->name('mutasi_masuk.store');
     });
 
-        Route::middleware('role:Pemilik,Admin')->group(function () {
+    Route::middleware('role:Pemilik,Admin')->group(function () {
         Route::prefix('mutasi-keluar')->group(function () {
-        Route::get('/', [MutasiKeluarController::class, 'index'])->name('mutasi_keluar.index');
-        Route::get('/tambah', [MutasiKeluarController::class, 'create'])->name('mutasi_keluar.create');
-        Route::post('/tambah', [MutasiKeluarController::class, 'store'])->name('mutasi_keluar.store');
+            Route::get('/', [MutasiKeluarController::class, 'index'])->name('mutasi_keluar.index');
+            Route::get('/tambah', [MutasiKeluarController::class, 'create'])->name('mutasi_keluar.create');
+            Route::post('/tambah', [MutasiKeluarController::class, 'store'])->name('mutasi_keluar.store');
         });
     });
 
+    // Laporan Penjualan (Hanya Pemilik)
+    Route::middleware('role:Pemilik')->group(function () {
+        Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
+
         // Log Aktivitas (Hanya Pemilik sahaja)
-        Route::middleware('role:Pemilik')->group(function () {
-            Route::get('/log-aktivitas', [LogController::class, 'index'])->name('log.aktivitas');
-        });
-    
+        Route::get('/log-aktivitas', [LogController::class, 'index'])->name('log.aktivitas');
+    });
+
     // --- MANAJEMEN KATEGORI ---
     Route::resource('kategori', KategoriController::class)->only(['index', 'store', 'destroy']);
 });

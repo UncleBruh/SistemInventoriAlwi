@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Inventori Alwi') }}</title>
+    <title>{{ config('app.name', 'Inventori Warung Biebie') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -308,7 +308,7 @@
         <div class="navbar">
             <a href="#" class="logo">
                 <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo" class="rounded bg-white p-1">
-                Kantin Alwi
+                Warung Biebie
             </a>
             <nav class="nav-links">
                 @auth
@@ -331,7 +331,7 @@
         <div class="hero-container">
             <div class="hero-content">
                 <h1>Kelola Stok Makanan & Minuman dengan Mudah</h1>
-                <p>Sistem Inventori Alwi dirancang khusus untuk memudahkan manajemen stok barang Anda. Real-time tracking, laporan lengkap, dan interface yang user-friendly.</p>
+                <p>Sistem Inventori Warung Biebie dirancang khusus untuk memudahkan manajemen stok barang Anda. Real-time tracking, laporan lengkap, dan interface yang user-friendly.</p>
 
                 <div class="cta-buttons">
                     @auth
@@ -366,7 +366,7 @@
             <div class="hero-visual">
                 <div class="hero-card">
                     <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo Bimbel" class="rounded bg-white p-1">
-                    <h3>Kantin Alwi</h3>
+                    <h3>Warung Biebie</h3>
                     <p>Sistem Manajemen Stok Terpercaya untuk Bisnis Anda</p>
                 </div>
             </div>
@@ -374,7 +374,7 @@
     </main>
 
     <footer>
-        <p>&copy; {{ date('Y') }} Inventori Alwi. Semua hak dilindungi. | Sistem Manajemen Stok Modern</p>
+        <p>&copy; {{ date('Y') }} Inventori Warung Biebie. Semua hak dilindungi. | Sistem Manajemen Stok Modern</p>
     </footer>
 </body>
 </html>

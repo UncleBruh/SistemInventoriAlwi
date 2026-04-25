@@ -5,7 +5,7 @@
 
     <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-            
+
             @if(session('success'))
                 <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center">
                     {{ session('success') }}
@@ -46,12 +46,56 @@
 
                 <div class="mb-6">
                     <x-input-label for="alasan" value="Alasan Pengeluaran" />
-                    
+
                     @if(Auth::user()->role === 'Admin')
                         <x-text-input id="alasan" name="alasan" type="text" class="block mt-1 w-full bg-gray-100 cursor-not-allowed text-gray-600" value="Penjualan" readonly />
                         <p class="text-xs text-red-500 mt-1 font-medium italic">*Sebagai Admin, alasan mutasi otomatis diatur sebagai Penjualan.</p>
                     @else
-                        <textarea id="alasan" name="alasan" rows="3" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" placeholder="Tulis alasan pengeluaran barang (Contoh: Penjualan harian, barang remuk, expired, dll...)" required></textarea>
+                        <select id="alasan_type" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full">
+                            <option value="penjualan" selected>Penjualan</option>
+                            <option value="lainnya">Lainnya</option>
+                        </select>
+
+                        <!-- Input untuk Penjualan (hidden) -->
+                        <input type="hidden" id="alasan" name="alasan" value="Penjualan" />
+
+                        <!-- Textarea untuk Lainnya (hidden by default) -->
+                        <textarea id="alasan_custom" name="alasan_custom" rows="3" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full hidden" placeholder="Tulis alasan pengeluaran barang (Contoh: Kedaluwarsa, Expired, Barang Rusak, Pemberian ke Pegawai, dll...)"></textarea>
+
+                        <script>
+                            document.getElementById('alasan_type').addEventListener('change', function(e) {
+                                const alasinField = document.getElementById('alasan');
+                                const customField = document.getElementById('alasan_custom');
+
+                                if (e.target.value === 'lainnya') {
+                                    customField.classList.remove('hidden');
+                                    customField.required = true;
+                                    alasinField.value = '';
+                                } else {
+                                    customField.classList.add('hidden');
+                                    customField.required = false;
+                                    customField.value = '';
+                                    alasinField.value = 'Penjualan';
+                                }
+                            });
+
+                            // Update alasan field on form submit
+                            document.querySelector('form').addEventListener('submit', function(e) {
+                                const alasinType = document.getElementById('alasan_type').value;
+                                const alasinField = document.getElementById('alasan');
+                                const customField = document.getElementById('alasan_custom');
+
+                                if (alasinType === 'lainnya') {
+                                    if (!customField.value.trim()) {
+                                        e.preventDefault();
+                                        alert('Silakan isi alasan pengeluaran');
+                                        customField.focus();
+                                        return;
+                                    }
+                                    alasinField.value = customField.value;
+                                }
+                            });
+                        </script>
                     @endif
                 </div>
 

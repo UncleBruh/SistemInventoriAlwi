@@ -153,7 +153,7 @@
                         <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo Bimbel" class="rounded bg-white p-0.5" />
                     </div>
                     <div style="position: relative; z-index: 10; text-align: center;">
-                        <div class="login-title">Kantin Alwi</div>
+                        <div class="login-title">Warung Biebie</div>
                         <div class="login-subtitle">
                             Sistem manajemen stok yang efisien untuk bisnis Anda. Kelola makanan dan minuman dengan mudah dan cepat.
                         </div>
