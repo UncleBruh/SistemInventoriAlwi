@@ -25,6 +25,10 @@
                         <a href="{{ route('mutasi_keluar.create') }}" class="{{ request()->routeIs('mutasi_keluar.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➖ Barang Keluar</a>
                         <a href="{{ route('penjualan.index') }}" class="{{ request()->routeIs('penjualan.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">💰 Laporan Penjualan</a>
                         <a href="{{ route('log.aktivitas') }}" class="{{ request()->routeIs('log.aktivitas') ? $activeClass : $inactiveClass }} {{ $navClass }}">📋 Laporan Log</a>
+
+                        <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-gray-400 uppercase">Admin</div>
+
+                        <a href="{{ route('register') }}" class="{{ request()->routeIs('register') ? $activeClass : $inactiveClass }} {{ $navClass }}">👤 Tambah Pengguna</a>
                     @endif
                 </nav>
             </div>
@@ -51,6 +55,10 @@
             @if(Auth::user()->role === 'Pemilik')
                 <a href="{{ route('penjualan.index') }}" class="{{ request()->routeIs('penjualan.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">💰 Laporan Penjualan</a>
                 <a href="{{ route('log.aktivitas') }}" class="{{ request()->routeIs('log.aktivitas') ? $activeClass : $inactiveClass }} {{ $navClass }}">📋 Laporan Log</a>
+
+                <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-gray-400 uppercase">Admin</div>
+
+                <a href="{{ route('register') }}" class="{{ request()->routeIs('register') ? $activeClass : $inactiveClass }} {{ $navClass }}">👤 Tambah Pengguna</a>
             @endif
         </div>
     </nav>

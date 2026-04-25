@@ -16,11 +16,21 @@ class RegisteredUserController extends Controller
 {
     public function create(): View
     {
+        // Verifikasi role Pemilik
+        if (Auth::user()->role !== 'Pemilik') {
+            abort(403, 'Hanya Pemilik yang dapat menambah user baru.');
+        }
+
         return view('auth.register');
     }
 
     public function store(Request $request): RedirectResponse
     {
+        // Verifikasi role Pemilik
+        if (Auth::user()->role !== 'Pemilik') {
+            abort(403, 'Hanya Pemilik yang dapat menambah user baru.');
+        }
+
         // Validasi input
         $request->validate([
             'username' => ['required', 'string', 'max:50', 'unique:'.User::class.',username'],
@@ -37,9 +47,7 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        // Langsung login otomatis setelah daftar
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+        // Redirect ke dashboard dengan pesan sukses
+        return redirect(route('dashboard', absolute: false))->with('success', 'User baru berhasil ditambahkan.');
     }
 }

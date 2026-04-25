@@ -25,10 +25,4 @@ class Makanan extends Model
         // Menghubungkan Makanan ke Kategori berdasarkan id_kategori
         return $this->belongsTo(Kategori::class, 'id_kategori', 'id_kategori');
     }
-
-    // Relasi: Satu Makanan bisa memiliki banyak Log Aktivitas
-    public function logAktivitas()
-    {
-        return $this->hasMany(LogAktivitas::class, 'id_makanan', 'id_makanan');
-    }
 }
