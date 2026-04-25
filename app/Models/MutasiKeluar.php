@@ -15,8 +15,11 @@ class MutasiKeluar extends Model
         'jumlah_keluar',
         'stok_sebelum',
         'stok_sesudah',
-        'alasan', // Pastikan alasan masuk ke fillable
+        'alasan',
         'tgl_mutasi',
+        'tipe_keluar',
+        'stok_etalase_sebelum',
+        'stok_etalase_sesudah',
     ];
 
     public function makanan()

@@ -15,7 +15,7 @@ class MakananController extends Controller
         $sort = $request->input('sort', 'terbaru');
 
         // Gunakan eager loading (with) agar tidak berat saat meload relasi nama kategori
-        $query = Makanan::with('kategori'); 
+        $query = Makanan::with('kategori');
 
         // Fitur Pencarian
         if ($search) {
@@ -65,9 +65,14 @@ class MakananController extends Controller
             'stok' => 'required|integer|min:0',
         ]);
 
-        Makanan::create($request->all());
+        // Saat membuat barang baru, stok awal masuk ke gudang
+        $data = $request->all();
+        $data['stok_gudang'] = $request->stok;
+        $data['stok_etalase'] = 0;
 
-        return redirect()->route('makanan.index')->with('success', 'Data jajanan berhasil ditambahkan.');
+        Makanan::create($data);
+
+        return redirect()->route('makanan.index')->with('success', 'Data jajanan berhasil ditambahkan. Stok masuk ke gudang.');
     }
 
     public function edit($id)

@@ -12,6 +12,7 @@
                             <th class="p-3 border">Tanggal</th>
                             <th class="p-3 border">Nama Barang</th>
                             <th class="p-3 border text-center">Jumlah</th>
+                            <th class="p-3 border text-center">Lokasi Tujuan</th>
                             <th class="p-3 border">Petugas</th>
                         </tr>
                     </thead>
@@ -21,6 +22,11 @@
                             <td class="p-3 border">{{ $row->tgl_mutasi }}</td>
                             <td class="p-3 border">{{ $row->makanan->nama_makanan }}</td>
                             <td class="p-3 border text-center text-green-600 font-bold">+{{ $row->jumlah_masuk }}</td>
+                            <td class="p-3 border text-center">
+                                @if($row->lokasi_tujuan === 'gudang')
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">📦 Gudang</span>
+                                @endif
+                            </td>
                             <td class="p-3 border">{{ $row->pengguna->username }}</td>
                         </tr>
                         @endforeach

@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        
+
         @if(session('success'))
             <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg shadow-sm">
                 {{ session('success') }}
@@ -12,11 +12,11 @@
         @endif
 
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-200">
-            
+
             <div class="flex flex-col md:flex-row justify-between gap-4 mb-6">
                 <form action="{{ route('makanan.index') }}" method="GET" class="flex flex-col md:flex-row gap-2 w-full md:w-2/3">
                     <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama atau barcode..." class="border-gray-300 rounded-md shadow-sm w-full md:w-1/2">
-                    
+
                     <select name="kategori" class="border-gray-300 rounded-md shadow-sm w-full md:w-1/4">
                         <option value="">Semua Kategori</option>
                         @foreach($categories as $kat)
@@ -45,7 +45,9 @@
                             <th class="p-3 border">Kategori</th>
                             <th class="p-3 border">Nama Jajanan</th>
                             <th class="p-3 border text-right">Harga</th>
-                            <th class="p-3 border text-center">Stok</th>
+                            <th class="p-3 border text-center">Total Stok</th>
+                            <th class="p-3 border text-center">Gudang</th>
+                            <th class="p-3 border text-center">Etalase</th>
                             <th class="p-3 border text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -58,10 +60,22 @@
                             </td>
                             <td class="p-3 font-bold text-gray-800">{{ $item->nama_makanan }}</td>
                             <td class="p-3 text-right font-medium">Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
-                            <td class="p-3 text-center font-bold text-lg {{ $item->stok < 10 ? 'text-red-600' : 'text-green-600' }}">{{ $item->stok }}</td>
+                            <td class="p-3 text-center font-bold text-lg {{ $item->stok < 10 ? 'text-red-600' : 'text-green-600' }}">
+                                {{ $item->stok }}
+                            </td>
+                            <td class="p-3 text-center">
+                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-bold">
+                                    📦 {{ $item->stok_gudang }}
+                                </span>
+                            </td>
+                            <td class="p-3 text-center">
+                                <span class="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm font-bold">
+                                    🏪 {{ $item->stok_etalase }}
+                                </span>
+                            </td>
                             <td class="p-3 text-center space-x-2">
                                 <a href="{{ route('makanan.edit', $item->id_makanan) }}" class="text-blue-600 hover:text-blue-800 text-xs font-bold bg-blue-50 px-3 py-1.5 rounded">Edit</a>
-                                
+
                                 <form action="{{ route('makanan.destroy', $item->id_makanan) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus jajanan ini?');">
                                     @csrf
                                     @method('DELETE')
@@ -71,7 +85,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="p-6 text-center text-gray-500 italic">Belum ada data jajanan yang sesuai.</td>
+                            <td colspan="8" class="p-6 text-center text-gray-500 italic">Belum ada data jajanan yang sesuai.</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -81,7 +95,7 @@
             <div class="mt-4">
                 {{ $makanan->links() }}
             </div>
-            
+
         </div>
     </div>
 </x-app-layout>

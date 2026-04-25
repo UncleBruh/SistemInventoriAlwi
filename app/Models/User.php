@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
@@ -32,9 +33,9 @@ class User extends Authenticatable
         ];
     }
 
-    // Relasi: Satu Pengguna bisa melakukan banyak Log Aktivitas
-    public function logAktivitas()
-    {
-        return $this->hasMany(LogAktivitas::class, 'id_pengguna', 'id_pengguna');
-    }
+    // // Relasi: Satu Pengguna bisa melakukan banyak Log Aktivitas
+    // public function logAktivitas()
+    // {
+    //     return $this->hasMany(LogAktivitas::class, 'id_pengguna', 'id_pengguna');
+    // }
 }

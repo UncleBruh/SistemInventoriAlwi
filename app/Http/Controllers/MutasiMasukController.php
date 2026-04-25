@@ -27,28 +27,56 @@ class MutasiMasukController extends Controller
         $request->validate([
             'id_makanan' => 'required|exists:makanan,id_makanan',
             'jumlah_perubahan' => 'required|integer|min:1',
-            'tgl_mutasi' => 'required|date', // Validasi tanggal wajib diisi
+            'lokasi_tujuan' => 'required|in:gudang,etalase', // Validasi lokasi tujuan
+            'tgl_mutasi' => 'required|date',
         ]);
 
         $makanan = Makanan::findOrFail($request->id_makanan);
+        $lokasi = $request->lokasi_tujuan;
+        $jumlah = $request->jumlah_perubahan;
+
+        // Simpan stok sebelum
+        $stok_gudang_sebelum = $makanan->stok_gudang;
+        $stok_etalase_sebelum = $makanan->stok_etalase;
         $stok_sebelum = $makanan->stok;
-        $stok_sesudah = $stok_sebelum + $request->jumlah_perubahan;
+
+        // Tentukan stok sesudah berdasarkan lokasi tujuan
+        if ($lokasi === 'gudang') {
+            $stok_gudang_sesudah = $stok_gudang_sebelum + $jumlah;
+            $stok_etalase_sesudah = $stok_etalase_sebelum;
+        } else { // etalase
+            $stok_gudang_sesudah = $stok_gudang_sebelum;
+            $stok_etalase_sesudah = $stok_etalase_sebelum + $jumlah;
+        }
+
+        $stok_sesudah = $stok_sebelum + $jumlah;
 
         DB::beginTransaction();
         try {
             MutasiMasuk::create([
                 'id_makanan' => $makanan->id_makanan,
                 'id_pengguna' => Auth::id(),
-                'jumlah_masuk' => $request->jumlah_perubahan,
+                'jumlah_masuk' => $jumlah,
                 'stok_sebelum' => $stok_sebelum,
                 'stok_sesudah' => $stok_sesudah,
-                'tgl_mutasi' => $request->tgl_mutasi, // Ambil dari inputan user
+                'tgl_mutasi' => $request->tgl_mutasi,
+                'lokasi_tujuan' => $lokasi,
+                'stok_gudang_sebelum' => $stok_gudang_sebelum,
+                'stok_gudang_sesudah' => $stok_gudang_sesudah,
+                'stok_etalase_sebelum' => $stok_etalase_sebelum,
+                'stok_etalase_sesudah' => $stok_etalase_sesudah,
             ]);
 
-            $makanan->update(['stok' => $stok_sesudah]);
+            // Update stok di tabel makanan
+            $makanan->update([
+                'stok' => $stok_sesudah,
+                'stok_gudang' => $stok_gudang_sesudah,
+                'stok_etalase' => $stok_etalase_sesudah,
+            ]);
+
             DB::commit();
-            
-            return redirect()->back()->with('success', 'Barang Masuk berhasil dicatat. Silakan input barang selanjutnya jika ada.');
+
+            return redirect()->back()->with('success', 'Barang Masuk berhasil dicatat ke ' . ucfirst($lokasi) . '. Silakan input barang selanjutnya jika ada.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());

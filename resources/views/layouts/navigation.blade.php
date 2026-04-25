@@ -21,8 +21,11 @@
                     <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-gray-400 uppercase">Mutasi</div>
 
                     <a href="{{ route('mutasi_masuk.create') }}" class="{{ request()->routeIs('mutasi_masuk.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➕ Barang Masuk</a>
-                    @if(Auth::user()->role === 'Pemilik')
+                    @if(Auth::user()->role === 'Pemilik' || Auth::user()->role === 'Admin')
                         <a href="{{ route('mutasi_keluar.create') }}" class="{{ request()->routeIs('mutasi_keluar.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➖ Barang Keluar</a>
+                        <a href="{{ route('alokasi-gudang-etalase.index') }}" class="{{ request()->routeIs('alokasi-gudang-etalase.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏭 Alokasi Gudang→Etalase</a>
+                    @endif
+                    @if(Auth::user()->role === 'Pemilik')
                         <a href="{{ route('penjualan.index') }}" class="{{ request()->routeIs('penjualan.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">💰 Laporan Penjualan</a>
                         <a href="{{ route('log.aktivitas') }}" class="{{ request()->routeIs('log.aktivitas') ? $activeClass : $inactiveClass }} {{ $navClass }}">📋 Laporan Log</a>
 
@@ -49,7 +52,9 @@
 
             <a href="{{ route('mutasi_masuk.create') }}" class="{{ request()->routeIs('mutasi_masuk.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➕ Barang Masuk</a>
             @if(Auth::user()->role === 'Pemilik' || Auth::user()->role === 'Admin')
+                <a href="{{ route('alokasi-gudang-etalase.index') }}" class="{{ request()->routeIs('alokasi-gudang-etalase.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏭 Alokasi Gudang→Etalase</a>
                 <a href="{{ route('mutasi_keluar.create') }}" class="{{ request()->routeIs('mutasi_keluar.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➖ Barang Keluar</a>
+
             @endif
 
             @if(Auth::user()->role === 'Pemilik')

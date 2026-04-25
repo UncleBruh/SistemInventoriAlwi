@@ -21,7 +21,8 @@
             <form action="{{ route('mutasi_keluar.store') }}" method="POST">
                 @csrf
                 <div class="mb-6 bg-red-50 p-4 rounded-lg border border-red-200">
-                    <p class="text-sm font-medium text-red-700">Mode: ➖ Kurangi Stok (Barang Keluar)</p>
+                    <p class="text-sm font-medium text-red-700">Mode: ➖ Kurangi Stok Etalase (Barang Keluar)</p>
+                    <p class="text-xs text-red-600 mt-2">💡 Barang keluar hanya akan mengurangi stok ETALASE, bukan gudang.</p>
                 </div>
 
                 <div class="mb-4">
@@ -29,7 +30,7 @@
                     <select id="id_makanan" name="id_makanan" class="searchable-select border-gray-300 rounded-md shadow-sm block mt-1 w-full" required autofocus>
                         <option value=""></option>
                         @foreach($makanan as $item)
-                            <option value="{{ $item->id_makanan }}">{{ $item->nama_makanan }} (Stok: {{ $item->stok }})</option>
+                            <option value="{{ $item->id_makanan }}">{{ $item->nama_makanan }} (Etalase: {{ $item->stok_etalase }} | Gudang: {{ $item->stok_gudang }})</option>
                         @endforeach
                     </select>
                 </div>
@@ -44,59 +45,33 @@
                     <x-text-input id="jumlah_perubahan" class="block mt-1 w-full text-center text-2xl font-bold" type="number" min="1" name="jumlah_perubahan" value="1" required />
                 </div>
 
+                <div class="mb-4">
+                    <x-input-label for="tipe_keluar" value="Tipe Pengeluaran Barang" />
+                    <div class="grid grid-cols-2 gap-2 mt-2">
+                        <label class="flex items-center p-2 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-green-50 transition" style="border-color: #22c55e;">
+                            <input type="radio" name="tipe_keluar" value="penjualan" class="mr-2" @if(Auth::user()->role === 'Admin') checked @endif @if(Auth::user()->role === 'Admin') disabled @endif required />
+                            <span class="text-sm font-medium">💰 Penjualan</span>
+                        </label>
+                        @if(Auth::user()->role !== 'Admin')
+                        <label class="flex items-center p-2 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-orange-50 transition" style="border-color: #f97316;">
+                            <input type="radio" name="tipe_keluar" value="rusak" class="mr-2" required />
+                            <span class="text-sm font-medium">🔨 Rusak</span>
+                        </label>
+                        <label class="flex items-center p-2 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-yellow-50 transition" style="border-color: #eab308;">
+                            <input type="radio" name="tipe_keluar" value="hilang" class="mr-2" required />
+                            <span class="text-sm font-medium">❓ Hilang</span>
+                        </label>
+                        <label class="flex items-center p-2 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-purple-50 transition" style="border-color: #a855f7;">
+                            <input type="radio" name="tipe_keluar" value="lainnya" class="mr-2" required />
+                            <span class="text-sm font-medium">📋 Lainnya</span>
+                        </label>
+                        @endif
+                    </div>
+                </div>
+
                 <div class="mb-6">
-                    <x-input-label for="alasan" value="Alasan Pengeluaran" />
-
-                    @if(Auth::user()->role === 'Admin')
-                        <x-text-input id="alasan" name="alasan" type="text" class="block mt-1 w-full bg-gray-100 cursor-not-allowed text-gray-600" value="Penjualan" readonly />
-                        <p class="text-xs text-red-500 mt-1 font-medium italic">*Sebagai Admin, alasan mutasi otomatis diatur sebagai Penjualan.</p>
-                    @else
-                        <select id="alasan_type" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full">
-                            <option value="penjualan" selected>Penjualan</option>
-                            <option value="lainnya">Lainnya</option>
-                        </select>
-
-                        <!-- Input untuk Penjualan (hidden) -->
-                        <input type="hidden" id="alasan" name="alasan" value="Penjualan" />
-
-                        <!-- Textarea untuk Lainnya (hidden by default) -->
-                        <textarea id="alasan_custom" name="alasan_custom" rows="3" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full hidden" placeholder="Tulis alasan pengeluaran barang (Contoh: Kedaluwarsa, Expired, Barang Rusak, Pemberian ke Pegawai, dll...)"></textarea>
-
-                        <script>
-                            document.getElementById('alasan_type').addEventListener('change', function(e) {
-                                const alasinField = document.getElementById('alasan');
-                                const customField = document.getElementById('alasan_custom');
-
-                                if (e.target.value === 'lainnya') {
-                                    customField.classList.remove('hidden');
-                                    customField.required = true;
-                                    alasinField.value = '';
-                                } else {
-                                    customField.classList.add('hidden');
-                                    customField.required = false;
-                                    customField.value = '';
-                                    alasinField.value = 'Penjualan';
-                                }
-                            });
-
-                            // Update alasan field on form submit
-                            document.querySelector('form').addEventListener('submit', function(e) {
-                                const alasinType = document.getElementById('alasan_type').value;
-                                const alasinField = document.getElementById('alasan');
-                                const customField = document.getElementById('alasan_custom');
-
-                                if (alasinType === 'lainnya') {
-                                    if (!customField.value.trim()) {
-                                        e.preventDefault();
-                                        alert('Silakan isi alasan pengeluaran');
-                                        customField.focus();
-                                        return;
-                                    }
-                                    alasinField.value = customField.value;
-                                }
-                            });
-                        </script>
-                    @endif
+                    <x-input-label for="alasan" value="Keterangan Tambahan (Opsional)" />
+                    <textarea id="alasan" name="alasan" rows="3" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" placeholder="Contoh: Barang expired, Kualitas buruk, dsb..."></textarea>
                 </div>
 
                 <x-primary-button class="w-full justify-center py-3 text-lg bg-red-600 hover:bg-red-700">SIMPAN BARANG KELUAR</x-primary-button>

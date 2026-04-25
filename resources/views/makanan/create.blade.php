@@ -5,7 +5,7 @@
 
     <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 border border-gray-200">
-            
+
             <form action="{{ route('makanan.store') }}" method="POST">
                 @csrf
 
@@ -41,8 +41,9 @@
                         <x-input-error :messages="$errors->get('harga')" class="mt-2" />
                     </div>
                     <div>
-                        <x-input-label for="stok" value="Stok Awal" />
+                        <x-input-label for="stok" value="Stok Awal (Masuk ke Gudang)" />
                         <x-text-input id="stok" class="block mt-1 w-full font-bold text-indigo-700" type="number" name="stok" value="{{ old('stok', 0) }}" required min="0" />
+                        <p class="text-xs text-gray-500 mt-1">Stok awal akan masuk ke gudang, bukan langsung ke etalase.</p>
                         <x-input-error :messages="$errors->get('stok')" class="mt-2" />
                     </div>
                 </div>
@@ -52,7 +53,7 @@
                     <x-primary-button class="bg-indigo-600 hover:bg-indigo-700 text-lg px-8 shadow-sm">Simpan Jajanan</x-primary-button>
                 </div>
             </form>
-            
+
         </div>
     </div>
 </x-app-layout>

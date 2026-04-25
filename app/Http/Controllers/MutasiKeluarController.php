@@ -26,23 +26,28 @@ class MutasiKeluarController extends Controller
     {
         // Jika yang input adalah Admin, paksa alasannya menjadi "Penjualan"
         if (Auth::user()->role === 'Admin') {
-            $request->merge(['alasan' => 'Penjualan']);
+            $request->merge(['tipe_keluar' => 'penjualan']);
         }
 
         $request->validate([
             'id_makanan' => 'required|exists:makanan,id_makanan',
             'jumlah_perubahan' => 'required|integer|min:1',
-            'alasan' => 'required|string|max:255',
-            'tgl_mutasi' => 'required|date', 
+            'tipe_keluar' => 'required|in:penjualan,rusak,hilang,lainnya', // Tipe keluar yang spesifik
+            'alasan' => 'nullable|string|max:255',
+            'tgl_mutasi' => 'required|date',
         ]);
 
         $makanan = Makanan::findOrFail($request->id_makanan);
+
+        // PENTING: Barang keluar hanya dari stok ETALASE, bukan gudang
+        $stok_etalase_sebelum = $makanan->stok_etalase;
         $stok_sebelum = $makanan->stok;
 
-        if ($stok_sebelum < $request->jumlah_perubahan) {
-            return redirect()->back()->with('error', 'Stok tidak mencukupi untuk pengeluaran ini.');
+        if ($stok_etalase_sebelum < $request->jumlah_perubahan) {
+            return redirect()->back()->with('error', 'Stok etalase tidak mencukupi untuk pengeluaran ini. Stok etalase: ' . $stok_etalase_sebelum);
         }
 
+        $stok_etalase_sesudah = $stok_etalase_sebelum - $request->jumlah_perubahan;
         $stok_sesudah = $stok_sebelum - $request->jumlah_perubahan;
 
         DB::beginTransaction();
@@ -53,14 +58,23 @@ class MutasiKeluarController extends Controller
                 'jumlah_keluar' => $request->jumlah_perubahan,
                 'stok_sebelum' => $stok_sebelum,
                 'stok_sesudah' => $stok_sesudah,
-                'alasan' => $request->alasan, // Ini akan berisi ketikan bebas dari Pemilik
+                'alasan' => $request->alasan ?? $request->tipe_keluar,
                 'tgl_mutasi' => $request->tgl_mutasi,
+                'tipe_keluar' => $request->tipe_keluar,
+                'stok_etalase_sebelum' => $stok_etalase_sebelum,
+                'stok_etalase_sesudah' => $stok_etalase_sesudah,
             ]);
 
-            $makanan->update(['stok' => $stok_sesudah]);
+            // Update stok di tabel makanan - hanya stok_etalase yang berkurang
+            $makanan->update([
+                'stok' => $stok_sesudah,
+                'stok_etalase' => $stok_etalase_sesudah,
+                // stok_gudang TIDAK BERUBAH
+            ]);
+
             DB::commit();
 
-            return redirect()->back()->with('success', 'Barang Keluar berhasil dicatat!');
+            return redirect()->back()->with('success', 'Barang Keluar berhasil dicatat! Stok etalase berkurang.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());

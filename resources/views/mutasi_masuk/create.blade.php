@@ -5,7 +5,7 @@
 
     <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-            
+
             @if(session('success'))
                 <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center">
                     {{ session('success') }}
@@ -29,7 +29,7 @@
                     <select id="id_makanan" name="id_makanan" class="searchable-select border-gray-300 rounded-md shadow-sm block mt-1 w-full" required autofocus>
                         <option value=""></option>
                         @foreach($makanan as $item)
-                            <option value="{{ $item->id_makanan }}">{{ $item->nama_makanan }} (Stok: {{ $item->stok }})</option>
+                            <option value="{{ $item->id_makanan }}">{{ $item->nama_makanan }} (Stok: {{ $item->stok }} | Gudang: {{ $item->stok_gudang }} | Etalase: {{ $item->stok_etalase }})</option>
                         @endforeach
                     </select>
                 </div>
@@ -38,6 +38,19 @@
                     <x-input-label for="tgl_mutasi" value="Tanggal Aktual Barang Datang" />
                     <x-text-input id="tgl_mutasi" class="block mt-1 w-full text-gray-700 font-medium" type="date" name="tgl_mutasi" value="{{ date('Y-m-d') }}" required />
                     <p class="text-xs text-gray-500 mt-1">Isi dengan tanggal kapan fisik barang benar-benar tiba di gudang.</p>
+                </div>
+
+                <div class="mb-4">
+                    <x-input-label for="lokasi_tujuan" value="Lokasi Tujuan Barang" />
+                    <div class="grid grid-cols-1 gap-4 mt-2">
+                        <label class="flex items-center w-full p-4 border-2 border-blue-500 rounded-lg cursor-pointer hover:bg-blue-50 transition">
+                            <input type="radio" name="lokasi_tujuan" value="gudang" class="mr-3" checked required />
+                            <span class="text-base font-medium">📦 Masuk ke Gudang</span>
+                        </label>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">
+                        <strong>Gudang:</strong> Stok keseluruhan barang (aset utama) |
+                    </p>
                 </div>
 
                 <div class="mb-6">

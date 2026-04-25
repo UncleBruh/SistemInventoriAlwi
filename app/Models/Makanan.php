@@ -11,12 +11,14 @@ class Makanan extends Model
 
     // Kolom apa saja yang boleh diisi (Mass Assignment)
     protected $fillable = [
-        'id_kategori', // <-- Tambahkan ini agar id_kategori bisa disimpan
+        'id_kategori',
         'barcode',
         'nama_makanan',
         'jenis_makanan',
         'harga',
         'stok',
+        'stok_gudang',
+        'stok_etalase',
     ];
 
     // Relasi ke tabel Kategori (Baru Ditambahkan)
