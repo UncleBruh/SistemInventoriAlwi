@@ -24,7 +24,17 @@
 
                 <div class="mb-4">
                     <x-input-label for="barcode" value="Barcode (Opsional - Bisa di-scan)" />
-                    <x-text-input id="barcode" class="block mt-1 w-full font-mono text-gray-600" type="text" name="barcode" value="{{ old('barcode') }}" placeholder="Scan atau ketik barcode..." />
+                    <div class="flex gap-2 items-start mt-1">
+                        <div class="flex-grow">
+                            <x-text-input id="barcode" class="block w-full font-mono text-gray-600" type="text" name="barcode" value="{{ old('barcode') }}" placeholder="Scan atau ketik barcode..." />
+                        </div>
+                        <button type="button" id="btn-scan" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition">
+                            📷 Scan
+                        </button>
+                    </div>
+                    
+                    <div id="reader" style="width: 100%; display: none;" class="mt-3 border-2 border-dashed border-gray-300 rounded-md overflow-hidden"></div>
+                    
                     <x-input-error :messages="$errors->get('barcode')" class="mt-2" />
                 </div>
 
@@ -56,4 +66,77 @@
 
         </div>
     </div>
+
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const btnScan = document.getElementById('btn-scan');
+            const readerDiv = document.getElementById('reader');
+            const barcodeInput = document.getElementById('barcode');
+            
+            let html5QrCode;
+            let isScanning = false;
+
+            btnScan.addEventListener('click', function() {
+                if (isScanning) {
+                    // Jika kamera sedang menyala, hentikan
+                    html5QrCode.stop().then(() => {
+                        readerDiv.style.display = 'none';
+                        isScanning = false;
+                        btnScan.innerHTML = '📷 Scan';
+                        btnScan.classList.replace('bg-red-600', 'bg-blue-600');
+                        btnScan.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
+                    }).catch(err => console.error("Gagal mematikan scanner", err));
+                    return;
+                }
+
+                // Tampilkan div kamera dan ubah tombol menjadi tombol batal
+                readerDiv.style.display = 'block';
+                btnScan.innerHTML = 'Batal Scan';
+                btnScan.classList.replace('bg-blue-600', 'bg-red-600');
+                btnScan.classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
+                isScanning = true;
+                
+                // Inisialisasi scanner
+                html5QrCode = new Html5Qrcode("reader");
+                
+                // Setting scanner
+                const config = { fps: 10, qrbox: { width: 250, height: 100 } };
+                
+                html5QrCode.start(
+                    { facingMode: "environment" }, // Gunakan kamera belakang
+                    config,
+                    (decodedText, decodedResult) => {
+                        // Aksi saat barcode berhasil terbaca
+                        barcodeInput.value = decodedText;
+                        
+                        // Matikan kamera otomatis
+                        html5QrCode.stop().then(() => {
+                            readerDiv.style.display = 'none';
+                            isScanning = false;
+                            btnScan.innerHTML = '📷 Scan';
+                            btnScan.classList.replace('bg-red-600', 'bg-blue-600');
+                            btnScan.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
+                            
+                            // Highlight input sebentar agar user sadar sudah terisi
+                            barcodeInput.classList.add('bg-green-100');
+                            setTimeout(() => barcodeInput.classList.remove('bg-green-100'), 1500);
+                        }).catch(err => console.error(err));
+                    },
+                    (errorMessage) => {
+                        // Biarkan kosong, ini akan looping terus mencari barcode
+                    }
+                ).catch((err) => {
+                    console.error("Error memulai kamera: ", err);
+                    alert("Kamera tidak dapat diakses. Pastikan Anda mengizinkan akses kamera dan menggunakan koneksi HTTPS atau localhost.");
+                    
+                    readerDiv.style.display = 'none';
+                    isScanning = false;
+                    btnScan.innerHTML = '📷 Scan';
+                    btnScan.classList.replace('bg-red-600', 'bg-blue-600');
+                    btnScan.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
+                });
+            });
+        });
+    </script>
 </x-app-layout>
