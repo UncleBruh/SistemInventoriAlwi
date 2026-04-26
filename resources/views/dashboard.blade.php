@@ -1,46 +1,46 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-lg sm:text-xl text-gray-800 leading-tight">
             {{ __('Dashboard') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="py-6 sm:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Charts Row 1 -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
                 <!-- Tren Penjualan Harian -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">📈 Tren Penjualan (7 Hari Terakhir)</h3>
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-4 sm:p-6">
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-4">📈 Tren Penjualan (7 Hari Terakhir)</h3>
                     <canvas id="trendChart"></canvas>
                 </div>
 
                 <!-- Top 5 Makanan Paling Laris -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">🏆 Top 5 Produk Terlaris</h3>
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-4 sm:p-6">
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-4">🏆 Top 5 Produk Terlaris</h3>
                     <canvas id="topMakananChart"></canvas>
                 </div>
             </div>
 
             <!-- Charts Row 2 -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 <!-- Stok Per Kategori -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">🏷️ Stok Per Kategori</h3>
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-4 sm:p-6">
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-4">🏷️ Stok Per Kategori</h3>
                     <canvas id="stokKategoriChart"></canvas>
                 </div>
 
                 <!-- Info Tambahan -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">📋 Ringkasan Kategori</h3>
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-4 sm:p-6">
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-4">📋 Ringkasan Kategori</h3>
                     <div class="space-y-3">
                         @forelse($stokPerKategori as $kategori => $stok)
-                            <div class="flex justify-between items-center pb-3 border-b">
+                            <div class="flex justify-between items-center pb-3 border-b text-sm">
                                 <span class="text-gray-700">{{ $kategori }}</span>
                                 <span class="font-bold text-blue-600">{{ number_format($stok) }} Pcs</span>
                             </div>
                         @empty
-                            <p class="text-gray-500">Tidak ada data kategori</p>
+                            <p class="text-gray-500 text-sm">Tidak ada data kategori</p>
                         @endforelse
                     </div>
                 </div>
@@ -60,6 +60,18 @@
             purple: 'rgb(147, 51, 234)',
             orange: 'rgb(249, 115, 22)',
             pink: 'rgb(236, 72, 153)',
+        };
+
+        // Responsive options
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: { font: { size: window.innerWidth < 640 ? 10 : 12 } }
+                }
+            }
         };
 
         // 1. Tren Penjualan Harian (Line Chart)
@@ -83,14 +95,7 @@
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        display: true,
-                        labels: { font: { size: 12 } }
-                    }
-                },
+                ...chartOptions,
                 scales: {
                     y: {
                         beginAtZero: true,

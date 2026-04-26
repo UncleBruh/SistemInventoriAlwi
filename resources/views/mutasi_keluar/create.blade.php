@@ -26,11 +26,25 @@
                 </div>
 
                 <div class="mb-4">
+                    <x-input-label for="barcode" value="Barcode (Opsional - Bisa di-scan)" />
+                    <div class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-start mt-1">
+                        <div class="flex-grow">
+                            <x-text-input id="barcode" class="block w-full font-mono text-gray-600 text-sm" type="text" name="barcode_scan" value="" placeholder="Scan barcode untuk mencari jajanan..." />
+                        </div>
+                        <button type="button" id="btn-scan" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition text-sm whitespace-nowrap">
+                            📷 Scan
+                        </button>
+                    </div>
+
+                    <div id="reader" style="width: 100%; display: none;" class="mt-3 border-2 border-dashed border-gray-300 rounded-md overflow-hidden max-h-72"></div>
+                </div>
+
+                <div class="mb-4">
                     <x-input-label for="id_makanan" value="Pilih Jajanan" />
                     <select id="id_makanan" name="id_makanan" class="searchable-select border-gray-300 rounded-md shadow-sm block mt-1 w-full" required autofocus>
                         <option value=""></option>
                         @foreach($makanan as $item)
-                            <option value="{{ $item->id_makanan }}">{{ $item->nama_makanan }} (Etalase: {{ $item->stok_etalase }} | Gudang: {{ $item->stok_gudang }})</option>
+                            <option value="{{ $item->id_makanan }}" data-barcode="{{ $item->barcode }}">{{ $item->nama_makanan }} (Etalase: {{ $item->stok_etalase }} | Gudang: {{ $item->stok_gudang }})</option>
                         @endforeach
                     </select>
                 </div>
@@ -79,3 +93,85 @@
         </div>
     </div>
 </x-app-layout>
+
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnScan = document.getElementById('btn-scan');
+        const readerDiv = document.getElementById('reader');
+        const barcodeInput = document.getElementById('barcode');
+        const selectMakanan = document.getElementById('id_makanan');
+
+        let html5QrCode;
+        let isScanning = false;
+
+        // Event listener untuk manual barcode input
+        barcodeInput.addEventListener('change', function() {
+            findMakananByBarcode(this.value);
+        });
+
+        btnScan.addEventListener('click', function() {
+            if (isScanning) {
+                html5QrCode.stop().then(() => {
+                    readerDiv.style.display = 'none';
+                    isScanning = false;
+                    btnScan.innerHTML = '📷 Scan';
+                    btnScan.classList.replace('bg-red-600', 'bg-blue-600');
+                    btnScan.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
+                }).catch(err => console.error("Gagal mematikan scanner", err));
+                return;
+            }
+
+            readerDiv.style.display = 'block';
+            btnScan.innerHTML = 'Batal Scan';
+            btnScan.classList.replace('bg-blue-600', 'bg-red-600');
+            btnScan.classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
+            isScanning = true;
+
+            html5QrCode = new Html5Qrcode("reader");
+            const config = { fps: 10, qrbox: { width: Math.min(250, window.innerWidth * 0.8), height: 100 } };
+
+            html5QrCode.start(
+                { facingMode: "environment" },
+                config,
+                (decodedText, decodedResult) => {
+                    barcodeInput.value = decodedText;
+                    findMakananByBarcode(decodedText);
+
+                    html5QrCode.stop().then(() => {
+                        readerDiv.style.display = 'none';
+                        isScanning = false;
+                        btnScan.innerHTML = '📷 Scan';
+                        btnScan.classList.replace('bg-red-600', 'bg-blue-600');
+                        btnScan.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
+
+                        barcodeInput.classList.add('bg-green-100');
+                        setTimeout(() => barcodeInput.classList.remove('bg-green-100'), 1500);
+                    }).catch(err => console.error(err));
+                },
+                (errorMessage) => {}
+            ).catch((err) => {
+                console.error("Error memulai kamera: ", err);
+                alert("Kamera tidak dapat diakses. Pastikan Anda mengizinkan akses kamera dan menggunakan koneksi HTTPS atau localhost.");
+
+                readerDiv.style.display = 'none';
+                isScanning = false;
+                btnScan.innerHTML = '📷 Scan';
+                btnScan.classList.replace('bg-red-600', 'bg-blue-600');
+                btnScan.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
+            });
+        });
+
+        function findMakananByBarcode(barcode) {
+            if (!barcode) return;
+
+            for (let option of selectMakanan.options) {
+                if (option.getAttribute('data-barcode') === barcode) {
+                    selectMakanan.value = option.value;
+                    selectMakanan.dispatchEvent(new Event('change'));
+                    break;
+                }
+            }
+        }
+    });
+</script>
