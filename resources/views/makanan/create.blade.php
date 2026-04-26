@@ -79,7 +79,6 @@
 
             btnScan.addEventListener('click', function() {
                 if (isScanning) {
-                    // Jika kamera sedang menyala, hentikan
                     html5QrCode.stop().then(() => {
                         readerDiv.style.display = 'none';
                         isScanning = false;
@@ -90,27 +89,25 @@
                     return;
                 }
 
-                // Tampilkan div kamera dan ubah tombol menjadi tombol batal
                 readerDiv.style.display = 'block';
                 btnScan.innerHTML = 'Batal Scan';
                 btnScan.classList.replace('bg-blue-600', 'bg-red-600');
                 btnScan.classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
                 isScanning = true;
 
-                // Inisialisasi scanner
+                
                 html5QrCode = new Html5Qrcode("reader");
 
-                // Setting scanner - responsif untuk mobile
+                
                 const config = { fps: 10, qrbox: { width: Math.min(250, window.innerWidth * 0.8), height: 100 } };
 
                 html5QrCode.start(
-                    { facingMode: "environment" }, // Gunakan kamera belakang
+                    { facingMode: "environment" }, 
                     config,
                     (decodedText, decodedResult) => {
                         // Aksi saat barcode berhasil terbaca
                         barcodeInput.value = decodedText;
 
-                        // Matikan kamera otomatis
                         html5QrCode.stop().then(() => {
                             readerDiv.style.display = 'none';
                             isScanning = false;
@@ -118,13 +115,11 @@
                             btnScan.classList.replace('bg-red-600', 'bg-blue-600');
                             btnScan.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
 
-                            // Highlight input sebentar agar user sadar sudah terisi
                             barcodeInput.classList.add('bg-green-100');
                             setTimeout(() => barcodeInput.classList.remove('bg-green-100'), 1500);
                         }).catch(err => console.error(err));
                     },
                     (errorMessage) => {
-                        // Biarkan kosong, ini akan looping terus mencari barcode
                     }
                 ).catch((err) => {
                     console.error("Error memulai kamera: ", err);

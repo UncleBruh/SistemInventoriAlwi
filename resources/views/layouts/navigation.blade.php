@@ -9,7 +9,11 @@
         <div class="fixed inset-0 bg-gray-900/80 transition-opacity" x-show="sidebarOpen" x-transition.opacity @click="sidebarOpen = false"></div>
         <div class="fixed inset-0 flex">
             <div x-show="sidebarOpen" x-transition:enter="transition ease-in-out duration-300 transform" x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in-out duration-300 transform" x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full" class="relative flex w-full max-w-xs flex-1 flex-col bg-white">
-                <div class="flex h-14 sm:h-16 shrink-0 items-center px-4 sm:px-6 bg-indigo-600 text-white font-bold text-lg sm:text-xl">Alwi College</div>
+                
+                <div @click="sidebarOpen = false" class="flex h-14 sm:h-16 shrink-0 items-center px-4 sm:px-6 bg-indigo-600 text-white font-bold text-lg sm:text-xl cursor-pointer hover:bg-indigo-700 transition">
+                    Warung Biebie
+                </div>
+
                 <nav class="flex-1 overflow-y-auto p-3 sm:p-4">
                     <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏠 Dashboard</a>
 
@@ -39,7 +43,11 @@
     </div>
 
     <nav x-show="sidebarOpen" x-transition:enter="transition ease-in-out duration-300 transform" x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in-out duration-300 transform" x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full" class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col border-r border-gray-200 bg-white shadow-sm">
-        <div class="flex h-16 shrink-0 items-center border-b border-indigo-700 bg-indigo-600 px-4 sm:px-6 text-white font-bold text-lg sm:text-xl shadow-md">Warung Biebie</div>
+        
+        <div @click="sidebarOpen = false" class="flex h-16 shrink-0 items-center border-b border-indigo-700 bg-indigo-600 px-4 sm:px-6 text-white font-bold text-lg sm:text-xl shadow-md cursor-pointer hover:bg-indigo-700 transition">
+            Warung Biebie
+        </div>
+
         <div class="flex flex-1 flex-col overflow-y-auto px-3 sm:px-4 py-4 sm:py-6">
             <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏠 Dashboard</a>
 
@@ -54,7 +62,6 @@
             @if(Auth::user()->role === 'Pemilik' || Auth::user()->role === 'Admin')
                 <a href="{{ route('alokasi-gudang-etalase.index') }}" class="{{ request()->routeIs('alokasi-gudang-etalase.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏭 Alokasi Gudang→Etalase</a>
                 <a href="{{ route('mutasi_keluar.create') }}" class="{{ request()->routeIs('mutasi_keluar.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➖ Barang Keluar</a>
-
             @endif
 
             @if(Auth::user()->role === 'Pemilik')
