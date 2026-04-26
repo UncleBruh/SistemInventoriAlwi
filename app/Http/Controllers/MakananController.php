@@ -75,7 +75,7 @@ class MakananController extends Controller
             break;
     }
 
-        $makanan = $query->paginate(10)->appends($request->all());
+        $makanan = $query->paginate(50)->appends($request->all());
 
         // Ambil semua data kategori untuk dimunculkan di Dropdown Filter
         $categories = Kategori::orderBy('nama_kategori', 'asc')->get();

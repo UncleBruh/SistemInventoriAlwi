@@ -126,6 +126,12 @@
                 @else
                     <p class="text-gray-500 text-base sm:text-lg text-center py-8">📊 Belum ada data penjualan. Silakan input penjualan dari menu <a href="{{ route('mutasi_keluar.create') }}" class="text-green-600 font-bold hover:underline">Barang Keluar</a> dengan alasan "Penjualan"</p>
                 @endif
+
+                @if($laporanPerHari->count() > 0)
+                    <div class="mt-8 pt-6 border-t border-gray-300">
+                        {{ $laporanPerHari->links() }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>

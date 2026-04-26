@@ -17,7 +17,7 @@ class AlokasiGudangEtalaseController extends Controller
     {
         $data = AlokasiGudangEtalase::with(['makanan', 'pengguna'])
             ->latest('tgl_alokasi')
-            ->get();
+            ->paginate(50);
         return view('alokasi_gudang_etalase.index', compact('data'));
     }
 

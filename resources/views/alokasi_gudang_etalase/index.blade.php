@@ -107,6 +107,12 @@
                     </div>
                     @endforeach
                 </div>
+
+                @if($data->count() > 0)
+                    <div class="mt-8 pt-6 border-t border-gray-300">
+                        {{ $data->links() }}
+                    </div>
+                @endif
             @else
                 <div class="bg-white rounded-lg shadow-sm p-8 sm:p-12 text-center">
                     <p class="text-3xl sm:text-4xl mb-4">📭</p>

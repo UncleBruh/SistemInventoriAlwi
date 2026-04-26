@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\MutasiKeluar;
 use Carbon\Carbon;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PenjualanController extends Controller
 {
@@ -26,18 +28,18 @@ class PenjualanController extends Controller
             $query->whereDate('tgl_mutasi', '<=', $tanggalAkhir);
         }
 
-        $data = $query->get();
+        $allData = $query->get();
 
         // Hitung ringkasan data
-        $totalPendapatan = $data->sum(function($item) {
+        $totalPendapatan = $allData->sum(function($item) {
             return $item->jumlah_keluar * $item->makanan->harga;
         });
 
-        $jumlahTransaksi = $data->count();
-        $totalUnitTerjual = $data->sum('jumlah_keluar');
+        $jumlahTransaksi = $allData->count();
+        $totalUnitTerjual = $allData->sum('jumlah_keluar');
 
         // Kelompokkan data berdasarkan tanggal untuk laporan per hari
-        $laporanPerHari = $data->groupBy(function($item) {
+        $laporanPerHariAll = $allData->groupBy(function($item) {
             return Carbon::parse($item->tgl_mutasi)->format('Y-m-d');
         })->map(function($items) {
             $totalHariIni = $items->sum(function($item) {
@@ -52,7 +54,24 @@ class PenjualanController extends Controller
             ];
         })->sortByDesc('tanggal')->values();
 
-        return view('penjualan.index', compact('data', 'laporanPerHari', 'totalPendapatan', 'jumlahTransaksi', 'totalUnitTerjual'));
+        // Manual pagination untuk laporan per hari (15 hari per halaman)
+        $perPage = 15;
+        $currentPage = $request->get('page', 1);
+        $total = $laporanPerHariAll->count();
+        $offset = ($currentPage - 1) * $perPage;
+
+        $laporanPerHari = new LengthAwarePaginator(
+            $laporanPerHariAll->slice($offset, $perPage)->values(),
+            $total,
+            $perPage,
+            $currentPage,
+            [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]
+        );
+
+        return view('penjualan.index', compact('laporanPerHari', 'totalPendapatan', 'jumlahTransaksi', 'totalUnitTerjual'));
     }
 }
 

@@ -25,9 +25,9 @@
                             @forelse($semua_log as $log)
                             <tr class="hover:bg-gray-50 transition border-b border-gray-200">
                                 <td class="p-3 text-sm text-gray-500">{{ $log->tgl_input }}</td>
-                                
+
                                 <td class="p-3 font-bold bg-indigo-50/30 text-indigo-900 border-x">{{ $log->tgl_aktual }}</td>
-                                
+
                                 <td class="p-3 font-semibold">{{ $log->nama_makanan }}</td>
                                 <td class="p-3">
                                     @if($log->jenis == 'Barang Masuk')
@@ -52,6 +52,12 @@
                         </tbody>
                     </table>
                 </div>
+
+                @if($semua_log->count() > 0)
+                    <div class="mt-8 pt-6 border-t border-gray-300">
+                        {{ $semua_log->links() }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>
