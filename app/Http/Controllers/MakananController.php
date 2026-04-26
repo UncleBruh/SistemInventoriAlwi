@@ -39,6 +39,42 @@ class MakananController extends Controller
             $query->orderBy('stok', 'asc');
         }
 
+// Fitur Sorting
+    switch ($sort) {
+        case 'terlama':
+            $query->oldest();
+            break;
+
+        case 'stok_terbanyak':
+            $query->orderBy('stok', 'desc');
+            break;
+
+        case 'stok_sedikit':
+            $query->orderBy('stok', 'asc');
+            break;
+
+        case 'gudang_asc':
+            $query->orderBy('stok_gudang', 'asc');
+            break;
+
+        case 'gudang_desc':
+            $query->orderBy('stok_gudang', 'desc');
+            break;
+
+        case 'etalase_asc':
+            $query->orderBy('stok_etalase', 'asc');
+            break;
+
+        case 'etalase_desc':
+            $query->orderBy('stok_etalase', 'desc');
+            break;
+
+        case 'terbaru':
+        default:
+            $query->latest();
+            break;
+    }
+
         $makanan = $query->paginate(10)->appends($request->all());
 
         // Ambil semua data kategori untuk dimunculkan di Dropdown Filter

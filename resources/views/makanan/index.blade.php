@@ -26,6 +26,17 @@
                         @endforeach
                     </select>
 
+                <select name="sort" class="border-gray-300 rounded-md shadow-sm w-full md:w-1/4">
+                    <option value="terbaru" {{ request('sort') == 'terbaru' ? 'selected' : '' }}>Terbaru</option>
+                    <option value="terlama" {{ request('sort') == 'terlama' ? 'selected' : '' }}>Terlama</option>
+                    <option value="stok_terbanyak" {{ request('sort') == 'stok_terbanyak' ? 'selected' : '' }}>Stok Total Terbanyak</option>
+                    <option value="stok_sedikit" {{ request('sort') == 'stok_sedikit' ? 'selected' : '' }}>Stok Total Tersedikit</option>
+                    <option value="gudang_desc" {{ request('sort') == 'gudang_desc' ? 'selected' : '' }}>Stok Gudang Terbanyak</option>
+                    <option value="gudang_asc" {{ request('sort') == 'gudang_asc' ? 'selected' : '' }}>Stok Gudang Tersedikit</option>
+                    <option value="etalase_desc" {{ request('sort') == 'etalase_desc' ? 'selected' : '' }}>Stok Etalase Terbanyak</option>
+                    <option value="etalase_asc" {{ request('sort') == 'etalase_asc' ? 'selected' : '' }}>Stok Etalase Tersedikit</option>
+                </select>
+
                     <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition font-medium">Filter</button>
                     @if($search || request('kategori'))
                         <a href="{{ route('makanan.index') }}" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition text-center font-medium border border-gray-300">Reset</a>
