@@ -58,9 +58,11 @@
                     </div>
                 </div>
 
-                <div class="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 border-t pt-4 mt-2">
-                    <a href="{{ route('makanan.index') }}" class="text-gray-500 hover:text-gray-800 font-medium transition text-sm w-full sm:w-auto text-center">⬅ Batal</a>
-                    <x-primary-button class="bg-indigo-600 hover:bg-indigo-700 text-base px-6 sm:px-8 shadow-sm w-full sm:w-auto">Simpan Jajanan</x-primary-button>
+                <div class="border-t pt-4 mt-2">
+                    <div class="flex flex-col items-center gap-3">
+                        <x-primary-button class="bg-indigo-600 hover:bg-indigo-700 text-base px-8 shadow-sm w-full sm:w-auto justify-center">Simpan Jajanan</x-primary-button>
+                        <a href="{{ route('makanan.index') }}" class="text-gray-500 hover:text-gray-800 font-medium transition text-sm">⬅ Batal</a>
+                    </div>
                 </div>
             </form>
 
@@ -95,14 +97,14 @@
                 btnScan.classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
                 isScanning = true;
 
-                
+
                 html5QrCode = new Html5Qrcode("reader");
 
-                
+
                 const config = { fps: 10, qrbox: { width: Math.min(250, window.innerWidth * 0.8), height: 100 } };
 
                 html5QrCode.start(
-                    { facingMode: "environment" }, 
+                    { facingMode: "environment" },
                     config,
                     (decodedText, decodedResult) => {
                         // Aksi saat barcode berhasil terbaca

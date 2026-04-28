@@ -13,12 +13,47 @@ class AlokasiGudangEtalaseController extends Controller
     /**
      * Tampilkan daftar semua alokasi gudang ke etalase
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = AlokasiGudangEtalase::with(['makanan', 'pengguna'])
-            ->latest('tgl_alokasi')
-            ->paginate(50);
-        return view('alokasi_gudang_etalase.index', compact('data'));
+        $id_makanan = $request->input('id_makanan');
+        $tgl_mulai = $request->input('tgl_mulai');
+        $tgl_akhir = $request->input('tgl_akhir');
+        $sort = $request->input('sort', 'terbaru');
+
+        $query = AlokasiGudangEtalase::with(['makanan', 'pengguna']);
+
+        // Filter berdasarkan produk/makanan
+        if ($id_makanan) {
+            $query->where('id_makanan', $id_makanan);
+        }
+
+        // Filter berdasarkan tanggal mulai
+        if ($tgl_mulai) {
+            $query->whereDate('tgl_alokasi', '>=', $tgl_mulai);
+        }
+
+        // Filter berdasarkan tanggal akhir
+        if ($tgl_akhir) {
+            $query->whereDate('tgl_alokasi', '<=', $tgl_akhir);
+        }
+
+        // Fitur Sorting
+        if ($sort == 'terbaru') {
+            $query->latest('tgl_alokasi');
+        } elseif ($sort == 'terlama') {
+            $query->oldest('tgl_alokasi');
+        } elseif ($sort == 'jumlah_desc') {
+            $query->orderBy('jumlah_dialokasi', 'desc');
+        } elseif ($sort == 'jumlah_asc') {
+            $query->orderBy('jumlah_dialokasi', 'asc');
+        }
+
+        $data = $query->paginate(50);
+
+        // Get semua makanan untuk dropdown filter
+        $makanan = Makanan::orderBy('nama_makanan')->get();
+
+        return view('alokasi_gudang_etalase.index', compact('data', 'makanan', 'id_makanan', 'tgl_mulai', 'tgl_akhir', 'sort'));
     }
 
     /**
@@ -94,5 +129,39 @@ class AlokasiGudangEtalaseController extends Controller
     {
         $alokasi = AlokasiGudangEtalase::with(['makanan', 'pengguna'])->findOrFail($id);
         return view('alokasi_gudang_etalase.show', compact('alokasi'));
+    }
+
+    /**
+     * Hapus alokasi (hanya untuk Pemilik)
+     */
+    public function destroy($id)
+    {
+        // Double-check: pastikan hanya Pemilik yang bisa hapus
+        if (Auth::user()->role !== 'Pemilik') {
+            abort(403, 'Anda tidak memiliki izin untuk menghapus alokasi. Hanya Pemilik yang dapat menghapus.');
+        }
+
+        $alokasi = AlokasiGudangEtalase::findOrFail($id);
+        $makanan = Makanan::findOrFail($alokasi->id_makanan);
+
+        DB::beginTransaction();
+        try {
+            // Kembalikan stok gudang dan kurangi etalase
+            $makanan->update([
+                'stok_gudang' => $makanan->stok_gudang + $alokasi->jumlah_dialokasi,
+                'stok_etalase' => $makanan->stok_etalase - $alokasi->jumlah_dialokasi,
+            ]);
+
+            // Hapus record alokasi
+            $alokasi->delete();
+
+            DB::commit();
+
+            return redirect()->route('alokasi-gudang-etalase.index')
+                ->with('success', 'Alokasi berhasil dihapus. Stok telah dikembalikan ke gudang.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menghapus alokasi: ' . $e->getMessage());
+        }
     }
 }

@@ -40,7 +40,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/tambah', [MutasiKeluarController::class, 'store'])->name('mutasi_keluar.store');
         });
 
-        // Alokasi Gudang ke Etalase (Hanya Pemilik/Admin)
+        // Alokasi Gudang ke Etalase (Pemilik/Admin - bisa buat, lihat, tapi hanya Pemilik bisa hapus)
         Route::prefix('alokasi-gudang-etalase')->group(function () {
             Route::get('/', [AlokasiGudangEtalaseController::class, 'index'])->name('alokasi-gudang-etalase.index');
             Route::get('/tambah', [AlokasiGudangEtalaseController::class, 'create'])->name('alokasi-gudang-etalase.create');
@@ -49,8 +49,9 @@ Route::middleware('auth')->group(function () {
         });
     });
 
-    // Laporan Penjualan (Hanya Pemilik)
+    // Laporan Penjualan & Hapus Alokasi (Hanya Pemilik)
     Route::middleware('role:Pemilik')->group(function () {
+        Route::delete('/alokasi-gudang-etalase/{id}', [AlokasiGudangEtalaseController::class, 'destroy'])->name('alokasi-gudang-etalase.destroy');
         Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
 
         // Log Aktivitas (Hanya Pemilik sahaja)
