@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Inventori Warung Biebie') }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('foto/logobimbel.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -307,7 +308,7 @@
     <header>
         <div class="navbar">
             <a href="#" class="logo">
-                <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo" class="rounded bg-white p-1">
+                <img src="{{ asset('foto/logobimbel.png') }}" alt="Logo" class="rounded">
                 Warung Biebie
             </a>
             <nav class="nav-links">
@@ -365,7 +366,7 @@
 
             <div class="hero-visual">
                 <div class="hero-card">
-                    <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo Bimbel" class="rounded bg-white p-1">
+                    <img src="{{ asset('foto/logobimbel.png') }}" alt="Logo Bimbel" class="rounded">
                     <h3>Warung Biebie</h3>
                     <p>Sistem Manajemen Stok Terpercaya untuk Bisnis Anda</p>
                 </div>

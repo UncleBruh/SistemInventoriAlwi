@@ -9,8 +9,9 @@
         <div class="fixed inset-0 bg-gray-900/80 transition-opacity" x-show="sidebarOpen" x-transition.opacity @click="sidebarOpen = false"></div>
         <div class="fixed inset-0 flex">
             <div x-show="sidebarOpen" x-transition:enter="transition ease-in-out duration-300 transform" x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in-out duration-300 transform" x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full" class="relative flex w-full max-w-xs flex-1 flex-col bg-white">
-                
-                <div @click="sidebarOpen = false" class="flex h-14 sm:h-16 shrink-0 items-center px-4 sm:px-6 bg-indigo-600 text-white font-bold text-lg sm:text-xl cursor-pointer hover:bg-indigo-700 transition">
+
+                <div @click="sidebarOpen = false" class="flex h-14 sm:h-16 shrink-0 items-center px-4 sm:px-6 bg-indigo-600 text-white font-bold text-lg sm:text-xl cursor-pointer hover:bg-indigo-700 transition gap-3">
+                    <img src="{{ asset('foto/logobimbel.png') }}" alt="Logo" class="w-8 sm:w-10 h-8 sm:h-10 object-contain">
                     Warung Biebie
                 </div>
 
@@ -43,8 +44,9 @@
     </div>
 
     <nav x-show="sidebarOpen" x-transition:enter="transition ease-in-out duration-300 transform" x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in-out duration-300 transform" x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full" class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col border-r border-gray-200 bg-white shadow-sm">
-        
-        <div @click="sidebarOpen = false" class="flex h-16 shrink-0 items-center border-b border-indigo-700 bg-indigo-600 px-4 sm:px-6 text-white font-bold text-lg sm:text-xl shadow-md cursor-pointer hover:bg-indigo-700 transition">
+
+        <div @click="sidebarOpen = false" class="flex h-16 shrink-0 items-center border-b border-indigo-700 bg-indigo-600 px-4 sm:px-6 text-white font-bold text-lg sm:text-xl shadow-md cursor-pointer hover:bg-indigo-700 transition gap-3">
+            <img src="{{ asset('foto/logobimbel.png') }}" alt="Logo" class="w-8 sm:w-10 h-8 sm:h-10 object-contain">
             Warung Biebie
         </div>
 

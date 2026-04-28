@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'Warung Biebie') }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('foto/logobimbel.png') }}">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -41,7 +42,7 @@
         @include('layouts.navigation')
 
         <div :class="sidebarOpen ? 'lg:pl-64' : 'lg:pl-0'" class="flex flex-col min-h-screen transition-all duration-300 ease-in-out">
-            <header class="sticky top-0 z-40 flex h-14 sm:h-16 shrink-0 items-center gap-x-3 sm:gap-x-4 border-b border-gray-200 bg-white px-3 sm:px-4 shadow-sm lg:px-8">
+            <header class="sticky top-0 z-40 flex h-14 sm:h-16 shrink-0 items-center gap-x-4 sm:gap-x-6 border-b border-gray-200 bg-white px-3 sm:px-4 shadow-sm lg:px-8">
                 <button type="button" class="-m-2.5 p-2.5 text-gray-700 hover:bg-gray-100 rounded-md transition" @click="sidebarOpen = !sidebarOpen">
                     <span class="sr-only">Toggle Sidebar</span>
                     <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">

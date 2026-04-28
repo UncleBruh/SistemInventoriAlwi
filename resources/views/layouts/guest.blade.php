@@ -6,6 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
+        <link rel="icon" type="image/png" href="{{ asset('foto/logobimbel.png') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -75,8 +76,8 @@
             .logo-container {
                 position: relative;
                 z-index: 10;
-                width: 140px;
-                height: 140px;
+                width: 160px;
+                height: 160px;
                 background: transparent;
                 border-radius: 30px;
                 display: flex;
@@ -95,8 +96,8 @@
                 box-shadow: none;
             }
             .logo-container img {
-                width: 95px;
-                height: 95px;
+                width: 110px;
+                height: 110px;
                 object-fit: contain;
                 filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.4));
                 transition: filter 0.3s ease, transform 0.3s ease;
@@ -133,13 +134,13 @@
                     padding: 40px 30px;
                 }
                 .logo-container {
-                    width: 120px;
-                    height: 120px;
+                    width: 140px;
+                    height: 140px;
                     margin-bottom: 30px;
                 }
                 .logo-container img {
-                    width: 80px;
-                    height: 80px;
+                    width: 100px;
+                    height: 100px;
                 }
             }
         </style>
@@ -150,7 +151,7 @@
                 <!-- Left Side - Logo & Title -->
                 <div class="login-left">
                     <div class="logo-container">
-                        <img src="{{ asset('foto/logobimbel.webp') }}" alt="Logo Bimbel" class="rounded bg-white p-0.5" />
+                        <img src="{{ asset('foto/logobimbel.png') }}" alt="Logo Bimbel" class="rounded" />
                     </div>
                     <div style="position: relative; z-index: 10; text-align: center;">
                         <div class="login-title">Warung Biebie</div>
