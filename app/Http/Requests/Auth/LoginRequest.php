@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -42,11 +44,31 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
+        // Cek apakah user dengan username tersebut ada
+        $user = User::where('username', $this->input('username'))->first();
+
+        if (!$user) {
+            // Username tidak ditemukan
+            RateLimiter::hit($this->throttleKey());
+            throw ValidationException::withMessages([
+                'login_failed' => '❌ Username tidak ditemukan.',
+            ]);
+        }
+
+        // Cek password
+        if (!Hash::check($this->input('password'), $user->password)) {
+            // Password salah
+            RateLimiter::hit($this->throttleKey());
+            throw ValidationException::withMessages([
+                'login_failed' => '❌ Password salah.',
+            ]);
+        }
+
+        // Jika username dan password benar, lakukan attempt
         if (! Auth::attempt($this->only('username', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
-
             throw ValidationException::withMessages([
-                'login_failed' => '❌ Username atau password salah. Silakan coba lagi.',
+                'login_failed' => '❌ Gagal melakukan login. Silakan coba lagi.',
             ]);
         }
 
