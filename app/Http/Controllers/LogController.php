@@ -31,7 +31,7 @@ class LogController extends Controller
                 'jumlah' => '+' . $item->jumlah_masuk,
                 'jumlah_nilai' => $item->jumlah_masuk,
                 'alasan' => '-',
-                'petugas' => $item->pengguna->username,
+                'petugas' => $item->pengguna ? $item->pengguna->username : '-',
                 'sort_date' => $item->created_at // Acuan pengurutan terbaru
             ];
         });
@@ -47,7 +47,7 @@ class LogController extends Controller
                 'jumlah' => '-' . $item->jumlah_keluar,
                 'jumlah_nilai' => $item->jumlah_keluar,
                 'alasan' => $item->alasan,
-                'petugas' => $item->pengguna->username,
+                'petugas' => $item->pengguna ? $item->pengguna->username : '-',
                 'sort_date' => $item->created_at
             ];
         });

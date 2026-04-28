@@ -30,7 +30,13 @@
                                         <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">📦 Gudang</span>
                                     @endif
                                 </td>
-                                <td class="p-3 text-sm">{{ $row->pengguna->username }}</td>
+                                <td class="p-3 text-sm">
+                                    @if($row->pengguna)
+                                        {{ $row->pengguna->username }}
+                                    @else
+                                        <span class="text-gray-400 italic">-</span>
+                                    @endif
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -55,7 +61,13 @@
                                 @endif
                             </div>
 
-                            <p class="text-xs text-gray-600"><strong>Petugas:</strong> {{ $row->pengguna->username }}</p>
+                            <p class="text-xs text-gray-600"><strong>Petugas:</strong>
+                                @if($row->pengguna)
+                                    {{ $row->pengguna->username }}
+                                @else
+                                    <span class="text-gray-400 italic">-</span>
+                                @endif
+                            </p>
                         </div>
                     @endforeach
                 </div>

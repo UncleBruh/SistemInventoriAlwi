@@ -156,7 +156,12 @@
                             <!-- Footer -->
                             <div class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                                 <div class="text-xs sm:text-sm text-gray-600">
-                                    <span class="font-medium">Petugas:</span> {{ $row->pengguna->username }}
+                                    <span class="font-medium">Petugas:</span>
+                                    @if($row->pengguna)
+                                        {{ $row->pengguna->username }}
+                                    @else
+                                        <span class="text-gray-400 italic">-</span>
+                                    @endif
                                     @if($row->keterangan)
                                     <p class="text-xs text-gray-500 mt-1">Catatan: {{ $row->keterangan }}</p>
                                     @endif

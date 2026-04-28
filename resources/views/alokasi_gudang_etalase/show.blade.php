@@ -24,7 +24,13 @@
                     </div>
                     <div class="text-center">
                         <p class="text-gray-600 text-sm">Petugas</p>
-                        <p class="text-lg font-bold text-blue-600">{{ $alokasi->pengguna->username }}</p>
+                        <p class="text-lg font-bold text-blue-600">
+                            @if($alokasi->pengguna)
+                                {{ $alokasi->pengguna->username }}
+                            @else
+                                <span class="text-gray-400 italic">-</span>
+                            @endif
+                        </p>
                     </div>
                     <div class="text-center">
                         <p class="text-gray-600 text-sm">Status</p>

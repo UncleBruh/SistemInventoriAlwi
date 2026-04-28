@@ -105,19 +105,20 @@
         let html5QrCode;
         let isScanning = false;
 
-        barcodeInput.addEventListener('change', function() {
-            findMakananByBarcode(this.value);
+        barcodeInput.addEventListener('input', function() {
+            findMakananByBarcode(this.value.trim());
         });
 
-        $('#barcode_input').on('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault(); 
-                    setTimeout(function() {
-                        $('#jumlah_perubahan').focus();
-                        $('#jumlah_perubahan').select();
-                    }, 200);
-                }
-            });
+        // Saat Enter di barcode, fokus ke jumlah (jangan submit form)
+        barcodeInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                setTimeout(function() {
+                    document.getElementById('jumlah_perubahan').focus();
+                    document.getElementById('jumlah_perubahan').select();
+                }, 200);
+            }
+        });
 
         btnScan.addEventListener('click', function() {
             if (isScanning) {

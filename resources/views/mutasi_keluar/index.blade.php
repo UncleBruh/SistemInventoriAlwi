@@ -48,7 +48,13 @@
                                     @endswitch
                                 </td>
                                 <td class="p-3 text-sm italic">{{ $row->alasan ?? '-' }}</td>
-                                <td class="p-3 text-sm">{{ $row->pengguna->username }}</td>
+                                <td class="p-3 text-sm">
+                                    @if($row->pengguna)
+                                        {{ $row->pengguna->username }}
+                                    @else
+                                        <span class="text-gray-400 italic">-</span>
+                                    @endif
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -88,7 +94,13 @@
                                 <p class="text-xs text-gray-600 mb-2"><strong>Keterangan:</strong> {{ $row->alasan }}</p>
                             @endif
 
-                            <p class="text-xs text-gray-600"><strong>Petugas:</strong> {{ $row->pengguna->username }}</p>
+                            <p class="text-xs text-gray-600"><strong>Petugas:</strong>
+                                @if($row->pengguna)
+                                    {{ $row->pengguna->username }}
+                                @else
+                                    <span class="text-gray-400 italic">-</span>
+                                @endif
+                            </p>
                         </div>
                     @endforeach
                 </div>

@@ -5,12 +5,12 @@
         </h2>
     </x-slot>
 
-    <div class="py-12 flex-1 h-full">
+    <div class="py-6 flex-1 h-full">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
 
                 <!-- Filter Section -->
-                <div class="mb-6 bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                <div class="mb-3 bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
                     <form action="{{ route('log.aktivitas') }}" method="GET" class="space-y-4">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <!-- Filter Produk -->
@@ -109,7 +109,13 @@
                                 <td class="p-3 text-sm italic text-gray-500 max-w-xs truncate" title="{{ $log->alasan }}">
                                     {{ $log->alasan }}
                                 </td>
-                                <td class="p-3 text-sm font-medium">{{ $log->petugas }}</td>
+                                <td class="p-3 text-sm font-medium">
+                                    @if($log->petugas)
+                                        {{ $log->petugas }}
+                                    @else
+                                        <span class="text-gray-400 italic">-</span>
+                                    @endif
+                                </td>
                             </tr>
                             @empty
                             <tr>

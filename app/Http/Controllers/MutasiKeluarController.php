@@ -39,15 +39,19 @@ class MutasiKeluarController extends Controller
 
         $makanan = Makanan::findOrFail($request->id_makanan);
 
-        // PENTING: Barang keluar hanya dari stok ETALASE, bukan gudang
+        // PENTING: Barang keluar HANYA dari stok ETALASE
         $stok_etalase_sebelum = $makanan->stok_etalase;
-        $stok_sebelum = $makanan->stok;
+        $stok_gudang_sebelum = $makanan->stok_gudang;
 
         if ($stok_etalase_sebelum < $request->jumlah_perubahan) {
             return redirect()->back()->with('error', 'Stok etalase tidak mencukupi untuk pengeluaran ini. Stok etalase: ' . $stok_etalase_sebelum);
         }
 
         $stok_etalase_sesudah = $stok_etalase_sebelum - $request->jumlah_perubahan;
+        $stok_gudang_sesudah = $stok_gudang_sebelum; // Gudang TIDAK BERUBAH
+
+        // Total stok juga berkurang (karena barang keluar dari etalase)
+        $stok_sebelum = $makanan->stok;
         $stok_sesudah = $stok_sebelum - $request->jumlah_perubahan;
 
         DB::beginTransaction();
@@ -65,16 +69,16 @@ class MutasiKeluarController extends Controller
                 'stok_etalase_sesudah' => $stok_etalase_sesudah,
             ]);
 
-            // Update stok di tabel makanan - hanya stok_etalase yang berkurang
+            // Update stok di tabel makanan - HANYA etalase yang berkurang
             $makanan->update([
-                'stok' => $stok_sesudah,
-                'stok_etalase' => $stok_etalase_sesudah,
-                // stok_gudang TIDAK BERUBAH
+                'stok' => $stok_sesudah,  // Total berkurang
+                'stok_etalase' => $stok_etalase_sesudah,  // Etalase berkurang
+                'stok_gudang' => $stok_gudang_sesudah,  // Gudang TIDAK BERUBAH
             ]);
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'Barang Keluar berhasil dicatat! Stok etalase berkurang.');
+            return redirect()->back()->with('success', 'Barang Keluar berhasil dicatat! Stok etalase berkurang dari ' . $stok_etalase_sebelum . ' menjadi ' . $stok_etalase_sesudah . '. Stok gudang tetap ' . $stok_gudang_sesudah . '.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
