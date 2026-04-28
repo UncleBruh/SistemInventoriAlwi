@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MutasiMasuk;
 use App\Models\MutasiKeluar;
+use App\Models\Makanan;
 use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -13,13 +14,22 @@ class LogController extends Controller
 {
     public function index(Request $request)
     {
+        $id_makanan = $request->input('id_makanan');
+        $tgl_mulai = $request->input('tgl_mulai');
+        $tgl_akhir = $request->input('tgl_akhir');
+        $jenis_aktivitas = $request->input('jenis_aktivitas', 'semua');
+        $sort = $request->input('sort', 'terbaru');
+
         $masuk = MutasiMasuk::with(['makanan', 'pengguna'])->get()->map(function($item) {
             return (object) [
+                'id_makanan' => $item->id_makanan,
                 'tgl_input' => $item->created_at->format('Y-m-d H:i:s'), // Kapan diklik simpan
                 'tgl_aktual' => Carbon::parse($item->tgl_mutasi)->format('Y-m-d'), // Kapan fisik barang masuk
+                'tgl_aktual_date' => $item->tgl_mutasi,
                 'nama_makanan' => $item->makanan->nama_makanan,
                 'jenis' => 'Barang Masuk',
                 'jumlah' => '+' . $item->jumlah_masuk,
+                'jumlah_nilai' => $item->jumlah_masuk,
                 'alasan' => '-',
                 'petugas' => $item->pengguna->username,
                 'sort_date' => $item->created_at // Acuan pengurutan terbaru
@@ -28,19 +38,67 @@ class LogController extends Controller
 
         $keluar = MutasiKeluar::with(['makanan', 'pengguna'])->get()->map(function($item) {
             return (object) [
+                'id_makanan' => $item->id_makanan,
                 'tgl_input' => $item->created_at->format('Y-m-d H:i:s'),
                 'tgl_aktual' => Carbon::parse($item->tgl_mutasi)->format('Y-m-d'),
+                'tgl_aktual_date' => $item->tgl_mutasi,
                 'nama_makanan' => $item->makanan->nama_makanan,
                 'jenis' => 'Barang Keluar',
                 'jumlah' => '-' . $item->jumlah_keluar,
+                'jumlah_nilai' => $item->jumlah_keluar,
                 'alasan' => $item->alasan,
                 'petugas' => $item->pengguna->username,
                 'sort_date' => $item->created_at
             ];
         });
 
-        // Gabungkan dan urutkan dari aktivitas input terbaru
-        $semua_log_all = $masuk->concat($keluar)->sortByDesc('sort_date')->values();
+        // Gabungkan
+        $semua_log_all = $masuk->concat($keluar);
+
+        // Filter berdasarkan jenis aktivitas
+        if ($jenis_aktivitas === 'masuk') {
+            $semua_log_all = $semua_log_all->filter(function($item) {
+                return $item->jenis === 'Barang Masuk';
+            });
+        } elseif ($jenis_aktivitas === 'keluar') {
+            $semua_log_all = $semua_log_all->filter(function($item) {
+                return $item->jenis === 'Barang Keluar';
+            });
+        }
+
+        // Filter berdasarkan produk
+        if ($id_makanan) {
+            $semua_log_all = $semua_log_all->filter(function($item) use ($id_makanan) {
+                return $item->id_makanan == $id_makanan;
+            });
+        }
+
+        // Filter berdasarkan tanggal mulai
+        if ($tgl_mulai) {
+            $semua_log_all = $semua_log_all->filter(function($item) use ($tgl_mulai) {
+                return Carbon::parse($item->tgl_aktual_date)->format('Y-m-d') >= $tgl_mulai;
+            });
+        }
+
+        // Filter berdasarkan tanggal akhir
+        if ($tgl_akhir) {
+            $semua_log_all = $semua_log_all->filter(function($item) use ($tgl_akhir) {
+                return Carbon::parse($item->tgl_aktual_date)->format('Y-m-d') <= $tgl_akhir;
+            });
+        }
+
+        // Sorting
+        if ($sort == 'terbaru') {
+            $semua_log_all = $semua_log_all->sortByDesc('sort_date')->values();
+        } elseif ($sort == 'terlama') {
+            $semua_log_all = $semua_log_all->sortBy('sort_date')->values();
+        } elseif ($sort == 'jumlah_desc') {
+            $semua_log_all = $semua_log_all->sortByDesc('jumlah_nilai')->values();
+        } elseif ($sort == 'jumlah_asc') {
+            $semua_log_all = $semua_log_all->sortBy('jumlah_nilai')->values();
+        } else {
+            $semua_log_all = $semua_log_all->sortByDesc('sort_date')->values();
+        }
 
         // Manual pagination (50 item per halaman)
         $perPage = 50;
@@ -59,6 +117,9 @@ class LogController extends Controller
             ]
         );
 
-        return view('log.index', compact('semua_log'));
+        // Get semua makanan untuk dropdown filter
+        $makanan = Makanan::orderBy('nama_makanan')->get();
+
+        return view('log.index', compact('semua_log', 'makanan', 'id_makanan', 'tgl_mulai', 'tgl_akhir', 'jenis_aktivitas', 'sort'));
     }
 }

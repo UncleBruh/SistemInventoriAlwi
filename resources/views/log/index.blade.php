@@ -8,6 +8,73 @@
     <div class="py-12 flex-1 h-full">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+
+                <!-- Filter Section -->
+                <div class="mb-6 bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+                    <form action="{{ route('log.aktivitas') }}" method="GET" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Filter Produk -->
+                            <div>
+                                <label for="id_makanan" class="block text-sm font-medium text-gray-700 mb-2">Pilih Produk</label>
+                                <select name="id_makanan" id="id_makanan" class="searchable-select border-gray-300 rounded-md shadow-sm block w-full text-sm py-2 px-3">
+                                    <option value="">Semua Produk</option>
+                                    @foreach($makanan as $item)
+                                        <option value="{{ $item->id_makanan }}" {{ request('id_makanan') == $item->id_makanan ? 'selected' : '' }}>
+                                            {{ $item->nama_makanan }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Filter Jenis Aktivitas -->
+                            <div>
+                                <label for="jenis_aktivitas" class="block text-sm font-medium text-gray-700 mb-2">Jenis Aktivitas</label>
+                                <select name="jenis_aktivitas" id="jenis_aktivitas" class="border-gray-300 rounded-md shadow-sm block w-full text-sm py-2 px-3">
+                                    <option value="semua" {{ request('jenis_aktivitas', 'semua') == 'semua' ? 'selected' : '' }}>Semua Aktivitas</option>
+                                    <option value="masuk" {{ request('jenis_aktivitas') == 'masuk' ? 'selected' : '' }}>➕ Barang Masuk</option>
+                                    <option value="keluar" {{ request('jenis_aktivitas') == 'keluar' ? 'selected' : '' }}>➖ Barang Keluar</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="tgl_mulai" class="block text-sm font-medium text-gray-700 mb-2">Tanggal Mulai</label>
+                                <input type="date" name="tgl_mulai" id="tgl_mulai" value="{{ request('tgl_mulai') }}" class="border-gray-300 rounded-md shadow-sm block w-full text-sm py-2 px-3" />
+                            </div>
+                            <div>
+                                <label for="tgl_akhir" class="block text-sm font-medium text-gray-700 mb-2">Tanggal Akhir</label>
+                                <input type="date" name="tgl_akhir" id="tgl_akhir" value="{{ request('tgl_akhir') }}" class="border-gray-300 rounded-md shadow-sm block w-full text-sm py-2 px-3" />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-1 gap-4">
+                            <!-- Sort -->
+                            <div>
+                                <label for="sort" class="block text-sm font-medium text-gray-700 mb-2">Urutkan</label>
+                                <select name="sort" id="sort" class="border-gray-300 rounded-md shadow-sm block w-full text-sm py-2 px-3">
+                                    <option value="terbaru" {{ request('sort') == 'terbaru' ? 'selected' : '' }}>Terbaru</option>
+                                    <option value="terlama" {{ request('sort') == 'terlama' ? 'selected' : '' }}>Terlama</option>
+                                    <option value="jumlah_desc" {{ request('sort') == 'jumlah_desc' ? 'selected' : '' }}>Jumlah Terbanyak</option>
+                                    <option value="jumlah_asc" {{ request('sort') == 'jumlah_asc' ? 'selected' : '' }}>Jumlah Tersedikit</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition flex-1 sm:flex-none">
+                                🔍 Terapkan Filter
+                            </button>
+                            @if(request('id_makanan') || request('tgl_mulai') || request('tgl_akhir') || request('jenis_aktivitas') || (request('sort') && request('sort') != 'terbaru'))
+                                <a href="{{ route('log.aktivitas') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium text-sm transition border border-gray-300 text-center flex-1 sm:flex-none">
+                                    ↺ Reset Filter
+                                </a>
+                            @endif
+                        </div>
+                    </form>
+                </div>
+
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse whitespace-nowrap">
                         <thead>
