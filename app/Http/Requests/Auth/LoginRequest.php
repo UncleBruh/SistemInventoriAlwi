@@ -46,7 +46,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'username' => trans('auth.failed'),
+                'login_failed' => '❌ Username atau password salah. Silakan coba lagi.',
             ]);
         }
 
@@ -67,12 +67,10 @@ class LoginRequest extends FormRequest
         event(new Lockout($this));
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
+        $minutes = ceil($seconds / 60);
 
         throw ValidationException::withMessages([
-            'username' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
+            'login_failed' => "🔒 Terlalu banyak percobaan login gagal. Silakan coba lagi dalam {$minutes} menit.",
         ]);
     }
 
