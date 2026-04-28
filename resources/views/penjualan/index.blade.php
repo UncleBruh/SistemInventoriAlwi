@@ -42,7 +42,20 @@
                             <div class="bg-gradient-to-r from-green-50 to-blue-50 border border-gray-200 rounded-lg p-4 mb-4">
                                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                                     <h4 class="text-base sm:text-lg font-bold text-gray-800">
-                                        {{ \Carbon\Carbon::parse($laporan['tanggal'])->format('d F Y (l)') }}
+                                        @php
+                                            $hariIndo = [
+                                                'Monday' => 'Senin',
+                                                'Tuesday' => 'Selasa',
+                                                'Wednesday' => 'Rabu',
+                                                'Thursday' => 'Kamis',
+                                                'Friday' => 'Jumat',
+                                                'Saturday' => 'Sabtu',
+                                                'Sunday' => 'Minggu'
+                                            ];
+                                            $hari = \Carbon\Carbon::parse($laporan['tanggal'])->format('l');
+                                            $hariIndonesia = $hariIndo[$hari];
+                                        @endphp
+                                        {{ \Carbon\Carbon::parse($laporan['tanggal'])->format('d F Y') }} ({{ $hariIndonesia }})
                                     </h4>
                                     <div class="text-right">
                                         <span class="text-xs sm:text-sm text-gray-600 block mb-1">{{ $laporan['jumlah_unit'] }} unit</span>
