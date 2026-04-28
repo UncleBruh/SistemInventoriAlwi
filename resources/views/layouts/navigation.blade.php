@@ -60,8 +60,8 @@
 
             <a href="{{ route('mutasi_masuk.create') }}" class="{{ request()->routeIs('mutasi_masuk.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➕ Barang Masuk</a>
             @if(Auth::user()->role === 'Pemilik' || Auth::user()->role === 'Admin')
-                <a href="{{ route('alokasi-gudang-etalase.index') }}" class="{{ request()->routeIs('alokasi-gudang-etalase.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏭 Alokasi Gudang→Etalase</a>
                 <a href="{{ route('mutasi_keluar.create') }}" class="{{ request()->routeIs('mutasi_keluar.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➖ Barang Keluar</a>
+                            <a href="{{ route('alokasi-gudang-etalase.index') }}" class="{{ request()->routeIs('alokasi-gudang-etalase.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏭 Alokasi Gudang→Etalase</a>
             @endif
 
             @if(Auth::user()->role === 'Pemilik')

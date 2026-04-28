@@ -105,10 +105,19 @@
         let html5QrCode;
         let isScanning = false;
 
-        // Event listener untuk manual barcode input
         barcodeInput.addEventListener('change', function() {
             findMakananByBarcode(this.value);
         });
+
+        $('#barcode_input').on('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); 
+                    setTimeout(function() {
+                        $('#jumlah_perubahan').focus();
+                        $('#jumlah_perubahan').select();
+                    }, 200);
+                }
+            });
 
         btnScan.addEventListener('click', function() {
             if (isScanning) {

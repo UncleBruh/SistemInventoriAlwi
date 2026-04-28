@@ -109,7 +109,12 @@
             barcodeInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    jumlahInput.focus();
+                    
+                    // Tambahkan jeda 200ms dan blok otomatis (select)
+                    setTimeout(function() {
+                        jumlahInput.focus();
+                        jumlahInput.select();
+                    }, 200);
                 }
             });
 

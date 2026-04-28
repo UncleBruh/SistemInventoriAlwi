@@ -91,11 +91,25 @@
         let html5QrCode;
         let isScanning = false;
 
-        // Event listener untuk manual barcode input
         barcodeInput.addEventListener('change', function() {
             findMakananByBarcode(this.value);
         });
 
+        const inputJumlah = document.getElementById('jumlah_perubahan');
+        barcodeInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+
+                setTimeout(function() {
+                    inputJumlah.focus();
+                    inputJumlah.select(); 
+                }, 200); 
+            }
+        });
+
+
+        btnScan.addEventListener('click', function() {
+        
         btnScan.addEventListener('click', function() {
             if (isScanning) {
                 html5QrCode.stop().then(() => {
