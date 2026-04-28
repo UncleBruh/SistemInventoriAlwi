@@ -99,7 +99,7 @@
                                             {{ $row->makanan->nama_makanan ?? 'N/A' }}
                                         </h3>
                                         @if(!$row->makanan)
-                                            <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded whitespace-nowrap">Produk sudah tidak ada lagi di daftar jajanan</span>
+                                            <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded whitespace-nowrap">Produk tidak ada lagi</span>
                                         @endif
                                     </div>
                                     <p class="text-xs text-gray-500 mt-1">Alokasi #{{ $loop->iteration }} • {{ $row->tgl_alokasi->format('d M Y H:i') }}</p>
