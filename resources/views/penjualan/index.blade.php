@@ -97,11 +97,7 @@
                                         <div class="flex justify-between items-start mb-2">
                                             <div>
                                                 <p class="font-bold text-gray-800 text-sm">{{ $item->makanan->nama_makanan }}</p>
-                                                <p class="text-xs text-gray-600">{{ \Carbon\Carbon::parse($item->tgl_mutasi)->format('H:i') }}</p>
-                                            </div>
-                                            <p class="text-xs text-gray-600 font-semibold whitespace-nowrap ml-2">{{ $item->pengguna->username ?? 'N/A' }}</p>
-                                        </div>
-
+                                <p class="text-xs text-gray-600 hidden md:block">{{ \Carbon\Carbon::parse($item->tgl_mutasi)->format('H:i') }}</p>
                                         <div class="grid grid-cols-3 gap-2 mb-2 pb-2 border-b border-gray-200">
                                             <div class="text-center">
                                                 <p class="text-xs text-gray-600 mb-0.5">Qty</p>
