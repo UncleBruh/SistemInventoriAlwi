@@ -56,7 +56,6 @@
                                 <table class="w-full text-sm">
                                     <thead>
                                         <tr class="bg-gray-50 border-b">
-                                            <th class="p-3 text-left text-gray-700 font-semibold text-xs uppercase">Jam</th>
                                             <th class="p-3 text-left text-gray-700 font-semibold text-xs uppercase">Nama Jajanan</th>
                                             <th class="p-3 text-center text-gray-700 font-semibold text-xs uppercase">Qty</th>
                                             <th class="p-3 text-right text-gray-700 font-semibold text-xs uppercase">Harga/Unit</th>
@@ -70,7 +69,6 @@
                                                 $totalItem = $item->jumlah_keluar * $item->makanan->harga;
                                             @endphp
                                             <tr class="border-b hover:bg-gray-50">
-                                                <td class="p-3 text-gray-600">{{ \Carbon\Carbon::parse($item->tgl_mutasi)->format('H:i') }}</td>
                                                 <td class="p-3 font-medium">{{ $item->makanan->nama_makanan }}</td>
                                                 <td class="p-3 text-center text-blue-600 font-semibold">{{ $item->jumlah_keluar }}</td>
                                                 <td class="p-3 text-right">Rp {{ number_format($item->makanan->harga, 0, ',', '.') }}</td>
