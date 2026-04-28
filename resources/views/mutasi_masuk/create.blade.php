@@ -87,29 +87,39 @@
         const readerDiv = document.getElementById('reader');
         const barcodeInput = document.getElementById('barcode');
         const selectMakanan = document.getElementById('id_makanan');
+        const inputJumlah = document.getElementById('jumlah_perubahan');
 
         let html5QrCode;
         let isScanning = false;
 
-        barcodeInput.addEventListener('change', function() {
-            findMakananByBarcode(this.value);
-        });
+        // Update barcode saat select berubah
+        selectMakanan.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const barcode = selectedOption ? selectedOption.getAttribute('data-barcode') : null;
 
-        const inputJumlah = document.getElementById('jumlah_perubahan');
-        barcodeInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-
-                setTimeout(function() {
-                    inputJumlah.focus();
-                    inputJumlah.select(); 
-                }, 200); 
+            if (barcode) {
+                barcodeInput.value = barcode;
+            } else {
+                barcodeInput.value = '';
             }
         });
 
+        // Cari makanan saat barcode berubah (input event untuk tangkap scan/ketik)
+        barcodeInput.addEventListener('input', function() {
+            findMakananByBarcode(this.value.trim());
+        });
 
-        btnScan.addEventListener('click', function() {
-        
+        // Saat Enter di barcode, fokus ke jumlah
+        barcodeInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                setTimeout(function() {
+                    inputJumlah.focus();
+                    inputJumlah.select();
+                }, 200);
+            }
+        });
+
         btnScan.addEventListener('click', function() {
             if (isScanning) {
                 html5QrCode.stop().then(() => {
@@ -147,6 +157,9 @@
 
                         barcodeInput.classList.add('bg-green-100');
                         setTimeout(() => barcodeInput.classList.remove('bg-green-100'), 1500);
+
+                        // Fokus ke jumlah setelah scan berhasil
+                        inputJumlah.focus();
                     }).catch(err => console.error(err));
                 },
                 (errorMessage) => {}
@@ -163,15 +176,30 @@
         });
 
         function findMakananByBarcode(barcode) {
-            if (!barcode) return;
+            if (!barcode) {
+                selectMakanan.value = "";
+                if (typeof jQuery !== 'undefined') jQuery(selectMakanan).trigger('change');
+                return;
+            }
 
+            let matchFound = false;
             for (let option of selectMakanan.options) {
                 if (option.getAttribute('data-barcode') === barcode) {
                     selectMakanan.value = option.value;
-                    // Trigger change event untuk update Select2 jika ada
                     selectMakanan.dispatchEvent(new Event('change'));
+
+                    if (typeof jQuery !== 'undefined') {
+                        jQuery(selectMakanan).trigger('change');
+                    }
+
+                    matchFound = true;
                     break;
                 }
+            }
+
+            if (!matchFound) {
+                selectMakanan.value = "";
+                if (typeof jQuery !== 'undefined') jQuery(selectMakanan).trigger('change');
             }
         }
     });
