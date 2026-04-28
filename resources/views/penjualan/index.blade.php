@@ -42,7 +42,20 @@
                             <div class="bg-gradient-to-r from-green-50 to-blue-50 border border-gray-200 rounded-lg p-4 mb-4">
                                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                                     <h4 class="text-base sm:text-lg font-bold text-gray-800">
-                                        {{ \Carbon\Carbon::parse($laporan['tanggal'])->format('d F Y (l)') }}
+                                        @php
+                                            $hariIndo = [
+                                                'Monday' => 'Senin',
+                                                'Tuesday' => 'Selasa',
+                                                'Wednesday' => 'Rabu',
+                                                'Thursday' => 'Kamis',
+                                                'Friday' => 'Jumat',
+                                                'Saturday' => 'Sabtu',
+                                                'Sunday' => 'Minggu'
+                                            ];
+                                            $hari = \Carbon\Carbon::parse($laporan['tanggal'])->format('l');
+                                            $hariIndonesia = $hariIndo[$hari];
+                                        @endphp
+                                        {{ \Carbon\Carbon::parse($laporan['tanggal'])->format('d F Y') }} ({{ $hariIndonesia }})
                                     </h4>
                                     <div class="text-right">
                                         <span class="text-xs sm:text-sm text-gray-600 block mb-1">{{ $laporan['jumlah_unit'] }} unit</span>
@@ -88,32 +101,33 @@
                             </div>
 
                             <!-- Mobile Card View -->
-                            <div class="md:hidden space-y-2">
+                            <div class="md:hidden space-y-3">
                                 @foreach($laporan['items'] as $item)
                                     @php
                                         $totalItem = $item->jumlah_keluar * $item->makanan->harga;
                                     @endphp
-                                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                                        <div class="flex justify-between items-start mb-2">
-                                            <div>
-                                                <p class="font-bold text-gray-800 text-sm">{{ $item->makanan->nama_makanan }}</p>
-                                                <p class="text-xs text-gray-600">{{ \Carbon\Carbon::parse($item->tgl_mutasi)->format('H:i') }}</p>
-                                            </div>
-                                            <p class="text-xs text-gray-600 font-semibold whitespace-nowrap ml-2">{{ $item->pengguna->username ?? 'N/A' }}</p>
+                                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                                        <!-- Header -->
+                                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 border-b border-gray-200">
+                                            <h5 class="font-bold text-gray-800 text-sm">{{ $item->makanan->nama_makanan }}</h5>
+                                            <p class="text-xs text-gray-600 mt-1">Petugas: {{ $item->pengguna->username ?? 'N/A' }}</p>
                                         </div>
 
-                                        <div class="grid grid-cols-3 gap-2 mb-2 pb-2 border-b border-gray-200">
-                                            <div class="text-center">
-                                                <p class="text-xs text-gray-600 mb-0.5">Qty</p>
-                                                <p class="text-sm font-bold text-blue-600">{{ $item->jumlah_keluar }}</p>
-                                            </div>
-                                            <div class="text-center">
-                                                <p class="text-xs text-gray-600 mb-0.5">Harga/Unit</p>
-                                                <p class="text-xs font-bold text-gray-700">Rp {{ number_format($item->makanan->harga, 0, ',', '.') }}</p>
-                                            </div>
-                                            <div class="text-center">
-                                                <p class="text-xs text-gray-600 mb-0.5">Total</p>
-                                                <p class="text-xs font-bold text-green-600">Rp {{ number_format($totalItem, 0, ',', '.') }}</p>
+                                        <!-- Content -->
+                                        <div class="p-4 space-y-3">
+                                            <div class="grid grid-cols-3 gap-3">
+                                                <div class="bg-blue-50 rounded p-2">
+                                                    <p class="text-xs text-gray-600 text-center">Qty</p>
+                                                    <p class="text-lg font-bold text-blue-600 text-center mt-1">{{ $item->jumlah_keluar }}</p>
+                                                </div>
+                                                <div class="bg-gray-50 rounded p-2">
+                                                    <p class="text-xs text-gray-600 text-center">Harga/Unit</p>
+                                                    <p class="text-xs font-bold text-gray-700 text-center mt-1">Rp {{ number_format($item->makanan->harga, 0, ',', '.') }}</p>
+                                                </div>
+                                                <div class="bg-green-50 rounded p-2">
+                                                    <p class="text-xs text-gray-600 text-center">Total</p>
+                                                    <p class="text-xs font-bold text-green-600 text-center mt-1">Rp {{ number_format($totalItem, 0, ',', '.') }}</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

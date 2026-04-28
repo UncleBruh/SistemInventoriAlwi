@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Makanan;
 use App\Models\Kategori; // Memanggil model kategori
+use App\Models\AlokasiGudangEtalase;
 use Illuminate\Http\Request;
 
 class MakananController extends Controller
@@ -138,9 +139,14 @@ class MakananController extends Controller
     public function destroy($id)
     {
         $makanan = Makanan::findOrFail($id);
+
+        // Hapus semua alokasi gudang etalase yang terkait dengan produk ini
+        AlokasiGudangEtalase::where('id_makanan', $id)->delete();
+
+        // Hapus produk
         $makanan->delete();
 
-        return redirect()->route('makanan.index')->with('success', 'Data jajanan berhasil dihapus.');
+        return redirect()->route('makanan.index')->with('success', 'Data jajanan berhasil dihapus. Semua alokasi terkait juga telah dihapus.');
     }
 
     public function findByBarcode($barcode)
