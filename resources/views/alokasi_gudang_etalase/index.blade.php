@@ -25,6 +25,12 @@
                 </p>
             </div>
 
+            <div class="mt-6 mb-6 sm:mt-8 flex justify-center">
+                <a href="{{ route('alokasi-gudang-etalase.create') }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium text-sm sm:text-base shadow-sm transition">
+                    ➕ Alokasikan Barang
+                </a>
+            </div>
+
             <!-- Filter Section -->
             <div class="mb-6 bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
                 <form action="{{ route('alokasi-gudang-etalase.index') }}" method="GET" class="space-y-4">
@@ -78,12 +84,6 @@
                         @endif
                     </div>
                 </form>
-            </div>
-
-            <div class="mt-6 mb-6 sm:mt-8 flex justify-center">
-                <a href="{{ route('alokasi-gudang-etalase.create') }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium text-sm sm:text-base shadow-sm transition">
-                    ➕ Alokasikan Barang
-                </a>
             </div>
 
             @if($data->count() > 0)
