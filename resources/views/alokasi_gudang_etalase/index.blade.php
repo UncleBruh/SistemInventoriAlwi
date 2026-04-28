@@ -113,7 +113,52 @@
 
                         <!-- Content Card -->
                         <div class="px-4 sm:px-6 py-3 sm:py-4">
-                            <div class="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6">
+                            <!-- Mobile Layout (stack vertically) -->
+                            <div class="md:hidden space-y-4">
+                                <!-- Gudang Section -->
+                                <div class="space-y-2 pb-4 border-b border-gray-200">
+                                    <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">📦 Gudang</p>
+                                    <div class="grid grid-cols-3 gap-2 items-end">
+                                        <div class="flex-1">
+                                            <p class="text-xs text-gray-500">Sebelum</p>
+                                            <p class="text-xl font-bold text-gray-700">{{ $row->stok_gudang_sebelum }}</p>
+                                        </div>
+                                        <div class="text-center">
+                                            <p class="text-red-500 text-lg flex-shrink-0">➖</p>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="text-xs text-gray-500">Sesudah</p>
+                                            <div class="text-xl font-bold text-red-600 bg-red-50 px-2 py-1 rounded text-center">{{ $row->stok_gudang_sesudah }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Arrow untuk mobile -->
+                                <div class="flex justify-center py-2">
+                                    <div class="text-2xl text-blue-400">⬇️</div>
+                                </div>
+
+                                <!-- Etalase Section -->
+                                <div class="space-y-2">
+                                    <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">🏪 Etalase</p>
+                                    <div class="grid grid-cols-3 gap-2 items-end">
+                                        <div class="flex-1">
+                                            <p class="text-xs text-gray-500">Sebelum</p>
+                                            <p class="text-xl font-bold text-gray-700">{{ $row->stok_etalase_sebelum }}</p>
+                                        </div>
+                                        <div class="text-center">
+                                            <p class="text-green-500 text-lg flex-shrink-0">➕</p>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="text-xs text-gray-500">Sesudah</p>
+                                            <div class="text-xl font-bold text-green-600 bg-green-50 px-2 py-1 rounded text-center">{{ $row->stok_etalase_sesudah }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Desktop Layout (3 columns) -->
+                            <div class="hidden md:grid grid-cols-3 gap-2 sm:gap-4 md:gap-6">
                                 <!-- Gudang Section -->
                                 <div class="space-y-2">
                                     <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">📦 Gudang</p>
@@ -132,8 +177,7 @@
 
                                 <!-- Arrow -->
                                 <div class="flex items-center justify-center">
-                                    <div class="hidden md:block text-3xl text-blue-400 text-center">🔄</div>
-                                    <div class="md:hidden text-2xl text-blue-400">➡️</div>
+                                    <div class="text-3xl text-blue-400 text-center">🔄</div>
                                 </div>
 
                                 <!-- Etalase Section -->
