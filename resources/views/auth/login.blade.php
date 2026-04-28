@@ -39,6 +39,6 @@
     </form>
 
     <div class="mt-6 text-center text-sm text-gray-600">
-        <p>Hubungi administrator untuk membuat akun baru.</p>
+        <p>Hubungi pemilik untuk membuat akun baru.</p>
     </div>
 </x-guest-layout>
