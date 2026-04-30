@@ -26,7 +26,7 @@ class PenjualanController extends Controller
     {
         // Hanya tampilkan makanan yang stok etalasenya > 0
         $makanan = Makanan::where('stok_etalase', '>', 0)->orderBy('nama_makanan')->get();
-        
+
         // Ambil data keranjang dari session sementara
         $keranjang = session()->get('keranjang', []);
         $total_harga = array_sum(array_column($keranjang, 'subtotal'));
@@ -69,23 +69,23 @@ class PenjualanController extends Controller
 
         if(isset($keranjang[$makanan->id_makanan])) {
             $jumlah_baru = $keranjang[$makanan->id_makanan]['jumlah'] + $request->jumlah;
-            
+
             if ($jumlah_baru > $makanan->stok_etalase) {
                 return redirect()->back()->with('error', 'Stok etalase tidak cukup untuk penambahan ini!');
             }
-            
+
             $keranjang[$makanan->id_makanan]['jumlah'] = $jumlah_baru;
-            
+
             // UBAH harga_jual MENJADI harga DI BAWAH INI:
-            $keranjang[$makanan->id_makanan]['subtotal'] = $jumlah_baru * $makanan->harga; 
+            $keranjang[$makanan->id_makanan]['subtotal'] = $jumlah_baru * $makanan->harga;
         } else {
             $keranjang[$makanan->id_makanan] = [
                 'nama_makanan' => $makanan->nama_makanan,
-                
+
                 // UBAH harga_jual MENJADI harga DI BAWAH INI:
-                'harga_satuan' => $makanan->harga, 
+                'harga_satuan' => $makanan->harga,
                 'jumlah' => $request->jumlah,
-                
+
                 // UBAH harga_jual MENJADI harga DI BAWAH INI:
                 'subtotal' => $makanan->harga * $request->jumlah
             ];
@@ -110,7 +110,7 @@ class PenjualanController extends Controller
     public function store(Request $request)
     {
         $keranjang = session()->get('keranjang');
-        
+
         if(!$keranjang || count($keranjang) == 0){
             return redirect()->back()->with('error', 'Keranjang belanja masih kosong!');
         }
@@ -121,14 +121,17 @@ class PenjualanController extends Controller
 
         $total_harga = array_sum(array_column($keranjang, 'subtotal'));
         $bayar = $request->bayar;
-        
+
         if($bayar < $total_harga) {
             return redirect()->back()->with('error', 'Uang pembayaran kurang!');
         }
 
         $kembalian = $bayar - $total_harga;
         // Membuat nomor nota unik (Contoh: INV-X7B9A-167812)
-        $no_nota = 'INV-' . strtoupper(Str::random(5)) . '-' . time(); 
+        $no_nota = 'INV-' . strtoupper(Str::random(5)) . '-' . time();
+
+        // Membuat kode transaksi unik untuk laporan penjualan (Contoh: TRX-20260430-001)
+        $kode_transaksi = 'TRX-' . now()->format('Ymd') . '-' . str_pad(random_int(1, 999), 3, '0', STR_PAD_LEFT);
 
         DB::beginTransaction();
         try {
@@ -142,9 +145,10 @@ class PenjualanController extends Controller
                 'bayar' => $bayar,
                 'kembalian' => $kembalian,
                 'no_nota' => $no_nota,
-                'tgl_penjualan' => now()->format('Y-m-d'), 
+                'kode_transaksi' => $kode_transaksi,
+                'tgl_penjualan' => now()->format('Y-m-d'),
                 // Kolom pensiun kita isi data dummy agar sistem tidak error (bypass)
-                'id_makanan' => $id_makanan_dummy, 
+                'id_makanan' => $id_makanan_dummy,
                 'jumlah' => 0
             ]);
 
@@ -171,10 +175,10 @@ class PenjualanController extends Controller
 
             // 3. Catat ke Log Aktivitas (Terintegrasi)
             $detail_log = implode(', ', $item_terjual);
-            LogController::recordLog('Penjualan Kasir', "Nota {$no_nota}: {$detail_log} (Total: Rp " . number_format($total_harga, 0, ',', '.') . ")");
+            LogController::recordLog('Penjualan Kasir', "Kode: {$kode_transaksi} | Nota {$no_nota}: {$detail_log} (Total: Rp " . number_format($total_harga, 0, ',', '.') . ")");
 
             DB::commit();
-            
+
             // Bersihkan meja kasir (keranjang)
             session()->forget('keranjang');
 

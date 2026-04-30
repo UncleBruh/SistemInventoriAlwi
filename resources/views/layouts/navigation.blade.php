@@ -33,22 +33,13 @@
                     <a href="{{ route('mutasi_masuk.create') }}" class="{{ request()->routeIs('mutasi_masuk.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➕ Barang Masuk</a>
                     @if(Auth::user()->role === 'Pemilik' || Auth::user()->role === 'Admin')
                         <a href="{{ route('alokasi-gudang-etalase.index') }}" class="{{ request()->routeIs('alokasi-gudang-etalase.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏭 Alokasi Gudang→Etalase</a>
-                        <a href="{{ route('mutasi_keluar.create') }}" class="{{ request()->routeIs('mutasi_keluar.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➖ Barang Keluar</a>
                     @endif
-                    
                     @if(Auth::user()->role === 'Pemilik')
-                        <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase">Laporan & Riwayat</div>
-
-                        <a href="{{ route('penjualan.index') }}" class="{{ request()->routeIs('penjualan.*') && !request()->routeIs('penjualan.create') ? $activeClass : $inactiveClass }} {{ $navClass }}">💰 Laporan Penjualan</a>
-                        <!-- Menu Baru Laporan PDF -->
-                        <a href="{{ route('laporan.masuk') }}" class="{{ request()->routeIs('laporan.masuk') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Barang Masuk</a>
-                        <a href="{{ route('laporan.keluar') }}" class="{{ request()->routeIs('laporan.keluar') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Barang Keluar</a>
-                        
-                        <a href="{{ route('log.aktivitas') }}" class="{{ request()->routeIs('log.aktivitas') ? $activeClass : $inactiveClass }} {{ $navClass }}">📋 Log Aktivitas</a>
-                    
-                        <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase">Admin</div>
-
-                        <a href="{{ route('register') }}" class="{{ request()->routeIs('register') ? $activeClass : $inactiveClass }} {{ $navClass }}">👤 Tambah Pengguna</a>
+                        <a href="{{ route('mutasi_keluar.create') }}" class="{{ request()->routeIs('mutasi_keluar.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">📦 Pengelolaan Stok Etalase</a>
+                        <a href="{{ route('pengeluaran_gudang.create') }}" class="{{ request()->routeIs('pengeluaran_gudang.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏭 Pengeluaran Gudang</a>
+                    @endif
+                    @if(Auth::user()->role === 'Pemilik')
+                        <a href="{{ route('log.aktivitas') }}" class="{{ request()->routeIs('log.aktivitas') ? $activeClass : $inactiveClass }} {{ $navClass }}">📋 Lihat Aktivitas Mutasi</a>
                     @endif
                 </nav>
             </div>
@@ -81,18 +72,21 @@
             <a href="{{ route('mutasi_masuk.create') }}" class="{{ request()->routeIs('mutasi_masuk.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➕ Barang Masuk</a>
             @if(Auth::user()->role === 'Pemilik' || Auth::user()->role === 'Admin')
                 <a href="{{ route('alokasi-gudang-etalase.index') }}" class="{{ request()->routeIs('alokasi-gudang-etalase.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏭 Alokasi Gudang→Etalase</a>
-                <a href="{{ route('mutasi_keluar.create') }}" class="{{ request()->routeIs('mutasi_keluar.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">➖ Barang Keluar</a>
+            @endif
+            @if(Auth::user()->role === 'Pemilik')
+                <a href="{{ route('mutasi_keluar.create') }}" class="{{ request()->routeIs('mutasi_keluar.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">📦 Pengelolaan Stok Etalase</a>
+                <a href="{{ route('pengeluaran_gudang.create') }}" class="{{ request()->routeIs('pengeluaran_gudang.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏭 Pengeluaran Gudang</a>
+            @endif
+            @if(Auth::user()->role === 'Pemilik')
+                <a href="{{ route('log.aktivitas') }}" class="{{ request()->routeIs('log.aktivitas') ? $activeClass : $inactiveClass }} {{ $navClass }}">📋 Lihat Aktivitas Mutasi</a>
             @endif
 
             @if(Auth::user()->role === 'Pemilik')
-                <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[10px] font-bold text-gray-400 uppercase">Laporan & Riwayat</div>
+                <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[10px] font-bold text-gray-400 uppercase">Laporan</div>
 
                 <a href="{{ route('penjualan.index') }}" class="{{ request()->routeIs('penjualan.*') && !request()->routeIs('penjualan.create') ? $activeClass : $inactiveClass }} {{ $navClass }}">💰 Laporan Penjualan</a>
-                <!-- Menu Baru Laporan PDF -->
                 <a href="{{ route('laporan.masuk') }}" class="{{ request()->routeIs('laporan.masuk') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Barang Masuk</a>
                 <a href="{{ route('laporan.keluar') }}" class="{{ request()->routeIs('laporan.keluar') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Barang Keluar</a>
-                
-                <a href="{{ route('log.aktivitas') }}" class="{{ request()->routeIs('log.aktivitas') ? $activeClass : $inactiveClass }} {{ $navClass }}">📋 Log Aktivitas</a>
 
                 <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[10px] font-bold text-gray-400 uppercase">Admin</div>
 

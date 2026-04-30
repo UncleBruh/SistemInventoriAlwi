@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        {{ __('Pengelolaan Stok Etalase') }}
+        {{ __('Pencatatan Pengeluaran Gudang') }}
     </x-slot>
 
     <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
@@ -18,11 +18,11 @@
                 </div>
             @endif
 
-            <form action="{{ route('mutasi_keluar.store') }}" method="POST">
+            <form action="{{ route('pengeluaran_gudang.store') }}" method="POST">
                 @csrf
-                <div class="mb-6 bg-purple-50 p-4 rounded-lg border border-purple-200">
-                    <p class="text-sm font-medium text-purple-700">Mode: 📦 Pengelolaan Stok Etalase</p>
-                    <p class="text-xs text-purple-600 mt-2">💡 Digunakan untuk mencatat pengurangan stok ETALASE yang bukan karena penjualan (rusak, hilang, expired di display, keperluan prive, dll).</p>
+                <div class="mb-6 bg-orange-50 p-4 rounded-lg border border-orange-200">
+                    <p class="text-sm font-medium text-orange-700">Mode: 🏭 Pengeluaran Stok Gudang</p>
+                    <p class="text-xs text-orange-600 mt-2">💡 Pengeluaran gudang HANYA akan mengurangi stok GUDANG (untuk barang rusak, expired, digigit tikus, dll), bukan etalase.</p>
                 </div>
 
                 <div class="mb-4">
@@ -44,49 +44,49 @@
                     <select id="id_makanan" name="id_makanan" class="searchable-select border-gray-300 rounded-md shadow-sm block mt-1 w-full" required autofocus>
                         <option value=""></option>
                         @foreach($makanan as $item)
-                            <option value="{{ $item->id_makanan }}" data-barcode="{{ $item->barcode }}">{{ $item->nama_makanan }} (Etalase: {{ $item->stok_etalase }} | Gudang: {{ $item->stok_gudang }})</option>
+                            <option value="{{ $item->id_makanan }}" data-barcode="{{ $item->barcode }}">{{ $item->nama_makanan }} (Gudang: {{ $item->stok_gudang }})</option>
                         @endforeach
                     </select>
                 </div>
 
                 <div class="mb-4">
-                    <x-input-label for="tgl_mutasi" value="Tanggal Aktual Barang Keluar" />
-                    <x-text-input id="tgl_mutasi" class="block mt-1 w-full text-gray-700 font-medium" type="date" name="tgl_mutasi" value="{{ date('Y-m-d') }}" required />
+                    <x-input-label for="tgl_pengeluaran" value="Tanggal Pengeluaran Gudang" />
+                    <x-text-input id="tgl_pengeluaran" class="block mt-1 w-full text-gray-700 font-medium" type="date" name="tgl_pengeluaran" value="{{ date('Y-m-d') }}" required />
                 </div>
 
                 <div class="mb-4">
-                    <x-input-label for="jumlah_perubahan" value="Jumlah Keluar (Pcs)" />
-                    <x-text-input id="jumlah_perubahan" class="block mt-1 w-full text-center text-2xl font-bold" type="number" min="1" name="jumlah_perubahan" value="1" required />
+                    <x-input-label for="jumlah_keluar" value="Jumlah Keluar (Pcs)" />
+                    <x-text-input id="jumlah_keluar" class="block mt-1 w-full text-center text-2xl font-bold" type="number" min="1" name="jumlah_keluar" value="1" required />
                 </div>
 
                 <div class="mb-4">
-                    <x-input-label for="tipe_keluar" value="Tipe Pengeluaran Barang" />
+                    <x-input-label for="alasan" value="Alasan Pengeluaran" />
                     <div class="grid grid-cols-2 gap-2 mt-2">
-                        <label class="flex items-center p-2 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-orange-50 transition" style="border-color: #f97316;">
-                            <input type="radio" name="tipe_keluar" value="rusak" class="mr-2" required />
-                            <span class="text-sm font-medium">🔨 Rusak</span>
-                        </label>
-                        <label class="flex items-center p-2 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-yellow-50 transition" style="border-color: #eab308;">
-                            <input type="radio" name="tipe_keluar" value="hilang" class="mr-2" required />
-                            <span class="text-sm font-medium">❓ Hilang</span>
-                        </label>
                         <label class="flex items-center p-2 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-red-50 transition" style="border-color: #ef4444;">
-                            <input type="radio" name="tipe_keluar" value="expired" class="mr-2" required />
+                            <input type="radio" name="alasan" value="expired" class="mr-2" required />
                             <span class="text-sm font-medium">📅 Expired</span>
                         </label>
+                        <label class="flex items-center p-2 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-yellow-50 transition" style="border-color: #eab308;">
+                            <input type="radio" name="alasan" value="tikus" class="mr-2" required />
+                            <span class="text-sm font-medium">🐭 Tikus</span>
+                        </label>
+                        <label class="flex items-center p-2 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-orange-50 transition" style="border-color: #f97316;">
+                            <input type="radio" name="alasan" value="rusak" class="mr-2" required />
+                            <span class="text-sm font-medium">🔨 Rusak</span>
+                        </label>
                         <label class="flex items-center p-2 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-purple-50 transition" style="border-color: #a855f7;">
-                            <input type="radio" name="tipe_keluar" value="keperluan_prive" class="mr-2" required />
-                            <span class="text-sm font-medium">🛍️ Keperluan Prive</span>
+                            <input type="radio" name="alasan" value="lainnya" class="mr-2" required />
+                            <span class="text-sm font-medium">📋 Lainnya</span>
                         </label>
                     </div>
                 </div>
 
                 <div class="mb-6">
-                    <x-input-label for="keterangan" value="Keterangan Tambahan (Opsional)" />
-                    <textarea id="keterangan" name="keterangan" rows="3" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" placeholder="Contoh: Barang expired, Kualitas buruk, Hilang dari display, dsb..."></textarea>
+                    <x-input-label for="keterangan" value="Keterangan Detail (Opsional)" />
+                    <textarea id="keterangan" name="keterangan" rows="3" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" placeholder="Jelaskan detail kerusakan atau alasan pengeluaran... (contoh: Bungkus sobek, udara masuk, aroma berubah)"></textarea>
                 </div>
 
-                <x-primary-button class="w-full justify-center py-3 text-lg bg-purple-600 hover:bg-purple-700">SIMPAN PENGELOLAAN STOK ETALASE</x-primary-button>
+                <x-primary-button class="w-full justify-center py-3 text-lg bg-orange-600 hover:bg-orange-700">SIMPAN PENGELUARAN GUDANG</x-primary-button>
             </form>
         </div>
     </div>
@@ -107,13 +107,13 @@
             findMakananByBarcode(this.value.trim());
         });
 
-        // Saat Enter di barcode, fokus ke jumlah (jangan submit form)
+        // Saat Enter di barcode, fokus ke jumlah
         barcodeInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 setTimeout(function() {
-                    document.getElementById('jumlah_perubahan').focus();
-                    document.getElementById('jumlah_perubahan').select();
+                    document.getElementById('jumlah_keluar').focus();
+                    document.getElementById('jumlah_keluar').select();
                 }, 200);
             }
         });

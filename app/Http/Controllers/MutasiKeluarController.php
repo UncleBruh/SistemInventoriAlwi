@@ -24,16 +24,16 @@ class MutasiKeluarController extends Controller
 
     public function store(Request $request)
     {
-        // Jika yang input adalah Admin, paksa alasannya menjadi "Penjualan"
-        if (Auth::user()->role === 'Admin') {
-            $request->merge(['tipe_keluar' => 'penjualan']);
+        // Pastikan hanya Pemilik yang bisa mengakses
+        if (Auth::user()->role !== 'Pemilik') {
+            abort(403, 'Hanya pemilik yang dapat mengakses fitur ini.');
         }
 
         $request->validate([
             'id_makanan' => 'required|exists:makanan,id_makanan',
             'jumlah_perubahan' => 'required|integer|min:1',
-            'tipe_keluar' => 'required|in:penjualan,rusak,hilang,lainnya', // Tipe keluar yang spesifik
-            'alasan' => 'nullable|string|max:255',
+            'tipe_keluar' => 'required|in:rusak,hilang,expired,keperluan_prive', // Tipe keluar untuk etalase BUKAN penjualan
+            'keterangan' => 'nullable|string|max:500',
             'tgl_mutasi' => 'required|date',
         ]);
 
@@ -62,7 +62,7 @@ class MutasiKeluarController extends Controller
                 'jumlah_keluar' => $request->jumlah_perubahan,
                 'stok_sebelum' => $stok_sebelum,
                 'stok_sesudah' => $stok_sesudah,
-                'alasan' => $request->alasan ?? $request->tipe_keluar,
+                'alasan' => $request->keterangan ?? $request->tipe_keluar,
                 'tgl_mutasi' => $request->tgl_mutasi,
                 'tipe_keluar' => $request->tipe_keluar,
                 'stok_etalase_sebelum' => $stok_etalase_sebelum,
@@ -78,7 +78,7 @@ class MutasiKeluarController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'Barang Keluar berhasil dicatat! Stok etalase berkurang dari ' . $stok_etalase_sebelum . ' menjadi ' . $stok_etalase_sesudah . '. Stok gudang tetap ' . $stok_gudang_sesudah . '.');
+            return redirect()->back()->with('success', 'Pengelolaan stok etalase berhasil dicatat! Stok etalase berkurang dari ' . $stok_etalase_sebelum . ' menjadi ' . $stok_etalase_sesudah . '.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());

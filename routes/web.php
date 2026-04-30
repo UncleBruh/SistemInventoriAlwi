@@ -10,6 +10,7 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\PengeluaranGudangController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -35,12 +36,6 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware('role:Pemilik,Admin')->group(function () {
-        Route::prefix('mutasi-keluar')->group(function () {
-            Route::get('/', [MutasiKeluarController::class, 'index'])->name('mutasi_keluar.index');
-            Route::get('/tambah', [MutasiKeluarController::class, 'create'])->name('mutasi_keluar.create');
-            Route::post('/tambah', [MutasiKeluarController::class, 'store'])->name('mutasi_keluar.store');
-        });
-
         // Alokasi Gudang ke Etalase (Pemilik/Admin - bisa buat, lihat, tapi hanya Pemilik bisa hapus)
         Route::prefix('alokasi-gudang-etalase')->group(function () {
             Route::get('/', [AlokasiGudangEtalaseController::class, 'index'])->name('alokasi-gudang-etalase.index');
@@ -48,38 +43,50 @@ Route::middleware('auth')->group(function () {
             Route::post('/tambah', [AlokasiGudangEtalaseController::class, 'store'])->name('alokasi-gudang-etalase.store');
             Route::get('/{id}', [AlokasiGudangEtalaseController::class, 'show'])->name('alokasi-gudang-etalase.show');
         });
+
+        // Penjualan (Pemilik & Admin bisa lakukan transaksi penjualan)
+        Route::get('/penjualan/tambah', [PenjualanController::class, 'create'])->name('penjualan.create');
+        Route::post('/penjualan/simpan', [PenjualanController::class, 'store'])->name('penjualan.store');
+        Route::post('/penjualan/keranjang', [PenjualanController::class, 'tambahKeranjang'])->name('penjualan.keranjang.tambah');
+        Route::delete('/penjualan/keranjang/{id}', [PenjualanController::class, 'hapusKeranjang'])->name('penjualan.keranjang.hapus');
     });
 
-    // Laporan Penjualan & Hapus Alokasi (Hanya Pemilik)
+    // Pengelolaan Stok Etalase & Pengeluaran Gudang (Hanya Pemilik)
     Route::middleware('role:Pemilik')->group(function () {
-        Route::delete('/alokasi-gudang-etalase/{id}', [AlokasiGudangEtalaseController::class, 'destroy'])->name('alokasi-gudang-etalase.destroy');
-        
-        // HANYA PEMILIK yang bisa melihat Laporan/Riwayat Penjualan
-        Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
+        // Pengelolaan Stok Etalase (Barang Keluar dari Etalase)
+        Route::prefix('pengelolaan-stok-etalase')->group(function () {
+            Route::get('/', [MutasiKeluarController::class, 'index'])->name('mutasi_keluar.index');
+            Route::get('/tambah', [MutasiKeluarController::class, 'create'])->name('mutasi_keluar.create');
+            Route::post('/tambah', [MutasiKeluarController::class, 'store'])->name('mutasi_keluar.store');
+        });
 
-        // Log Aktivitas (Hanya Pemilik sahaja)
-        Route::get('/log-aktivitas', [LogController::class, 'index'])->name('log.aktivitas');
+        // Pengeluaran Gudang (Barang Keluar dari Gudang)
+        Route::prefix('pengeluaran-gudang')->group(function () {
+            Route::get('/', [PengeluaranGudangController::class, 'index'])->name('pengeluaran_gudang.index');
+            Route::get('/tambah', [PengeluaranGudangController::class, 'create'])->name('pengeluaran_gudang.create');
+            Route::post('/tambah', [PengeluaranGudangController::class, 'store'])->name('pengeluaran_gudang.store');
+        });
+
+        // Hapus Alokasi
+        Route::delete('/alokasi-gudang-etalase/{id}', [AlokasiGudangEtalaseController::class, 'destroy'])->name('alokasi-gudang-etalase.destroy');
+
+        // Laporan Penjualan (Hanya Pemilik)
+        Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
+        Route::get('/laporan/penjualan', [LaporanController::class, 'laporanPenjualan'])->name('laporan.penjualan');
+        Route::get('/laporan/penjualan/pdf', [LaporanController::class, 'cetakLaporanPenjualan'])->name('laporan.penjualan.pdf');
+
+        // Laporan Barang Masuk & Keluar (Hanya Pemilik)
+        Route::get('/laporan/masuk', [LaporanController::class, 'mutasiMasuk'])->name('laporan.masuk');
+        Route::get('/laporan/masuk/pdf', [LaporanController::class, 'cetakMutasiMasuk'])->name('laporan.masuk.pdf');
+        Route::get('/laporan/keluar', [LaporanController::class, 'mutasiKeluar'])->name('laporan.keluar');
+        Route::get('/laporan/keluar/pdf', [LaporanController::class, 'cetakMutasiKeluar'])->name('laporan.keluar.pdf');
+
+        // Lihat Aktivitas Mutasi (Hanya Pemilik)
+        Route::get('/lihat-aktivitas-mutasi', [LogController::class, 'index'])->name('log.aktivitas');
     });
 
     // --- MANAJEMEN KATEGORI ---
     Route::resource('kategori', KategoriController::class)->only(['index', 'store', 'destroy']);
-
-    // Rute Laporan
-    Route::get('/laporan/masuk', [LaporanController::class, 'mutasiMasuk'])->name('laporan.masuk');
-    Route::get('/laporan/masuk/pdf', [LaporanController::class, 'cetakMutasiMasuk'])->name('laporan.masuk.pdf');
-    
-    Route::get('/laporan/keluar', [LaporanController::class, 'mutasiKeluar'])->name('laporan.keluar');
-    Route::get('/laporan/keluar/pdf', [LaporanController::class, 'cetakMutasiKeluar'])->name('laporan.keluar.pdf');
-
-    // ==========================================
-    // --- TRANSAKSI / MESIN KASIR ---
-    // ==========================================
-    Route::get('/penjualan/tambah', [PenjualanController::class, 'create'])->name('penjualan.create');
-    Route::post('/penjualan/simpan', [PenjualanController::class, 'store'])->name('penjualan.store');
-    
-    // Route untuk sistem keranjang kasir
-    Route::post('/penjualan/keranjang', [PenjualanController::class, 'tambahKeranjang'])->name('penjualan.keranjang.tambah');
-    Route::delete('/penjualan/keranjang/{id}', [PenjualanController::class, 'hapusKeranjang'])->name('penjualan.keranjang.hapus');
 });
 
 

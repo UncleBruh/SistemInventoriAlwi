@@ -19,6 +19,22 @@ class LaporanController extends Controller
             $query->whereBetween('tgl_mutasi', [$request->start_date, $request->end_date]);
         }
 
+        // Filter berdasarkan nama produk
+        if ($request->filled('nama_produk')) {
+            $query->whereHas('makanan', function($q) use ($request) {
+                $q->where('nama_makanan', 'like', '%' . $request->nama_produk . '%');
+            });
+        }
+
+        // Filter sortir (terbaru/terlama)
+        if ($request->filled('sort')) {
+            if ($request->sort === 'terlama') {
+                $query->orderBy('tgl_mutasi', 'asc');
+            } else {
+                $query->orderBy('tgl_mutasi', 'desc');
+            }
+        }
+
         $mutasiMasuk = $query->get();
 
         return view('laporan.masuk', compact('mutasiMasuk'));
@@ -32,8 +48,15 @@ class LaporanController extends Controller
             $query->whereBetween('tgl_mutasi', [$request->start_date, $request->end_date]);
         }
 
+        // Filter berdasarkan nama produk
+        if ($request->filled('nama_produk')) {
+            $query->whereHas('makanan', function($q) use ($request) {
+                $q->where('nama_makanan', 'like', '%' . $request->nama_produk . '%');
+            });
+        }
+
         $mutasiMasuk = $query->get();
-        
+
         // Render ke PDF
         $pdf = Pdf::loadView('laporan.masuk_pdf', compact('mutasiMasuk'));
         return $pdf->stream('Laporan_Barang_Masuk.pdf');
@@ -49,6 +72,22 @@ class LaporanController extends Controller
             $query->whereBetween('tgl_mutasi', [$request->start_date, $request->end_date]);
         }
 
+        // Filter berdasarkan nama produk
+        if ($request->filled('nama_produk')) {
+            $query->whereHas('makanan', function($q) use ($request) {
+                $q->where('nama_makanan', 'like', '%' . $request->nama_produk . '%');
+            });
+        }
+
+        // Filter sortir (terbaru/terlama)
+        if ($request->filled('sort')) {
+            if ($request->sort === 'terlama') {
+                $query->orderBy('tgl_mutasi', 'asc');
+            } else {
+                $query->orderBy('tgl_mutasi', 'desc');
+            }
+        }
+
         $mutasiKeluar = $query->get();
         return view('laporan.keluar', compact('mutasiKeluar'));
     }
@@ -62,10 +101,81 @@ class LaporanController extends Controller
             $query->whereBetween('tgl_mutasi', [$request->start_date, $request->end_date]);
         }
 
+        // Filter berdasarkan nama produk
+        if ($request->filled('nama_produk')) {
+            $query->whereHas('makanan', function($q) use ($request) {
+                $q->where('nama_makanan', 'like', '%' . $request->nama_produk . '%');
+            });
+        }
+
         $mutasiKeluar = $query->get();
-        
+
         // Render ke PDF
         $pdf = Pdf::loadView('laporan.keluar_pdf', compact('mutasiKeluar'));
         return $pdf->stream('Laporan_Barang_Keluar.pdf');
+    }
+
+    // --- LAPORAN PENJUALAN ---
+    public function laporanPenjualan(Request $request)
+    {
+        $query = \App\Models\Penjualan::with(['pengguna', 'detail.makanan'])->orderBy('tgl_penjualan', 'desc');
+
+        // Filter rentang tanggal
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('tgl_penjualan', [$request->start_date, $request->end_date]);
+        }
+
+        // Filter berdasarkan nama produk
+        if ($request->filled('nama_produk')) {
+            $query->whereHas('detail.makanan', function($q) use ($request) {
+                $q->where('nama_makanan', 'like', '%' . $request->nama_produk . '%');
+            });
+        }
+
+        // Filter sortir (terbaru/terlama)
+        if ($request->filled('sort')) {
+            if ($request->sort === 'terlama') {
+                $query->orderBy('tgl_penjualan', 'asc');
+            } else {
+                $query->orderBy('tgl_penjualan', 'desc');
+            }
+        }
+
+        $penjualan = $query->get();
+
+        // Hitung total penghasilan per tanggal
+        $totalPerTanggal = $penjualan->groupBy('tgl_penjualan')->map(function($items) {
+            return $items->sum('total_harga');
+        });
+
+        return view('laporan.penjualan', compact('penjualan', 'totalPerTanggal'));
+    }
+
+    public function cetakLaporanPenjualan(Request $request)
+    {
+        $query = \App\Models\Penjualan::with(['pengguna', 'detail.makanan'])->orderBy('tgl_penjualan', 'desc');
+
+        // Filter rentang tanggal
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('tgl_penjualan', [$request->start_date, $request->end_date]);
+        }
+
+        // Filter berdasarkan nama produk
+        if ($request->filled('nama_produk')) {
+            $query->whereHas('detail.makanan', function($q) use ($request) {
+                $q->where('nama_makanan', 'like', '%' . $request->nama_produk . '%');
+            });
+        }
+
+        $penjualan = $query->get();
+
+        // Hitung total penghasilan per tanggal
+        $totalPerTanggal = $penjualan->groupBy('tgl_penjualan')->map(function($items) {
+            return $items->sum('total_harga');
+        });
+
+        // Render ke PDF
+        $pdf = Pdf::loadView('laporan.penjualan_pdf', compact('penjualan', 'totalPerTanggal'));
+        return $pdf->stream('Laporan_Penjualan.pdf');
     }
 }
