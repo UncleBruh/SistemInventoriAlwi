@@ -42,7 +42,7 @@ class LaporanController extends Controller
     // --- LAPORAN BARANG KELUAR ---
     public function mutasiKeluar(Request $request)
     {
-        $query = MutasiKeluar::with('makanan')->orderBy('tgl_mutasi', 'desc');
+        $query = MutasiKeluar::with(['makanan', 'pengguna'])->orderBy('tgl_mutasi', 'desc');
 
         // Jika ada filter rentang tanggal
         if ($request->filled('start_date') && $request->filled('end_date')) {

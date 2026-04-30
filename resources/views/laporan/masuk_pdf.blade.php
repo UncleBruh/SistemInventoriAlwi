@@ -34,21 +34,25 @@
                 <th width="20%" class="text-center">Jumlah Masuk</th>
             </tr>
         </thead>
-        <tbody>
-            @forelse ($mutasiMasuk as $index => $item)
-                <tr>
-                    <td class="text-center">{{ $index + 1 }}</td>
-                    <td>{{ \Carbon\Carbon::parse($item->tgl_mutasi)->format('d M Y') }}</td>
-                    <td>{{ $item->makanan->nama_makanan ?? '-' }}</td>
-                    <td>{{ $item->pengguna->name ?? 'Admin' }}</td>
-                    <td class="text-center">+{{ $item->jumlah_perubahan ?? 0 }} Pcs</td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="5" class="text-center">Tidak ada data transaksi.</td>
-                </tr>
-            @endforelse
-        </tbody>
+            <tbody>
+                @forelse ($mutasiMasuk as $index => $item)
+                    <tr>
+                        <td class="text-center">{{ $index + 1 }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->tgl_mutasi)->format('d M Y') }}</td>
+                        <td>{{ $item->makanan->nama_makanan ?? '-' }}</td>
+                        
+                        <!-- Perbaikan 1: Menampilkan nama penginput (Coba cari username jika name tidak ada) -->
+                        <td>{{ $item->pengguna->name ?? $item->pengguna->username ?? 'Admin' }}</td>
+                        
+                        <!-- Perbaikan 2: Panggil variabel jumlah_masuk -->
+                        <td class="text-center">+{{ $item->jumlah_masuk ?? 0 }} Pcs</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="text-center">Tidak ada data transaksi.</td>
+                    </tr>
+                @endforelse
+            </tbody>
     </table>
 </body>
 </html>
