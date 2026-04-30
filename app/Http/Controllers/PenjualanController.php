@@ -34,42 +34,60 @@ class PenjualanController extends Controller
         return view('penjualan.create', compact('makanan', 'keranjang', 'total_harga'));
     }
 
-    // Fungsi menambahkan barang ke keranjang session
+    // =========================================================================
+    // UPDATE LANGKAH 1: Fungsi menambahkan barang ke keranjang session
+    // Mendukung input Barcode Scanner ATAU Pencarian Manual dari Select Option
+    // =========================================================================
     public function tambahKeranjang(Request $request)
     {
+        // Validasi bisa menerima barcode ATAU id_makanan
         $request->validate([
-            'id_makanan' => 'required|exists:makanan,id_makanan',
+            'id_makanan' => 'nullable|exists:makanan,id_makanan',
+            'barcode' => 'nullable|string',
             'jumlah' => 'required|integer|min:1'
         ]);
 
-        $makanan = Makanan::findOrFail($request->id_makanan);
+        // 1. Cek apakah input dari Barcode atau Manual
+        if ($request->filled('barcode')) {
+            // Mencari barang berdasarkan kolom barcode
+            $makanan = Makanan::where('barcode', $request->barcode)->first();
+            if (!$makanan) {
+                return redirect()->back()->with('error', 'Barcode tidak ditemukan di database!');
+            }
+        } elseif ($request->filled('id_makanan')) {
+            $makanan = Makanan::findOrFail($request->id_makanan);
+        } else {
+            return redirect()->back()->with('error', 'Pilih barang atau scan barcode terlebih dahulu!');
+        }
 
-        // Validasi stok etalase
+        // 2. Validasi stok etalase
         if ($request->jumlah > $makanan->stok_etalase) {
             return redirect()->back()->with('error', 'Stok etalase tidak cukup! Sisa stok: ' . $makanan->stok_etalase);
         }
 
         $keranjang = session()->get('keranjang', []);
 
-        // Jika barang sudah ada di keranjang, update jumlahnya
         if(isset($keranjang[$makanan->id_makanan])) {
             $jumlah_baru = $keranjang[$makanan->id_makanan]['jumlah'] + $request->jumlah;
             
-            // Cek lagi apakah akumulasi jumlah melebihi stok
             if ($jumlah_baru > $makanan->stok_etalase) {
                 return redirect()->back()->with('error', 'Stok etalase tidak cukup untuk penambahan ini!');
             }
             
             $keranjang[$makanan->id_makanan]['jumlah'] = $jumlah_baru;
-            // CATATAN: Ubah 'harga_jual' menjadi 'harga' jika di databasemu namanya 'harga'
-            $keranjang[$makanan->id_makanan]['subtotal'] = $jumlah_baru * $makanan->harga_jual; 
+            
+            // UBAH harga_jual MENJADI harga DI BAWAH INI:
+            $keranjang[$makanan->id_makanan]['subtotal'] = $jumlah_baru * $makanan->harga; 
         } else {
-            // Jika barang belum ada, buat entri baru di keranjang
             $keranjang[$makanan->id_makanan] = [
                 'nama_makanan' => $makanan->nama_makanan,
-                'harga_satuan' => $makanan->harga_jual, // CATATAN: Ubah jadi 'harga' jika error
+                
+                // UBAH harga_jual MENJADI harga DI BAWAH INI:
+                'harga_satuan' => $makanan->harga, 
                 'jumlah' => $request->jumlah,
-                'subtotal' => $makanan->harga_jual * $request->jumlah
+                
+                // UBAH harga_jual MENJADI harga DI BAWAH INI:
+                'subtotal' => $makanan->harga * $request->jumlah
             ];
         }
 

@@ -53,6 +53,8 @@ Route::middleware('auth')->group(function () {
     // Laporan Penjualan & Hapus Alokasi (Hanya Pemilik)
     Route::middleware('role:Pemilik')->group(function () {
         Route::delete('/alokasi-gudang-etalase/{id}', [AlokasiGudangEtalaseController::class, 'destroy'])->name('alokasi-gudang-etalase.destroy');
+        
+        // HANYA PEMILIK yang bisa melihat Laporan/Riwayat Penjualan
         Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
 
         // Log Aktivitas (Hanya Pemilik sahaja)
@@ -69,9 +71,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan/keluar', [LaporanController::class, 'mutasiKeluar'])->name('laporan.keluar');
     Route::get('/laporan/keluar/pdf', [LaporanController::class, 'cetakMutasiKeluar'])->name('laporan.keluar.pdf');
 
+    // ==========================================
+    // --- TRANSAKSI / MESIN KASIR ---
+    // ==========================================
+    Route::get('/penjualan/tambah', [PenjualanController::class, 'create'])->name('penjualan.create');
+    Route::post('/penjualan/simpan', [PenjualanController::class, 'store'])->name('penjualan.store');
+    
     // Route untuk sistem keranjang kasir
-    Route::post('/penjualan/keranjang', [App\Http\Controllers\PenjualanController::class, 'tambahKeranjang'])->name('penjualan.keranjang.tambah');
-    Route::delete('/penjualan/keranjang/{id}', [App\Http\Controllers\PenjualanController::class, 'hapusKeranjang'])->name('penjualan.keranjang.hapus');
+    Route::post('/penjualan/keranjang', [PenjualanController::class, 'tambahKeranjang'])->name('penjualan.keranjang.tambah');
+    Route::delete('/penjualan/keranjang/{id}', [PenjualanController::class, 'hapusKeranjang'])->name('penjualan.keranjang.hapus');
 });
 
 
