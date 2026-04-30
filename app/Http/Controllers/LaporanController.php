@@ -119,11 +119,11 @@ class LaporanController extends Controller
     // --- LAPORAN PENJUALAN ---
     public function laporanPenjualan(Request $request)
     {
-        $query = \App\Models\Penjualan::with(['pengguna', 'detail.makanan'])->orderBy('tgl_penjualan', 'desc');
+        $query = \App\Models\Penjualan::with(['pengguna', 'detail.makanan'])->orderBy('tanggal_penjualan', 'desc');
 
         // Filter rentang tanggal
         if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('tgl_penjualan', [$request->start_date, $request->end_date]);
+            $query->whereBetween('tanggal_penjualan', [$request->start_date, $request->end_date]);
         }
 
         // Filter berdasarkan nama produk
@@ -136,29 +136,27 @@ class LaporanController extends Controller
         // Filter sortir (terbaru/terlama)
         if ($request->filled('sort')) {
             if ($request->sort === 'terlama') {
-                $query->orderBy('tgl_penjualan', 'asc');
+                $query->orderBy('tanggal_penjualan', 'asc');
             } else {
-                $query->orderBy('tgl_penjualan', 'desc');
+                $query->orderBy('tanggal_penjualan', 'desc');
             }
         }
 
         $penjualan = $query->get();
 
-        // Hitung total penghasilan per tanggal
-        $totalPerTanggal = $penjualan->groupBy('tgl_penjualan')->map(function($items) {
-            return $items->sum('total_harga');
-        });
+        // Hitung total pendapatan
+        $total_pendapatan = $penjualan->sum('total_harga');
 
-        return view('laporan.penjualan', compact('penjualan', 'totalPerTanggal'));
+        return view('laporan.penjualan', compact('penjualan', 'total_pendapatan'));
     }
 
     public function cetakLaporanPenjualan(Request $request)
     {
-        $query = \App\Models\Penjualan::with(['pengguna', 'detail.makanan'])->orderBy('tgl_penjualan', 'desc');
+        $query = \App\Models\Penjualan::with(['pengguna', 'detail.makanan'])->orderBy('tanggal_penjualan', 'desc');
 
         // Filter rentang tanggal
         if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('tgl_penjualan', [$request->start_date, $request->end_date]);
+            $query->whereBetween('tanggal_penjualan', [$request->start_date, $request->end_date]);
         }
 
         // Filter berdasarkan nama produk
@@ -170,13 +168,11 @@ class LaporanController extends Controller
 
         $penjualan = $query->get();
 
-        // Hitung total penghasilan per tanggal
-        $totalPerTanggal = $penjualan->groupBy('tgl_penjualan')->map(function($items) {
-            return $items->sum('total_harga');
-        });
+        // Hitung total pendapatan
+        $total_pendapatan = $penjualan->sum('total_harga');
 
         // Render ke PDF
-        $pdf = Pdf::loadView('laporan.penjualan_pdf', compact('penjualan', 'totalPerTanggal'));
+        $pdf = Pdf::loadView('laporan.penjualan_pdf', compact('penjualan', 'total_pendapatan'));
         return $pdf->stream('Laporan_Penjualan.pdf');
     }
 

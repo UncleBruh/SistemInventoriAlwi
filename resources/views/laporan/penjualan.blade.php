@@ -7,27 +7,39 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            
-            <!-- KOTAK FILTER TANGGAL -->
-            <div class="bg-white shadow-sm sm:rounded-lg p-6 mb-6 border-l-4 border-indigo-500">
-                <form action="{{ route('penjualan.index') }}" method="GET" class="flex flex-col sm:flex-row gap-4 items-end">
+
+            <!-- KOTAK FILTER & TOMBOL CETAK PDF -->
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-6">
+                <form method="GET" action="{{ route('laporan.penjualan') }}" class="flex flex-wrap gap-4 items-end bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <div>
-                        <label for="tgl_awal" class="block text-sm font-bold text-gray-700">Dari Tanggal</label>
-                        <input type="date" name="tgl_awal" id="tgl_awal" value="{{ $tgl_awal }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                        <label for="nama_produk" class="block text-sm font-bold text-gray-700">Cari Nama Produk</label>
+                        <input type="text" id="nama_produk" name="nama_produk" value="{{ request('nama_produk') }}" placeholder="Contoh: Donat, Kopi..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     </div>
                     <div>
-                        <label for="tgl_akhir" class="block text-sm font-bold text-gray-700">Sampai Tanggal</label>
-                        <input type="date" name="tgl_akhir" id="tgl_akhir" value="{{ $tgl_akhir }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                        <label for="start_date" class="block text-sm font-bold text-gray-700">Dari Tanggal</label>
+                        <input type="date" id="start_date" name="start_date" value="{{ request('start_date') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     </div>
-                    <div class="flex gap-2 w-full sm:w-auto">
-                        <button type="submit" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition">
+                    <div>
+                        <label for="end_date" class="block text-sm font-bold text-gray-700">Sampai Tanggal</label>
+                        <input type="date" id="end_date" name="end_date" value="{{ request('end_date') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label for="sort" class="block text-sm font-bold text-gray-700">Sortir</label>
+                        <select id="sort" name="sort" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1">
+                            <option value="">Pilih...</option>
+                            <option value="terbaru" @selected(request('sort') === 'terbaru')>Terbaru</option>
+                            <option value="terlama" @selected(request('sort') === 'terlama')>Terlama</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded shadow transition">
                             🔍 Filter
                         </button>
-                        <a href="{{ route('penjualan.index') }}" class="w-full sm:w-auto text-center bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded shadow transition">
-                            Reset
+                        <a href="{{ route('laporan.penjualan') }}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded shadow transition">
+                            ↺ Reset
                         </a>
-                        <!-- Tombol Cetak PDF mengirimkan data tanggal yang sedang difilter -->
-                        <a href="{{ route('penjualan.cetak_pdf', ['tgl_awal' => $tgl_awal, 'tgl_akhir' => $tgl_akhir]) }}" target="_blank" class="w-full sm:w-auto text-center bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow transition flex items-center justify-center gap-1">
+                        <!-- Tombol Cetak PDF -->
+                        <a href="{{ route('laporan.penjualan.pdf', ['nama_produk' => request('nama_produk'), 'start_date' => request('start_date'), 'end_date' => request('end_date'), 'sort' => request('sort')]) }}" target="_blank" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow transition flex items-center justify-center gap-1">
                             🖨️ Cetak PDF
                         </a>
                     </div>
