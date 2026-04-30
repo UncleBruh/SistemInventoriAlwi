@@ -24,13 +24,14 @@
         @endif
     </div>
 
-    <table>
+   <table>
         <thead>
             <tr>
                 <th width="5%" class="text-center">No</th>
-                <th width="20%">Tanggal</th>
-                <th width="50%">Nama Jajanan</th>
-                <th width="25%" class="text-center">Jumlah Masuk</th>
+                <th width="15%">Tanggal</th>
+                <th width="40%">Nama Jajanan</th>
+                <th width="20%">Penginput</th>
+                <th width="20%" class="text-center">Jumlah Masuk</th>
             </tr>
         </thead>
         <tbody>
@@ -39,11 +40,12 @@
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td>{{ \Carbon\Carbon::parse($item->tgl_mutasi)->format('d M Y') }}</td>
                     <td>{{ $item->makanan->nama_makanan ?? '-' }}</td>
-                    <td class="text-center">{{ $item->jumlah_perubahan }} Pcs</td>
+                    <td>{{ $item->user->name ?? $item->pengguna->name ?? 'Admin' }}</td>
+                    <td class="text-center">+{{ $item->jumlah ?? $item->jumlah_masuk ?? $item->jumlah_perubahan ?? 0 }} Pcs</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4" class="text-center">Tidak ada data transaksi.</td>
+                    <td colspan="5" class="text-center">Tidak ada data transaksi.</td>
                 </tr>
             @endforelse
         </tbody>

@@ -40,7 +40,7 @@
                         <a href="{{ route('laporan.masuk') }}" class="{{ request()->routeIs('laporan.masuk') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Barang Masuk</a>
                         <a href="{{ route('laporan.keluar') }}" class="{{ request()->routeIs('laporan.keluar') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Barang Keluar</a>
                         
-                        <a href="{{ route('log.index') }}" class="{{ request()->routeIs('log.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">📋 Log Aktivitas</a>
+                        <a href="{{ route('log.aktivitas') }}" class="{{ request()->routeIs('log.aktivitas') ? $activeClass : $inactiveClass }} {{ $navClass }}">📋 Log Aktivitas</a>
                     
                         <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase">Admin</div>
 
@@ -84,7 +84,7 @@
                 <a href="{{ route('laporan.masuk') }}" class="{{ request()->routeIs('laporan.masuk') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Barang Masuk</a>
                 <a href="{{ route('laporan.keluar') }}" class="{{ request()->routeIs('laporan.keluar') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Barang Keluar</a>
                 
-                <a href="{{ route('log.index') }}" class="{{ request()->routeIs('log.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">📋 Log Aktivitas</a>
+                <a href="{{ route('log.aktivitas') }}" class="{{ request()->routeIs('log.aktivitas') ? $activeClass : $inactiveClass }} {{ $navClass }}">📋 Log Aktivitas</a>
 
                 <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[10px] font-bold text-gray-400 uppercase">Admin</div>
 
