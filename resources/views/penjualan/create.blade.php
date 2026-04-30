@@ -13,7 +13,7 @@
 
     <div class="py-6">
         
-        <!-- KOTAK PESAN ERROR & SUKSES (BARU DITAMBAHKAN) -->
+        <!-- KOTAK PESAN ERROR & SUKSES -->
         <div class="max-w-full px-4 sm:px-6 lg:px-8 mx-auto mb-4">
             @if(session('error'))
                 <div class="p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center shadow-sm font-bold text-lg mb-4">
@@ -53,7 +53,6 @@
                         <select id="id_makanan" name="id_makanan" class="select2-dropdown border-gray-300 rounded-md shadow-sm block mt-1 w-full">
                             <option value="" disabled selected>-- Ketik/Pilih Jajanan --</option>
                             @foreach($makanan as $item)
-                                <!-- Atribut data-barcode ditambahkan agar fungsi scan milikmu bisa mencocokkan data -->
                                 <option value="{{ $item->id_makanan }}" data-barcode="{{ $item->barcode ?? '' }}">
                                     {{ $item->nama_makanan }} (Stok: {{ $item->stok_etalase }})
                                 </option>
@@ -156,6 +155,7 @@
             const barcodeInput = document.getElementById('barcode');
             const selectMakanan = document.getElementById('id_makanan');
             const formTambah = document.getElementById('form-tambah-keranjang');
+            const jumlahInput = document.getElementById('jumlah'); // Ambil elemen input jumlah
 
             let html5QrCode;
             let isScanning = false;
@@ -165,12 +165,14 @@
                 findMakananByBarcode(this.value.trim());
             });
 
-            // Otomatis Submit jika alat scanner fisik menekan Enter
+            // MENCEGAH Scanner Asli Langsung Submit
             barcodeInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
-                    e.preventDefault();
+                    e.preventDefault(); // Cegah submit otomatis
                     if(barcodeInput.value.trim() !== '') {
-                        formTambah.submit();
+                         // Pindahkan fokus ke input jumlah dan pilih angkanya
+                         jumlahInput.focus();
+                         jumlahInput.select();
                     }
                 }
             });
@@ -214,7 +216,8 @@
 
                             barcodeInput.classList.add('bg-green-100');
                             
-                            // Otomatis Submit ke keranjang setelah berhasil memindai!
+                            // Otomatis Submit ke keranjang setelah berhasil memindai via Kamera!
+                            // Kamera HP di asumsikan input = 1 qty, jadi langsung submit agar praktis.
                             setTimeout(() => {
                                 barcodeInput.classList.remove('bg-green-100');
                                 formTambah.submit(); 

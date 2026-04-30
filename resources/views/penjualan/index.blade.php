@@ -39,7 +39,7 @@
 
                     <div class="mb-4 flex flex-col sm:flex-row sm:justify-between sm:items-start sm:items-center gap-4 border-b pb-4">
                         <div>
-                            <h3 class="text-lg font-bold text-gray-700">Daftar Transaksi Kasir</h3>
+                            <h3 class="text-lg font-bold text-gray-700">Daftar Transaksi</h3>
                             <!-- Menampilkan Total Pendapatan Sesuai Filter -->
                             <p class="text-sm font-bold text-gray-500 mt-1">Total Pendapatan: <span class="text-xl text-green-600">Rp {{ number_format($total_pendapatan ?? 0, 0, ',', '.') }}</span></p>
                         </div>
