@@ -43,10 +43,9 @@
                                 <td class="py-2 px-4 border-b text-sm">{{ $index + 1 }}</td>
                                 <td class="py-2 px-4 border-b text-sm">{{ \Carbon\Carbon::parse($item->tgl_mutasi)->format('d M Y') }}</td>
                                 <td class="py-2 px-4 border-b text-sm font-medium">{{ $item->makanan->nama_makanan ?? 'Data Terhapus' }}</td>
-                                <!-- Menampilkan nama User/Pengguna -->
-                                <td class="py-2 px-4 border-b text-sm">{{ $item->user->name ?? $item->pengguna->name ?? 'Admin' }}</td>
-                                <!-- Memperbaiki panggilan kolom jumlah -->
-                                <td class="py-2 px-4 border-b text-center text-sm font-bold text-green-600">+{{ $item->jumlah ?? $item->jumlah_masuk ?? $item->jumlah_perubahan ?? 0 }} Pcs</td>
+                                <!-- Menampilkan nama penginput -->
+                                <td class="py-2 px-4 border-b text-sm">{{ $item->pengguna->name ?? 'Admin' }}</td>
+                                <td class="py-2 px-4 border-b text-center text-sm font-bold text-green-600">+{{ $item->jumlah_perubahan ?? 0 }} Pcs</td>
                             </tr>
                         @empty
                             <tr>

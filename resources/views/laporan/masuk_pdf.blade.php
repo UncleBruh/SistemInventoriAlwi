@@ -40,8 +40,8 @@
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td>{{ \Carbon\Carbon::parse($item->tgl_mutasi)->format('d M Y') }}</td>
                     <td>{{ $item->makanan->nama_makanan ?? '-' }}</td>
-                    <td>{{ $item->user->name ?? $item->pengguna->name ?? 'Admin' }}</td>
-                    <td class="text-center">+{{ $item->jumlah ?? $item->jumlah_masuk ?? $item->jumlah_perubahan ?? 0 }} Pcs</td>
+                    <td>{{ $item->pengguna->name ?? 'Admin' }}</td>
+                    <td class="text-center">+{{ $item->jumlah_perubahan ?? 0 }} Pcs</td>
                 </tr>
             @empty
                 <tr>

@@ -7,6 +7,8 @@ use App\Models\Makanan;
 use App\Models\MutasiMasuk;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+// Tambahkan ini agar fungsi recordLog bisa dipanggil
+use App\Http\Controllers\LogController;
 
 class MutasiMasukController extends Controller
 {
@@ -55,7 +57,7 @@ class MutasiMasukController extends Controller
         try {
             MutasiMasuk::create([
                 'id_makanan' => $makanan->id_makanan,
-                'id_pengguna' => Auth::id(),
+                'id_pengguna' => Auth::id(), // Ini sudah benar, mencatat ID pengguna
                 'jumlah_masuk' => $jumlah,
                 'stok_sebelum' => $stok_sebelum,
                 'stok_sesudah' => $stok_sesudah,
@@ -73,6 +75,14 @@ class MutasiMasukController extends Controller
                 'stok_gudang' => $stok_gudang_sesudah,
                 'stok_etalase' => $stok_etalase_sesudah,
             ]);
+
+            // --- TAMBAHAN BARU: LOG AKTIVITAS ---
+            // Mencatat tindakan ini ke dalam sistem Log
+            LogController::recordLog(
+                'Mutasi Masuk',
+                "Menambahkan {$jumlah} pcs {$makanan->nama_makanan} ke {$lokasi}"
+            );
+            // ------------------------------------
 
             DB::commit();
 

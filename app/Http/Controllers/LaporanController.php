@@ -12,7 +12,7 @@ class LaporanController extends Controller
     // --- LAPORAN BARANG MASUK ---
     public function mutasiMasuk(Request $request)
     {
-        $query = MutasiMasuk::with('makanan')->orderBy('tgl_mutasi', 'desc');
+        $query = MutasiMasuk::with(['makanan', 'pengguna'])->orderBy('tgl_mutasi', 'desc');
 
         // Jika ada filter rentang tanggal
         if ($request->filled('start_date') && $request->filled('end_date')) {

@@ -9,6 +9,8 @@ use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB; // Tambahkan ini untuk fungsi recordLog
+use Illuminate\Support\Facades\Auth; // Tambahkan ini untuk fungsi recordLog
 
 class LogController extends Controller
 {
@@ -35,7 +37,7 @@ class LogController extends Controller
                 'sort_date' => $item->created_at // Acuan pengurutan terbaru
             ];
         });
-
+        
         $keluar = MutasiKeluar::with(['makanan', 'pengguna'])->get()->map(function($item) {
             return (object) [
                 'id_makanan' => $item->id_makanan,
@@ -121,5 +123,25 @@ class LogController extends Controller
         $makanan = Makanan::orderBy('nama_makanan')->get();
 
         return view('log.index', compact('semua_log', 'makanan', 'id_makanan', 'tgl_mulai', 'tgl_akhir', 'jenis_aktivitas', 'sort'));
+    }
+
+    /**
+     * Fungsi statis untuk mencatat aktivitas ke dalam tabel log
+     */
+    public static function recordLog($action, $description)
+    {
+        // Pastikan nama tabel log di database-mu adalah 'log' atau 'logs'
+        // Jika tabel log belum ada, abaikan sementara error ini dengan try-catch
+        try {
+            DB::table('logs')->insert([
+                'id_pengguna' => Auth::id(),
+                'action' => $action,
+                'description' => $description,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Exception $e) {
+            // Abaikan error jika tabel logs belum dibuat, agar proses mutasi tidak terhenti
+        }
     }
 }

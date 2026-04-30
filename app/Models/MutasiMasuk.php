@@ -29,7 +29,7 @@ class MutasiMasuk extends Model
     }
 
     public function pengguna()
-    {
-        return $this->belongsTo(User::class, 'id_pengguna', 'id_pengguna');
-    }
+        {
+            return $this->belongsTo(User::class, 'id_pengguna', 'id_pengguna');
+        }
 }

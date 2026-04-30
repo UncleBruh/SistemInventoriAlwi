@@ -10,11 +10,12 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
-
     // Beritahu Laravel nama tabel dan primary key yang benar
     protected $table = 'pengguna';
     protected $primaryKey = 'id_pengguna';
 
+    use HasFactory, Notifiable;
+    
     protected $fillable = [
         'username',
         'name',
