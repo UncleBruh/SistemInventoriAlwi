@@ -1,113 +1,106 @@
 <x-app-layout>
     <x-slot name="header">
-        {{ __('Tambah Penjualan') }}
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Kasir / Point of Sale') }}
+        </h2>
     </x-slot>
 
-    <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-
-            @if(session('success'))
-                <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            @if(session('error'))
-                <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center">
-                    {{ session('error') }}
-                </div>
-            @endif
-
-            <form action="{{ route('penjualan.store') }}" method="POST">
-                @csrf
-                <div class="mb-6 bg-green-50 p-4 rounded-lg border border-green-200">
-                    <p class="text-sm font-medium text-green-700">💰 Pencatatan Penjualan - Stok akan berkurang dan pendapatan tercatat</p>
-                </div>
-
-                <div class="mb-4">
-                    <x-input-label for="id_makanan" value="Pilih Jajanan yang Terjual" />
-                    <select id="id_makanan" name="id_makanan" class="searchable-select border-gray-300 rounded-md shadow-sm block mt-1 w-full" required autofocus onchange="updateHarga()">
-                        <option value="">-- Pilih Jajanan --</option>
-                        @foreach($makanan as $item)
-                            <option value="{{ $item->id_makanan }}" data-harga="{{ $item->harga }}" data-stok="{{ $item->stok }}">
-                                {{ $item->nama_makanan }} - Rp {{ number_format($item->harga, 0, ',', '.') }} (Stok: {{ $item->stok }})
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('id_makanan')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <x-input-label for="tanggal_penjualan" value="Tanggal Penjualan" />
-                    <x-text-input id="tanggal_penjualan" class="block mt-1 w-full" type="datetime-local" name="tanggal_penjualan" value="{{ date('Y-m-d\TH:i') }}" required />
-                    @error('tanggal_penjualan')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <x-input-label for="jumlah_terjual" value="Jumlah Terjual (Pcs)" />
-                    <x-text-input id="jumlah_terjual" class="block mt-1 w-full text-center text-2xl font-bold" type="number" min="1" name="jumlah_terjual" value="1" required onchange="hitungTotal()" oninput="hitungTotal()" />
-                    @error('jumlah_terjual')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <x-input-label for="harga_per_unit" value="Harga per Unit (Rp)" />
-                    <x-text-input id="harga_per_unit" class="block mt-1 w-full text-right text-lg font-semibold" type="number" step="0.01" min="0" name="harga_per_unit" value="{{ old('harga_per_unit') }}" required onchange="hitungTotal()" oninput="hitungTotal()" />
-                    @error('harga_per_unit')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <div class="flex justify-between items-center">
-                        <span class="text-blue-900 font-medium">Total Pendapatan:</span>
-                        <span class="text-blue-900 text-2xl font-bold" id="totalDisplay">Rp 0</span>
+    <div class="py-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- BAGIAN KIRI: Form Input/Scan Barang -->
+            <div class="md:col-span-1 bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 h-fit">
+                <h3 class="text-lg font-bold text-gray-700 mb-4 border-b pb-2">Scan / Pilih Barang</h3>
+                
+                <form action="{{ route('penjualan.keranjang.tambah') }}" method="POST">
+                    @csrf
+                    <div class="mb-4">
+                        <label for="id_makanan" class="block text-sm font-medium text-gray-700">Nama Jajanan</label>
+                        <!-- Jika pakai barcode scanner, alatnya otomatis mengetik di kolom ini jika diubah ke input text, tapi kita pakai select untuk amannya -->
+                        <select name="id_makanan" id="id_makanan" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required autofocus>
+                            <option value="" disabled selected>-- Pilih Jajanan --</option>
+                            @foreach($makanan as $item)
+                                <option value="{{ $item->id_makanan }}">{{ $item->nama_makanan }} (Stok Etalase: {{ $item->stok_etalase }})</option>
+                            @endforeach
+                        </select>
                     </div>
-                    <input type="hidden" id="totalInput" name="total_harga" value="0">
+
+                    <div class="mb-4">
+                        <label for="jumlah" class="block text-sm font-medium text-gray-700">Jumlah</label>
+                        <input type="number" name="jumlah" id="jumlah" value="1" min="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow">
+                        + Tambah ke Keranjang (Enter)
+                    </button>
+                </form>
+            </div>
+
+            <!-- BAGIAN KANAN: Daftar Keranjang & Pembayaran -->
+            <div class="md:col-span-2 bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                <h3 class="text-lg font-bold text-gray-700 mb-4 border-b pb-2">Keranjang Belanja</h3>
+                
+                <!-- Tabel Daftar Barang -->
+                <div class="overflow-x-auto mb-6">
+                    <table class="min-w-full border border-gray-200">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="py-2 px-3 border-b text-left text-xs font-bold text-gray-700">Jajanan</th>
+                                <th class="py-2 px-3 border-b text-center text-xs font-bold text-gray-700">Harga</th>
+                                <th class="py-2 px-3 border-b text-center text-xs font-bold text-gray-700">Qty</th>
+                                <th class="py-2 px-3 border-b text-right text-xs font-bold text-gray-700">Subtotal</th>
+                                <th class="py-2 px-3 border-b text-center text-xs font-bold text-gray-700">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($keranjang as $id => $item)
+                                <tr>
+                                    <td class="py-2 px-3 border-b text-sm">{{ $item['nama_makanan'] }}</td>
+                                    <td class="py-2 px-3 border-b text-center text-sm">Rp {{ number_format($item['harga_satuan'], 0, ',', '.') }}</td>
+                                    <td class="py-2 px-3 border-b text-center text-sm">{{ $item['jumlah'] }}</td>
+                                    <td class="py-2 px-3 border-b text-right text-sm font-semibold">Rp {{ number_format($item['subtotal'], 0, ',', '.') }}</td>
+                                    <td class="py-2 px-3 border-b text-center">
+                                        <form action="{{ route('penjualan.keranjang.hapus', $id) }}" method="POST" onsubmit="return confirm('Hapus barang ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-500 hover:text-red-700 font-bold">X</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="py-4 text-center text-gray-500 italic">Keranjang masih kosong. Silakan scan/pilih barang.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="mb-6">
-                    <x-input-label for="catatan" value="Catatan (Opsional)" />
-                    <textarea id="catatan" name="catatan" rows="3" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" placeholder="Contoh: Penjualan di tempat, penjualan online, dll..."></textarea>
+                <!-- Bagian Total & Pembayaran -->
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-xl font-bold text-gray-700">TOTAL:</span>
+                        <span class="text-3xl font-black text-green-600">Rp {{ number_format($total_harga, 0, ',', '.') }}</span>
+                    </div>
+
+                    <!-- Form Proses Checkout -->
+                    <form action="{{ route('penjualan.store') }}" method="POST" class="mt-4 border-t pt-4">
+                        @csrf
+                        <div class="flex flex-col sm:flex-row gap-4 items-end">
+                            <div class="w-full sm:w-2/3">
+                                <label for="bayar" class="block text-sm font-bold text-gray-700">Uang Diterima (Rp)</label>
+                                <input type="number" name="bayar" id="bayar" min="{{ $total_harga }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-lg font-bold" required placeholder="Contoh: 50000" {{ count($keranjang) == 0 ? 'disabled' : '' }}>
+                            </div>
+                            <div class="w-full sm:w-1/3">
+                                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded shadow text-lg" {{ count($keranjang) == 0 ? 'disabled' : '' }}>
+                                    💵 BAYAR
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
 
-                <x-primary-button class="w-full justify-center py-3 text-lg bg-green-600 hover:bg-green-700">💾 SIMPAN PENJUALAN</x-primary-button>
-            </form>
+            </div>
         </div>
     </div>
-
-    <script>
-        function updateHarga() {
-            const selectElement = document.getElementById('id_makanan');
-            const selectedOption = selectElement.options[selectElement.selectedIndex];
-            const harga = selectedOption.getAttribute('data-harga') || 0;
-            const stok = selectedOption.getAttribute('data-stok') || 0;
-
-            document.getElementById('harga_per_unit').value = harga;
-            document.getElementById('jumlah_terjual').max = stok;
-            hitungTotal();
-        }
-
-        function hitungTotal() {
-            const jumlah = parseFloat(document.getElementById('jumlah_terjual').value) || 0;
-            const harga = parseFloat(document.getElementById('harga_per_unit').value) || 0;
-            const total = jumlah * harga;
-
-            document.getElementById('totalInput').value = total;
-            document.getElementById('totalDisplay').textContent = 'Rp ' + formatCurrency(total);
-        }
-
-        function formatCurrency(value) {
-            return Math.floor(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            hitungTotal();
-        });
-    </script>
 </x-app-layout>

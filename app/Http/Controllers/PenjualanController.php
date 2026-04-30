@@ -3,75 +3,168 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\MutasiKeluar;
-use Carbon\Carbon;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\Makanan;
+use App\Models\Penjualan;
+use App\Models\DetailPenjualan;
+use App\Http\Controllers\LogController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PenjualanController extends Controller
 {
-    public function index(Request $request)
+    // Menampilkan riwayat transaksi
+    public function index()
     {
-        // Ambil data MutasiKeluar yang hanya untuk Penjualan
-        $query = MutasiKeluar::with(['makanan', 'pengguna'])
-            ->where('alasan', 'Penjualan')
-            ->latest('tgl_mutasi');
+        // Menarik data transaksi induk beserta relasi anak (detail) dan kasir
+        $data = Penjualan::with(['pengguna', 'detail.makanan'])->latest('created_at')->get();
+        return view('penjualan.index', compact('data'));
+    }
 
-        // Filter berdasarkan tanggal jika ada
-        if ($request->filled('tanggal_mulai')) {
-            $tanggalMulai = Carbon::parse($request->tanggal_mulai)->startOfDay();
-            $query->whereDate('tgl_mutasi', '>=', $tanggalMulai);
+    // Menampilkan halaman Aplikasi Kasir (POS)
+    public function create()
+    {
+        // Hanya tampilkan makanan yang stok etalasenya > 0
+        $makanan = Makanan::where('stok_etalase', '>', 0)->orderBy('nama_makanan')->get();
+        
+        // Ambil data keranjang dari session sementara
+        $keranjang = session()->get('keranjang', []);
+        $total_harga = array_sum(array_column($keranjang, 'subtotal'));
+
+        return view('penjualan.create', compact('makanan', 'keranjang', 'total_harga'));
+    }
+
+    // Fungsi menambahkan barang ke keranjang session
+    public function tambahKeranjang(Request $request)
+    {
+        $request->validate([
+            'id_makanan' => 'required|exists:makanan,id_makanan',
+            'jumlah' => 'required|integer|min:1'
+        ]);
+
+        $makanan = Makanan::findOrFail($request->id_makanan);
+
+        // Validasi stok etalase
+        if ($request->jumlah > $makanan->stok_etalase) {
+            return redirect()->back()->with('error', 'Stok etalase tidak cukup! Sisa stok: ' . $makanan->stok_etalase);
         }
 
-        if ($request->filled('tanggal_akhir')) {
-            $tanggalAkhir = Carbon::parse($request->tanggal_akhir)->endOfDay();
-            $query->whereDate('tgl_mutasi', '<=', $tanggalAkhir);
-        }
+        $keranjang = session()->get('keranjang', []);
 
-        $allData = $query->get();
-
-        // Hitung ringkasan data
-        $totalPendapatan = $allData->sum(function($item) {
-            return $item->jumlah_keluar * $item->makanan->harga;
-        });
-
-        $jumlahTransaksi = $allData->count();
-        $totalUnitTerjual = $allData->sum('jumlah_keluar');
-
-        // Kelompokkan data berdasarkan tanggal untuk laporan per hari
-        $laporanPerHariAll = $allData->groupBy(function($item) {
-            return Carbon::parse($item->tgl_mutasi)->format('Y-m-d');
-        })->map(function($items) {
-            $totalHariIni = $items->sum(function($item) {
-                return $item->jumlah_keluar * $item->makanan->harga;
-            });
-
-            return [
-                'tanggal' => $items->first()->tgl_mutasi,
-                'items' => $items,
-                'total' => $totalHariIni,
-                'jumlah_unit' => $items->sum('jumlah_keluar'),
+        // Jika barang sudah ada di keranjang, update jumlahnya
+        if(isset($keranjang[$makanan->id_makanan])) {
+            $jumlah_baru = $keranjang[$makanan->id_makanan]['jumlah'] + $request->jumlah;
+            
+            // Cek lagi apakah akumulasi jumlah melebihi stok
+            if ($jumlah_baru > $makanan->stok_etalase) {
+                return redirect()->back()->with('error', 'Stok etalase tidak cukup untuk penambahan ini!');
+            }
+            
+            $keranjang[$makanan->id_makanan]['jumlah'] = $jumlah_baru;
+            // CATATAN: Ubah 'harga_jual' menjadi 'harga' jika di databasemu namanya 'harga'
+            $keranjang[$makanan->id_makanan]['subtotal'] = $jumlah_baru * $makanan->harga_jual; 
+        } else {
+            // Jika barang belum ada, buat entri baru di keranjang
+            $keranjang[$makanan->id_makanan] = [
+                'nama_makanan' => $makanan->nama_makanan,
+                'harga_satuan' => $makanan->harga_jual, // CATATAN: Ubah jadi 'harga' jika error
+                'jumlah' => $request->jumlah,
+                'subtotal' => $makanan->harga_jual * $request->jumlah
             ];
-        })->sortByDesc('tanggal')->values();
+        }
 
-        // Manual pagination untuk laporan per hari (15 hari per halaman)
-        $perPage = 15;
-        $currentPage = $request->get('page', 1);
-        $total = $laporanPerHariAll->count();
-        $offset = ($currentPage - 1) * $perPage;
+        session()->put('keranjang', $keranjang);
+        return redirect()->back()->with('success', 'Barang dimasukkan ke keranjang!');
+    }
 
-        $laporanPerHari = new LengthAwarePaginator(
-            $laporanPerHariAll->slice($offset, $perPage)->values(),
-            $total,
-            $perPage,
-            $currentPage,
-            [
-                'path' => $request->url(),
-                'query' => $request->query(),
-            ]
-        );
+    // Fungsi menghapus 1 jenis barang dari keranjang
+    public function hapusKeranjang($id)
+    {
+        $keranjang = session()->get('keranjang');
+        if(isset($keranjang[$id])) {
+            unset($keranjang[$id]);
+            session()->put('keranjang', $keranjang);
+        }
+        return redirect()->back()->with('success', 'Barang dihapus dari keranjang.');
+    }
 
-        return view('penjualan.index', compact('laporanPerHari', 'totalPendapatan', 'jumlahTransaksi', 'totalUnitTerjual'));
+    // Fungsi proses Pembayaran (Checkout)
+    public function store(Request $request)
+    {
+        $keranjang = session()->get('keranjang');
+        
+        if(!$keranjang || count($keranjang) == 0){
+            return redirect()->back()->with('error', 'Keranjang belanja masih kosong!');
+        }
+
+        $request->validate([
+            'bayar' => 'required|integer|min:0'
+        ]);
+
+        $total_harga = array_sum(array_column($keranjang, 'subtotal'));
+        $bayar = $request->bayar;
+        
+        if($bayar < $total_harga) {
+            return redirect()->back()->with('error', 'Uang pembayaran kurang!');
+        }
+
+        $kembalian = $bayar - $total_harga;
+        // Membuat nomor nota unik (Contoh: INV-X7B9A-167812)
+        $no_nota = 'INV-' . strtoupper(Str::random(5)) . '-' . time(); 
+
+        DB::beginTransaction();
+        try {
+            // Ambil salah satu ID Makanan dari keranjang sebagai data "dummy" untuk kolom lama yang pensiun
+            $id_makanan_dummy = array_key_first($keranjang);
+
+            // 1. Simpan ke tabel induk (penjualans)
+            $penjualan = Penjualan::create([
+                'id_pengguna' => Auth::id(),
+                'total_harga' => $total_harga,
+                'bayar' => $bayar,
+                'kembalian' => $kembalian,
+                'no_nota' => $no_nota,
+                'tgl_penjualan' => now()->format('Y-m-d'), 
+                // Kolom pensiun kita isi data dummy agar sistem tidak error (bypass)
+                'id_makanan' => $id_makanan_dummy, 
+                'jumlah' => 0
+            ]);
+
+            $item_terjual = []; // Array untuk dikirim ke Log Aktivitas
+
+            // 2. Simpan ke tabel anak (detail_penjualans) & Potong Stok
+            foreach($keranjang as $id_makanan => $item) {
+                DetailPenjualan::create([
+                    'id_penjualan' => $penjualan->id_penjualan, // (atau $penjualan->id tergantung primary key-nya)
+                    'id_makanan' => $id_makanan,
+                    'harga_satuan' => $item['harga_satuan'],
+                    'jumlah' => $item['jumlah'],
+                    'subtotal' => $item['subtotal']
+                ]);
+
+                // Update stok makanan (potong stok etalase & stok utama)
+                $makanan = Makanan::find($id_makanan);
+                $makanan->stok_etalase -= $item['jumlah'];
+                $makanan->stok -= $item['jumlah'];
+                $makanan->save();
+
+                $item_terjual[] = "{$item['jumlah']}x {$item['nama_makanan']}";
+            }
+
+            // 3. Catat ke Log Aktivitas (Terintegrasi)
+            $detail_log = implode(', ', $item_terjual);
+            LogController::recordLog('Penjualan Kasir', "Nota {$no_nota}: {$detail_log} (Total: Rp " . number_format($total_harga, 0, ',', '.') . ")");
+
+            DB::commit();
+            
+            // Bersihkan meja kasir (keranjang)
+            session()->forget('keranjang');
+
+            return redirect()->route('penjualan.index')->with('success', "Pembayaran Berhasil! Kembalian: Rp " . number_format($kembalian, 0, ',', '.'));
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Terjadi kesalahan sistem saat checkout: ' . $e->getMessage());
+        }
     }
 }
-

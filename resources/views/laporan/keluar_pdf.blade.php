@@ -59,7 +59,7 @@
                 <th width="15%" class="text-left">Tanggal</th>
                 <th width="30%" class="text-left">Nama Jajanan</th>
                 <th width="15%" class="text-left">Alasan</th>
-                <th width="20%" class="text-left">Penginput</th>
+                <th width="20%" class="text-left">Petugas</th>
                 <th width="15%" class="text-center">Jumlah Keluar</th>
             </tr>
         </thead>

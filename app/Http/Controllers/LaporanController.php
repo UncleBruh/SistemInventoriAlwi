@@ -44,20 +44,20 @@ class LaporanController extends Controller
     {
         $query = MutasiKeluar::with(['makanan', 'pengguna'])->orderBy('tgl_mutasi', 'desc');
 
-        // Jika ada filter rentang tanggal
+        // Jika user memilih rentang waktu, filter datanya
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('tgl_mutasi', [$request->start_date, $request->end_date]);
         }
 
         $mutasiKeluar = $query->get();
-
         return view('laporan.keluar', compact('mutasiKeluar'));
     }
 
-    public function cetakMutasiKeluar(Request $request)
+    public function cetakMutasiKeluar(Request $request) // (Sesuaikan dengan nama fungsi cetak aslimu)
     {
-        $query = MutasiKeluar::with('makanan')->orderBy('tgl_mutasi', 'desc');
+        $query = MutasiKeluar::with(['makanan', 'pengguna'])->orderBy('tgl_mutasi', 'desc');
 
+        // Filter data yang dicetak sesuai rentang waktu yang dipilih
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('tgl_mutasi', [$request->start_date, $request->end_date]);
         }

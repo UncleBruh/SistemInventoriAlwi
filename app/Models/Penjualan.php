@@ -12,26 +12,27 @@ class Penjualan extends Model
     protected $fillable = [
         'id_makanan',
         'id_pengguna',
-        'jumlah_terjual',
-        'harga_per_unit',
+        'jumlah',
         'total_harga',
-        'tanggal_penjualan',
-        'catatan',
+        'tgl_penjualan',
+        'no_nota',
+        'bayar',
+        'kembalian'
     ];
 
-    protected $casts = [
-        'tanggal_penjualan' => 'datetime',
-        'harga_per_unit' => 'decimal:2',
-        'total_harga' => 'decimal:2',
-    ];
 
-    public function makanan()
+    public function detail()
     {
-        return $this->belongsTo(Makanan::class, 'id_makanan', 'id_makanan');
+        return $this->hasMany(DetailPenjualan::class, 'id_penjualan', 'id_penjualan');
     }
 
     public function pengguna()
     {
-        return $this->belongsTo(User::class, 'id_pengguna', 'id');
+        return $this->belongsTo(User::class, 'id_pengguna', 'id_pengguna');
+    }
+    
+    public function makanan()
+    {
+        return $this->belongsTo(Makanan::class, 'id_makanan', 'id_makanan');
     }
 }

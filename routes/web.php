@@ -63,11 +63,15 @@ Route::middleware('auth')->group(function () {
     Route::resource('kategori', KategoriController::class)->only(['index', 'store', 'destroy']);
 
     // Rute Laporan
-Route::get('/laporan/masuk', [LaporanController::class, 'mutasiMasuk'])->name('laporan.masuk');
-Route::get('/laporan/masuk/pdf', [LaporanController::class, 'cetakMutasiMasuk'])->name('laporan.masuk.pdf');
+    Route::get('/laporan/masuk', [LaporanController::class, 'mutasiMasuk'])->name('laporan.masuk');
+    Route::get('/laporan/masuk/pdf', [LaporanController::class, 'cetakMutasiMasuk'])->name('laporan.masuk.pdf');
+    
+    Route::get('/laporan/keluar', [LaporanController::class, 'mutasiKeluar'])->name('laporan.keluar');
+    Route::get('/laporan/keluar/pdf', [LaporanController::class, 'cetakMutasiKeluar'])->name('laporan.keluar.pdf');
 
-Route::get('/laporan/keluar', [LaporanController::class, 'mutasiKeluar'])->name('laporan.keluar');
-Route::get('/laporan/keluar/pdf', [LaporanController::class, 'cetakMutasiKeluar'])->name('laporan.keluar.pdf');
+    // Route untuk sistem keranjang kasir
+    Route::post('/penjualan/keranjang', [App\Http\Controllers\PenjualanController::class, 'tambahKeranjang'])->name('penjualan.keranjang.tambah');
+    Route::delete('/penjualan/keranjang/{id}', [App\Http\Controllers\PenjualanController::class, 'hapusKeranjang'])->name('penjualan.keranjang.hapus');
 });
 
 
