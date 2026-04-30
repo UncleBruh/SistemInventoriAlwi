@@ -1,6 +1,7 @@
 {
     "version": 2,
     "framework": null,
+    "buildCommand": "npm run build",
     "functions": {
         "api/index.php": { "runtime": "vercel-php@0.7.4" }
     },
@@ -33,6 +34,8 @@
         "CACHE_DRIVER": "array",
         "LOG_CHANNEL": "stderr",
         "SESSION_DRIVER": "cookie",
-        "QUEUE_CONNECTION": "sync"
+        "QUEUE_CONNECTION": "sync",
+        "DB_CONNECTION": "mysql",
+        "LOG_LEVEL": "error"
     }
 }
