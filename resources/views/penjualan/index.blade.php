@@ -7,7 +7,7 @@
 
     <div class="py-6 sm:py-12">
         <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-            
+
             <!-- KOTAK FILTER TANGGAL & CETAK (BARU) -->
             <div class="bg-white shadow-sm sm:rounded-lg p-4 sm:p-6 mb-6 border-l-4 border-indigo-500">
                 <form action="{{ route('penjualan.index') }}" method="GET" class="flex flex-col sm:flex-row gap-4 items-end">
@@ -44,7 +44,7 @@
                             <p class="text-sm font-bold text-gray-500 mt-1">Total Pendapatan: <span class="text-xl text-green-600">Rp {{ number_format($total_pendapatan ?? 0, 0, ',', '.') }}</span></p>
                         </div>
                         <a href="{{ route('penjualan.create') }}" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded shadow text-center w-full sm:w-auto">
-                            + Kasir Baru
+                            + Transaksi
                         </a>
                     </div>
 
@@ -54,7 +54,7 @@
                             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                                 <div class="flex justify-between items-start mb-2">
                                     <div>
-                                        <p class="text-xs font-semibold text-indigo-700">{{ $item->kode_transaksi ?? 'N/A' }}</p>
+                                        <p class="text-xs font-semibold text-indigo-700"><strong>Kode:</strong> {{ $item->no_nota ?? 'LAMA-' . $item->id_penjualan }}</p>
                                         <p class="text-xs text-gray-600">{{ \Carbon\Carbon::parse($item->tanggal_penjualan)->format('d M Y, H:i') }}</p>
                                     </div>
                                     <p class="text-sm font-bold text-green-600 text-right">
@@ -86,7 +86,6 @@
                             <thead class="bg-gray-100">
                                 <tr>
                                     <th class="py-3 px-4 border-b text-left font-bold text-gray-700">Kode Transaksi</th>
-                                    <th class="py-3 px-4 border-b text-left font-bold text-gray-700">No. Nota</th>
                                     <th class="py-3 px-4 border-b text-left font-bold text-gray-700">Waktu</th>
                                     <th class="py-3 px-4 border-b text-left font-bold text-gray-700">Kasir</th>
                                     <th class="py-3 px-4 border-b text-left font-bold text-gray-700">Detail Belanjaan</th>
@@ -96,8 +95,7 @@
                             <tbody>
                                 @forelse ($penjualan as $item)
                                     <tr class="hover:bg-gray-50">
-                                        <td class="py-3 px-4 border-b font-bold text-indigo-700">{{ $item->kode_transaksi ?? 'N/A' }}</td>
-                                        <td class="py-3 px-4 border-b font-semibold text-indigo-600">{{ $item->no_nota ?? 'LAMA-' . $item->id_penjualan }}</td>
+                                        <td class="py-3 px-4 border-b font-bold text-indigo-700">{{ $item->no_nota ?? 'LAMA-' . $item->id_penjualan }}</td>
                                         <td class="py-3 px-4 border-b">{{ \Carbon\Carbon::parse($item->tanggal_penjualan)->format('d M Y, H:i') }}</td>
                                         <td class="py-3 px-4 border-b">{{ $item->pengguna->name ?? $item->pengguna->username ?? 'Admin' }}</td>
 
@@ -120,7 +118,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="py-6 px-4 text-center text-gray-500 italic">Belum ada data transaksi.</td>
+                                        <td colspan="5" class="py-6 px-4 text-center text-gray-500 italic">Belum ada data transaksi.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
