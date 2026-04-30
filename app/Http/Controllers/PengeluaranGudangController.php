@@ -28,7 +28,7 @@ class PengeluaranGudangController extends Controller
         $request->validate([
             'id_makanan' => 'required|exists:makanan,id_makanan',
             'jumlah_keluar' => 'required|integer|min:1',
-            'alasan' => 'required|in:expired,tikus,rusak,lainnya',
+            'alasan' => 'required|in:expired,keperluan_prive,rusak,lainnya',
             'keterangan' => 'nullable|string|max:500',
             'tgl_pengeluaran' => 'required|date',
             'barcode' => 'nullable|string',

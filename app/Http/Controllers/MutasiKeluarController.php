@@ -32,8 +32,7 @@ class MutasiKeluarController extends Controller
         $request->validate([
             'id_makanan' => 'required|exists:makanan,id_makanan',
             'jumlah_perubahan' => 'required|integer|min:1',
-            'tipe_keluar' => 'required|in:rusak,hilang,expired,keperluan_prive', // Tipe keluar untuk etalase BUKAN penjualan
-            'keterangan' => 'nullable|string|max:500',
+            'tipe_keluar' => 'required|in:rusak,hilang,expired,keperluan_prive',
             'tgl_mutasi' => 'required|date',
         ]);
 
@@ -62,7 +61,7 @@ class MutasiKeluarController extends Controller
                 'jumlah_keluar' => $request->jumlah_perubahan,
                 'stok_sebelum' => $stok_sebelum,
                 'stok_sesudah' => $stok_sesudah,
-                'alasan' => $request->keterangan ?? $request->tipe_keluar,
+                'alasan' => $request->tipe_keluar,
                 'tgl_mutasi' => $request->tgl_mutasi,
                 'tipe_keluar' => $request->tipe_keluar,
                 'stok_etalase_sebelum' => $stok_etalase_sebelum,

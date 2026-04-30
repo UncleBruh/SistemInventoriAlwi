@@ -3,8 +3,8 @@
         {{ __('Alokasi Stok: Gudang ➔ Etalase') }}
     </x-slot>
 
-    <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+    <div class="max-w-2xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-4 sm:p-6">
 
             @if(session('success'))
                 <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center">
@@ -79,7 +79,7 @@
     </div>
 
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const btnScan = document.getElementById('btn-scan');
@@ -94,7 +94,7 @@
             selectMakanan.addEventListener('change', function() {
                 const selectedOption = this.options[this.selectedIndex];
                 const barcode = selectedOption ? selectedOption.getAttribute('data-barcode') : null;
-                
+
                 if (barcode) {
                     barcodeInput.value = barcode;
                 } else {
@@ -109,7 +109,7 @@
             barcodeInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    
+
                     // Tambahkan jeda 200ms dan blok otomatis (select)
                     setTimeout(function() {
                         jumlahInput.focus();
@@ -155,7 +155,7 @@
 
                             barcodeInput.classList.add('bg-green-100');
                             setTimeout(() => barcodeInput.classList.remove('bg-green-100'), 1500);
-                            
+
                             jumlahInput.focus();
                         }).catch(err => console.error(err));
                     },
@@ -183,13 +183,13 @@
                 for (let option of selectMakanan.options) {
                     if (option.getAttribute('data-barcode') === barcode) {
                         selectMakanan.value = option.value;
-                        
+
                         selectMakanan.dispatchEvent(new Event('change'));
-                        
+
                         if (typeof jQuery !== 'undefined') {
                             jQuery(selectMakanan).trigger('change');
                         }
-                        
+
                         matchFound = true;
                         break;
                     }

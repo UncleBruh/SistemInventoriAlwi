@@ -67,8 +67,8 @@
                             <span class="text-sm font-medium">📅 Expired</span>
                         </label>
                         <label class="flex items-center p-2 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-yellow-50 transition" style="border-color: #eab308;">
-                            <input type="radio" name="alasan" value="tikus" class="mr-2" required />
-                            <span class="text-sm font-medium">🐭 Tikus</span>
+                            <input type="radio" name="alasan" value="keperluan_prive" class="mr-2" required />
+                            <span class="text-sm font-medium">🛍️ Keperluan Prive</span>
                         </label>
                         <label class="flex items-center p-2 border-2 border-gray-300 rounded-lg cursor-pointer hover:bg-orange-50 transition" style="border-color: #f97316;">
                             <input type="radio" name="alasan" value="rusak" class="mr-2" required />

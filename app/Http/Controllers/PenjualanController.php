@@ -115,18 +115,9 @@ class PenjualanController extends Controller
             return redirect()->back()->with('error', 'Keranjang belanja masih kosong!');
         }
 
-        $request->validate([
-            'bayar' => 'required|integer|min:0'
-        ]);
-
         $total_harga = array_sum(array_column($keranjang, 'subtotal'));
-        $bayar = $request->bayar;
-
-        if($bayar < $total_harga) {
-            return redirect()->back()->with('error', 'Uang pembayaran kurang!');
-        }
-
-        $kembalian = $bayar - $total_harga;
+        $bayar = $total_harga;  // Tanpa input uang diterima, bayar sama dengan total
+        $kembalian = 0;  // Kembalian = 0 karena tidak ada input uang
         // Membuat nomor nota unik (Contoh: INV-X7B9A-167812)
         $no_nota = 'INV-' . strtoupper(Str::random(5)) . '-' . time();
 

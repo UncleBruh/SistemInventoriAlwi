@@ -81,6 +81,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan/keluar', [LaporanController::class, 'mutasiKeluar'])->name('laporan.keluar');
         Route::get('/laporan/keluar/pdf', [LaporanController::class, 'cetakMutasiKeluar'])->name('laporan.keluar.pdf');
 
+        // Laporan Pengeluaran Gudang (Hanya Pemilik)
+        Route::get('/laporan/pengeluaran-gudang', [LaporanController::class, 'pengeluaranGudang'])->name('laporan.pengeluaran_gudang');
+        Route::get('/laporan/pengeluaran-gudang/pdf', [LaporanController::class, 'cetakPengeluaranGudang'])->name('laporan.pengeluaran_gudang.pdf');
+
         // Lihat Aktivitas Mutasi (Hanya Pemilik)
         Route::get('/lihat-aktivitas-mutasi', [LogController::class, 'index'])->name('log.aktivitas');
     });

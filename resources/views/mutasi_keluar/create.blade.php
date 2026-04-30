@@ -3,8 +3,8 @@
         {{ __('Pengelolaan Stok Etalase') }}
     </x-slot>
 
-    <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+    <div class="max-w-2xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-4 sm:p-6">
 
             @if(session('success'))
                 <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center">
@@ -79,11 +79,6 @@
                             <span class="text-sm font-medium">🛍️ Keperluan Prive</span>
                         </label>
                     </div>
-                </div>
-
-                <div class="mb-6">
-                    <x-input-label for="keterangan" value="Keterangan Tambahan (Opsional)" />
-                    <textarea id="keterangan" name="keterangan" rows="3" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" placeholder="Contoh: Barang expired, Kualitas buruk, Hilang dari display, dsb..."></textarea>
                 </div>
 
                 <x-primary-button class="w-full justify-center py-3 text-lg bg-purple-600 hover:bg-purple-700">SIMPAN PENGELOLAAN STOK ETALASE</x-primary-button>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\MutasiMasuk;
 use App\Models\MutasiKeluar;
+use App\Models\PengeluaranGudang;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanController extends Controller
@@ -177,5 +178,59 @@ class LaporanController extends Controller
         // Render ke PDF
         $pdf = Pdf::loadView('laporan.penjualan_pdf', compact('penjualan', 'totalPerTanggal'));
         return $pdf->stream('Laporan_Penjualan.pdf');
+    }
+
+    // --- LAPORAN PENGELUARAN GUDANG ---
+    public function pengeluaranGudang(Request $request)
+    {
+        $query = \App\Models\PengeluaranGudang::with(['makanan', 'pengguna'])->orderBy('tgl_pengeluaran', 'desc');
+
+        // Jika ada filter rentang tanggal
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('tgl_pengeluaran', [$request->start_date, $request->end_date]);
+        }
+
+        // Filter berdasarkan nama produk
+        if ($request->filled('nama_produk')) {
+            $query->whereHas('makanan', function($q) use ($request) {
+                $q->where('nama_makanan', 'like', '%' . $request->nama_produk . '%');
+            });
+        }
+
+        // Filter sortir (terbaru/terlama)
+        if ($request->filled('sort')) {
+            if ($request->sort === 'terlama') {
+                $query->orderBy('tgl_pengeluaran', 'asc');
+            } else {
+                $query->orderBy('tgl_pengeluaran', 'desc');
+            }
+        }
+
+        $pengeluaranGudang = $query->get();
+
+        return view('laporan.pengeluaran_gudang', compact('pengeluaranGudang'));
+    }
+
+    public function cetakPengeluaranGudang(Request $request)
+    {
+        $query = \App\Models\PengeluaranGudang::with(['makanan', 'pengguna'])->orderBy('tgl_pengeluaran', 'desc');
+
+        // Filter data yang dicetak sesuai rentang waktu yang dipilih
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('tgl_pengeluaran', [$request->start_date, $request->end_date]);
+        }
+
+        // Filter berdasarkan nama produk
+        if ($request->filled('nama_produk')) {
+            $query->whereHas('makanan', function($q) use ($request) {
+                $q->where('nama_makanan', 'like', '%' . $request->nama_produk . '%');
+            });
+        }
+
+        $pengeluaranGudang = $query->get();
+
+        // Render ke PDF
+        $pdf = Pdf::loadView('laporan.pengeluaran_gudang_pdf', compact('pengeluaranGudang'));
+        return $pdf->stream('Laporan_Pengeluaran_Gudang.pdf');
     }
 }
