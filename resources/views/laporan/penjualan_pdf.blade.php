@@ -26,14 +26,14 @@
     </style>
 </head>
 <body onload="window.print()">
-    
+
     <div class="header">
         <h2>LAPORAN PENJUALAN - WARUNG BIEBIE</h2>
         <p>
-            <strong>Periode:</strong> 
-            {{ $tgl_awal ? \Carbon\Carbon::parse($tgl_awal)->format('d M Y') : 'Semua Transaksi' }} 
-            s/d 
-            {{ $tgl_akhir ? \Carbon\Carbon::parse($tgl_akhir)->format('d M Y') : 'Hari Ini' }}
+            <strong>Periode:</strong>
+            {{ request('start_date') ? \Carbon\Carbon::parse(request('start_date'))->format('d M Y') : 'Semua Transaksi' }}
+            s/d
+            {{ request('end_date') ? \Carbon\Carbon::parse(request('end_date'))->format('d M Y') : 'Hari Ini' }}
         </p>
         <p><small>Dicetak pada: {{ \Carbon\Carbon::now()->format('d M Y, H:i') }} WIB</small></p>
     </div>
@@ -59,14 +59,14 @@
                     </td>
                     <td>{{ \Carbon\Carbon::parse($item->tanggal_penjualan)->format('d-m-Y H:i') }}</td>
                     <td>{{ $item->pengguna->name ?? $item->pengguna->username ?? 'Unknown' }}</td>
-                    
+
                     <!-- Menampilkan Detail Barang -->
                     <td>
                         @if($item->detail && $item->detail->count() > 0)
                             <ul class="detail-list">
                                 @foreach($item->detail as $det)
                                     <li>
-                                        <strong>{{ $det->makanan->nama_makanan ?? 'Terhapus' }}</strong> 
+                                        <strong>{{ $det->makanan->nama_makanan ?? 'Terhapus' }}</strong>
                                         ({{ $det->jumlah }}x @ Rp {{ number_format($det->harga_satuan, 0, ',', '.') }})
                                     </li>
                                 @endforeach
