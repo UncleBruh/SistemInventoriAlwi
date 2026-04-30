@@ -25,18 +25,10 @@ class PengeluaranGudangController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'id_makanan' => 'required|exists:makanan,id_makanan',
-            'jumlah_keluar' => 'required|integer|min:1',
-            'alasan' => 'required|in:expired,keperluan_prive,rusak,lainnya',
-            'keterangan' => 'nullable|string|max:500',
-            'tgl_pengeluaran' => 'required|date',
-            'barcode' => 'nullable|string',
-        ]);
-
+        // 1. Cari data barang terlebih dahulu
         $makanan = Makanan::findOrFail($request->id_makanan);
 
-        // Validasi stok gudang
+        // 2. Hitung dan validasi stok gudang[cite: 2]
         $stok_gudang_sebelum = $makanan->stok_gudang;
 
         if ($stok_gudang_sebelum < $request->jumlah_keluar) {
@@ -49,8 +41,10 @@ class PengeluaranGudangController extends Controller
         $stok_sebelum = $makanan->stok;
         $stok_sesudah = $stok_sebelum - $request->jumlah_keluar;
 
+        // 3. Simpan data dan potong stok dalam satu Transaksi Database yang aman
         DB::beginTransaction();
         try {
+            // Mencatat riwayat pengeluaran gudang
             PengeluaranGudang::create([
                 'id_makanan' => $makanan->id_makanan,
                 'id_pengguna' => Auth::id(),
@@ -59,15 +53,15 @@ class PengeluaranGudangController extends Controller
                 'stok_gudang_sesudah' => $stok_gudang_sesudah,
                 'alasan' => $request->alasan,
                 'keterangan' => $request->keterangan,
-                'tgl_pengeluaran' => $request->tgl_pengeluaran,
+                'tgl_pengeluaran' => $request->tgl_pengeluaran ?? date('Y-m-d'), // Pastikan tanggal terisi[cite: 2]
                 'barcode' => $request->barcode,
             ]);
 
-            // Update stok di tabel makanan - HANYA gudang yang berkurang
+            // Update stok di tabel makanan - HANYA gudang dan total yang berkurang
             $makanan->update([
-                'stok' => $stok_sesudah,           // Total berkurang
-                'stok_gudang' => $stok_gudang_sesudah,  // Gudang berkurang
-                'stok_etalase' => $makanan->stok_etalase,  // Etalase tetap
+                'stok' => $stok_sesudah,                 // Total berkurang
+                'stok_gudang' => $stok_gudang_sesudah,   // Gudang berkurang
+                // stok_etalase tidak perlu di-update karena tidak berubah
             ]);
 
             DB::commit();

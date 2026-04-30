@@ -18,7 +18,7 @@ class PengeluaranGudang extends Model
         'alasan',
         'keterangan',
         'tgl_pengeluaran',
-        'barcode',
+        'barcode'
     ];
 
     public function makanan()

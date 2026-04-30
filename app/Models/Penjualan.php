@@ -2,26 +2,30 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Penjualan extends Model
 {
+    use HasFactory;
+
     protected $table = 'penjualans';
     protected $primaryKey = 'id_penjualan';
 
+    // WAJIB ADA: no_nota, bayar, kembalian agar tidak ditolak saat klik BAYAR
     protected $fillable = [
         'id_makanan',
         'id_pengguna',
-        'jumlah',
+        'jumlah_terjual',    // <--- UBAH JADI INI
+        'harga_per_unit',    // <--- TAMBAH INI
         'total_harga',
-        'tgl_penjualan',
+        'tanggal_penjualan', // <--- Wajib tetap ada!
         'no_nota',
         'bayar',
-        'kembalian',
-        'kode_transaksi'
+        'kembalian'
     ];
 
-
+    // Relasi ke tabel detail (Anak)
     public function detail()
     {
         return $this->hasMany(DetailPenjualan::class, 'id_penjualan', 'id_penjualan');
@@ -31,7 +35,7 @@ class Penjualan extends Model
     {
         return $this->belongsTo(User::class, 'id_pengguna', 'id_pengguna');
     }
-
+    
     public function makanan()
     {
         return $this->belongsTo(Makanan::class, 'id_makanan', 'id_makanan');

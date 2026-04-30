@@ -13,12 +13,50 @@ use Illuminate\Support\Str;
 
 class PenjualanController extends Controller
 {
-    // Menampilkan riwayat transaksi
-    public function index()
+    // =========================================================================
+    // UPDATE: Menampilkan riwayat transaksi dengan Filter Tanggal
+    // =========================================================================
+    public function index(Request $request)
     {
-        // Menarik data transaksi induk beserta relasi anak (detail) dan kasir
-        $data = Penjualan::with(['pengguna', 'detail.makanan'])->latest('created_at')->get();
-        return view('penjualan.index', compact('data'));
+        $query = Penjualan::with(['pengguna', 'detail.makanan']);
+
+        // Menangkap input rentang tanggal dari form filter
+        $tgl_awal = $request->tgl_awal;
+        $tgl_akhir = $request->tgl_akhir;
+
+        // Jika user memilih tanggal, lakukan filter
+        if ($tgl_awal && $tgl_akhir) {
+            $query->whereBetween('tanggal_penjualan', [$tgl_awal . ' 00:00:00', $tgl_akhir . ' 23:59:59']);
+        }
+
+        // Eksekusi query: urutkan dari yang paling baru
+        $penjualan = $query->latest('tanggal_penjualan')->get();
+        
+        // Hitung total pendapatan dari hasil filter
+        $total_pendapatan = $penjualan->sum('total_harga');
+
+        return view('penjualan.index', compact('penjualan', 'tgl_awal', 'tgl_akhir', 'total_pendapatan'));
+    }
+
+    // =========================================================================
+    // BARU: Fungsi untuk mencetak Laporan PDF berdasarkan rentang tanggal
+    // =========================================================================
+    public function cetakPdf(Request $request)
+    {
+        $query = Penjualan::with(['pengguna', 'detail.makanan']);
+
+        $tgl_awal = $request->tgl_awal;
+        $tgl_akhir = $request->tgl_akhir;
+
+        if ($tgl_awal && $tgl_akhir) {
+            $query->whereBetween('tanggal_penjualan', [$tgl_awal . ' 00:00:00', $tgl_akhir . ' 23:59:59']);
+        }
+
+        // Urutkan dari yang terlama ke terbaru agar rapi saat dicetak
+        $penjualan = $query->orderBy('tanggal_penjualan', 'asc')->get();
+        $total_pendapatan = $penjualan->sum('total_harga');
+
+        return view('laporan.penjualan_pdf', compact('penjualan', 'tgl_awal', 'tgl_akhir', 'total_pendapatan'));
     }
 
     // Menampilkan halaman Aplikasi Kasir (POS)
@@ -35,7 +73,7 @@ class PenjualanController extends Controller
     }
 
     // =========================================================================
-    // UPDATE LANGKAH 1: Fungsi menambahkan barang ke keranjang session
+    // Fungsi menambahkan barang ke keranjang session
     // Mendukung input Barcode Scanner ATAU Pencarian Manual dari Select Option
     // =========================================================================
     public function tambahKeranjang(Request $request)
@@ -75,18 +113,12 @@ class PenjualanController extends Controller
             }
 
             $keranjang[$makanan->id_makanan]['jumlah'] = $jumlah_baru;
-
-            // UBAH harga_jual MENJADI harga DI BAWAH INI:
             $keranjang[$makanan->id_makanan]['subtotal'] = $jumlah_baru * $makanan->harga;
         } else {
             $keranjang[$makanan->id_makanan] = [
                 'nama_makanan' => $makanan->nama_makanan,
-
-                // UBAH harga_jual MENJADI harga DI BAWAH INI:
                 'harga_satuan' => $makanan->harga,
                 'jumlah' => $request->jumlah,
-
-                // UBAH harga_jual MENJADI harga DI BAWAH INI:
                 'subtotal' => $makanan->harga * $request->jumlah
             ];
         }
@@ -136,11 +168,12 @@ class PenjualanController extends Controller
                 'bayar' => $bayar,
                 'kembalian' => $kembalian,
                 'no_nota' => $no_nota,
-                'kode_transaksi' => $kode_transaksi,
-                'tgl_penjualan' => now()->format('Y-m-d'),
-                // Kolom pensiun kita isi data dummy agar sistem tidak error (bypass)
-                'id_makanan' => $id_makanan_dummy,
-                'jumlah' => 0
+                'tanggal_penjualan' => now(), // <--- Pastikan ini ada ya!
+                
+                // Kolom pensiun kita isi data dummy 0 agar database senang
+                'id_makanan' => $id_makanan_dummy, 
+                'jumlah_terjual' => 0,        // <--- UBAH JADI INI
+                'harga_per_unit' => 0         // <--- TAMBAH INI
             ]);
 
             $item_terjual = []; // Array untuk dikirim ke Log Aktivitas
