@@ -9,6 +9,7 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LaporanController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -60,6 +61,14 @@ Route::middleware('auth')->group(function () {
 
     // --- MANAJEMEN KATEGORI ---
     Route::resource('kategori', KategoriController::class)->only(['index', 'store', 'destroy']);
+
+    // Rute Laporan
+Route::get('/laporan/masuk', [LaporanController::class, 'mutasiMasuk'])->name('laporan.masuk');
+Route::get('/laporan/masuk/pdf', [LaporanController::class, 'cetakMutasiMasuk'])->name('laporan.masuk.pdf');
+
+Route::get('/laporan/keluar', [LaporanController::class, 'mutasiKeluar'])->name('laporan.keluar');
+Route::get('/laporan/keluar/pdf', [LaporanController::class, 'cetakMutasiKeluar'])->name('laporan.keluar.pdf');
 });
+
 
 require __DIR__.'/auth.php';
