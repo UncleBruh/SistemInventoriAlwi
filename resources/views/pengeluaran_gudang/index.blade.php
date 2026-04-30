@@ -14,7 +14,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-4 sm:p-6">
                 <div class="mb-4 bg-orange-50 p-3 sm:p-4 rounded-lg border border-orange-200 text-xs sm:text-sm">
                     <p class="text-orange-700">
-                        <strong>💡 Info:</strong> Tabel ini menampilkan pengeluaran barang dari GUDANG (rusak, expired, digigit tikus, dll). Hanya stok gudang yang berkurang, stok etalase tetap.
+                        <strong>💡 Info:</strong> Tabel ini menampilkan pengeluaran barang dari GUDANG (rusak, expired, dll). Hanya stok gudang yang berkurang, stok etalase tetap.
                     </p>
                 </div>
 
@@ -43,7 +43,7 @@
                                             <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">📅 Expired</span>
                                             @break
                                         @case('tikus')
-                                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">🐭 Tikus</span>
+                                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">📋 Kebutuhan Prive</span>
                                             @break
                                         @case('rusak')
                                             <span class="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-medium">🔨 Rusak</span>
