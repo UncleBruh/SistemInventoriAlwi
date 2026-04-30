@@ -28,8 +28,8 @@ class MutasiMasuk extends Model
         return $this->belongsTo(Makanan::class, 'id_makanan', 'id_makanan');
     }
 
-public function pengguna()
+    public function pengguna()
     {
-        return $this->belongsTo(User::class, 'id_pengguna');
+        return $this->belongsTo(User::class, 'id_pengguna', 'id_pengguna');
     }
 }
