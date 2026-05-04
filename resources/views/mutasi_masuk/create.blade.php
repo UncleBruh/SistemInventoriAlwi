@@ -20,7 +20,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('mutasi_masuk.store') }}" method="POST">
+            <form action="{{ route('mutasi_masuk.store') }}" method="POST" id="form-mutasi-masuk">
                 @csrf
                 <div class="mb-6 bg-green-50 p-3 sm:p-4 rounded-lg border border-green-200">
                     <p class="text-xs sm:text-sm font-medium text-green-700">Mode: ➕ Tambah Stok (Barang Masuk)</p>
@@ -74,7 +74,7 @@
                     <x-text-input id="jumlah_perubahan" class="block mt-1 w-full text-center text-xl sm:text-2xl font-bold" type="number" min="1" name="jumlah_perubahan" value="1" required />
                 </div>
 
-                <x-primary-button class="w-full justify-center py-2 sm:py-3 text-base bg-green-600 hover:bg-green-700">SIMPAN BARANG MASUK</x-primary-button>
+                <x-primary-button id="btn-submit-mutasi-masuk" class="w-full justify-center py-2 sm:py-3 text-base bg-green-600 hover:bg-green-700">SIMPAN BARANG MASUK</x-primary-button>
             </form>
         </div>
     </div>
@@ -202,5 +202,29 @@
                 if (typeof jQuery !== 'undefined') jQuery(selectMakanan).trigger('change');
             }
         }
+
+        // ===== PENCEGAHAN DOUBLE SUBMISSION =====
+        let isSubmitting = false;
+        const form = document.getElementById('form-mutasi-masuk');
+        const submitBtn = document.getElementById('btn-submit-mutasi-masuk');
+
+        form.addEventListener('submit', function(e) {
+            if (isSubmitting) {
+                e.preventDefault();
+                return false;
+            }
+
+            isSubmitting = true;
+
+            // Disable tombol submit
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            submitBtn.innerHTML = '⏳ Sedang Memproses...';
+
+            // Disable semua input
+            form.querySelectorAll('input, select, button[type="button"]').forEach(el => {
+                el.disabled = true;
+            });
+        });
     });
 </script>

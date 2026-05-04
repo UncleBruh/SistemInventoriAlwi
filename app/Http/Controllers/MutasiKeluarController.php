@@ -37,6 +37,24 @@ class MutasiKeluarController extends Controller
         ]);
 
         $makanan = Makanan::findOrFail($request->id_makanan);
+        $userId = Auth::id();
+        $jumlah = $request->jumlah_perubahan;
+
+        // PERBAIKAN BUG 2: Cegah double submission dengan mengecek duplikasi
+        // Cek apakah ada mutasi yang sama dalam 10 detik terakhir
+        $recentDuplicate = MutasiKeluar::where('id_makanan', $makanan->id_makanan)
+            ->where('id_pengguna', $userId)
+            ->where('jumlah_keluar', $jumlah)
+            ->where('tipe_keluar', $request->tipe_keluar)
+            ->where('tgl_mutasi', $request->tgl_mutasi)
+            ->where('created_at', '>=', now()->subSeconds(10))
+            ->first();
+
+        if ($recentDuplicate) {
+            return redirect()->back()->with('error',
+                'Submission duplikat terdeteksi! Data yang sama baru saja diinput dalam beberapa detik terakhir. ' .
+                'Silakan tunggu sebentar dan coba lagi jika diperlukan.');
+        }
 
         // PENTING: Barang keluar HANYA dari stok ETALASE
         $stok_etalase_sebelum = $makanan->stok_etalase;
@@ -57,7 +75,7 @@ class MutasiKeluarController extends Controller
         try {
             MutasiKeluar::create([
                 'id_makanan' => $makanan->id_makanan,
-                'id_pengguna' => Auth::id(),
+                'id_pengguna' => $userId,
                 'jumlah_keluar' => $request->jumlah_perubahan,
                 'stok_sebelum' => $stok_sebelum,
                 'stok_sesudah' => $stok_sesudah,

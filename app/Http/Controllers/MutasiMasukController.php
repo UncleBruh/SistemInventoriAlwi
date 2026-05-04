@@ -36,6 +36,23 @@ class MutasiMasukController extends Controller
         $makanan = Makanan::findOrFail($request->id_makanan);
         $lokasi = $request->lokasi_tujuan;
         $jumlah = $request->jumlah_perubahan;
+        $userId = Auth::id();
+
+        // PERBAIKAN BUG 2: Cegah double submission dengan mengecek duplikasi
+        // Cek apakah ada mutasi yang sama dalam 10 detik terakhir
+        $recentDuplicate = MutasiMasuk::where('id_makanan', $makanan->id_makanan)
+            ->where('id_pengguna', $userId)
+            ->where('jumlah_masuk', $jumlah)
+            ->where('lokasi_tujuan', $lokasi)
+            ->where('tgl_mutasi', $request->tgl_mutasi)
+            ->where('created_at', '>=', now()->subSeconds(10))
+            ->first();
+
+        if ($recentDuplicate) {
+            return redirect()->back()->with('error',
+                'Submission duplikat terdeteksi! Data yang sama baru saja diinput dalam beberapa detik terakhir. ' .
+                'Silakan tunggu sebentar dan coba lagi jika diperlukan.');
+        }
 
         // Simpan stok sebelum
         $stok_gudang_sebelum = $makanan->stok_gudang;
@@ -57,7 +74,7 @@ class MutasiMasukController extends Controller
         try {
             MutasiMasuk::create([
                 'id_makanan' => $makanan->id_makanan,
-                'id_pengguna' => Auth::id(), // Ini sudah benar, mencatat ID pengguna
+                'id_pengguna' => $userId,
                 'jumlah_masuk' => $jumlah,
                 'stok_sebelum' => $stok_sebelum,
                 'stok_sesudah' => $stok_sesudah,

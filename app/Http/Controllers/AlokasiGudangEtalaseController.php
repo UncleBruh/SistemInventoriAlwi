@@ -146,11 +146,41 @@ class AlokasiGudangEtalaseController extends Controller
 
         DB::beginTransaction();
         try {
-            // Kembalikan stok gudang dan kurangi etalase
-            $makanan->update([
-                'stok_gudang' => $makanan->stok_gudang + $alokasi->jumlah_dialokasi,
-                'stok_etalase' => $makanan->stok_etalase - $alokasi->jumlah_dialokasi,
-            ]);
+            // PERBAIKAN BUG: Cek apakah stok etalase sudah berkurang karena penjualan
+            // Saat alokasi dibuat: stok_etalase = $alokasi->stok_etalase_sesudah
+            // Sekarang: stok_etalase = $makanan->stok_etalase (bisa lebih kecil karena penjualan)
+
+            $stok_etalase_saat_ini = $makanan->stok_etalase;
+            $stok_etalase_saat_alokasi = $alokasi->stok_etalase_sesudah;
+
+            // Jika ada penjualan: stok_etalase_saat_ini < stok_etalase_saat_alokasi
+            $selisih_penjualan = $stok_etalase_saat_alokasi - $stok_etalase_saat_ini;
+
+            // Jumlah yang bisa dikembalikan ke gudang = yang belum terjual
+            $jumlah_untuk_dikembalikan = $alokasi->jumlah_dialokasi - $selisih_penjualan;
+
+            // Validasi: tidak boleh hasil stok menjadi negatif
+            if ($jumlah_untuk_dikembalikan < 0) {
+                DB::rollBack();
+                return redirect()->back()->with('error',
+                    'Tidak dapat menghapus alokasi. Stok etalase sudah terjual lebih banyak dari yang dialokasi. ' .
+                    'Alokasi: ' . $alokasi->jumlah_dialokasi . ' pcs, Terjual: ' . $selisih_penjualan . ' pcs.');
+            }
+
+            if ($jumlah_untuk_dikembalikan > 0) {
+                // Kembalikan hanya stok yang belum terjual ke gudang
+                $makanan->update([
+                    'stok_gudang' => $makanan->stok_gudang + $jumlah_untuk_dikembalikan,
+                    'stok_etalase' => $makanan->stok_etalase - $jumlah_untuk_dikembalikan,
+                    'stok' => $makanan->stok - 0, // Total stok tidak berubah (hanya dipindah dalam alokasi)
+                ]);
+
+                $pesan = 'Alokasi berhasil dihapus. ' . $jumlah_untuk_dikembalikan . ' pcs dikembalikan ke gudang. ' .
+                         $selisih_penjualan . ' pcs dianggap terjual dan dihapuskan dari pencatatan alokasi.';
+            } else {
+                // Semua sudah terjual, tidak ada yang dikembalikan
+                $pesan = 'Alokasi berhasil dihapus. Seluruh alokasi (' . $alokasi->jumlah_dialokasi . ' pcs) sudah terjual sebelumnya.';
+            }
 
             // Hapus record alokasi
             $alokasi->delete();
@@ -158,7 +188,7 @@ class AlokasiGudangEtalaseController extends Controller
             DB::commit();
 
             return redirect()->route('alokasi-gudang-etalase.index')
-                ->with('success', 'Alokasi berhasil dihapus. Stok telah dikembalikan ke gudang.');
+                ->with('success', $pesan);
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menghapus alokasi: ' . $e->getMessage());

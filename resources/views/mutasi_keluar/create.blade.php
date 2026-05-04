@@ -18,7 +18,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('mutasi_keluar.store') }}" method="POST">
+            <form action="{{ route('mutasi_keluar.store') }}" method="POST" id="form-mutasi-keluar">
                 @csrf
                 <div class="mb-6 bg-purple-50 p-4 rounded-lg border border-purple-200">
                     <p class="text-sm font-medium text-purple-700">Mode: 📦 Pengelolaan Stok Etalase</p>
@@ -81,7 +81,7 @@
                     </div>
                 </div>
 
-                <x-primary-button class="w-full justify-center py-3 text-lg bg-purple-600 hover:bg-purple-700">SIMPAN PENGELOLAAN STOK ETALASE</x-primary-button>
+                <x-primary-button id="btn-submit-mutasi-keluar" class="w-full justify-center py-3 text-lg bg-purple-600 hover:bg-purple-700">SIMPAN PENGELOLAAN STOK ETALASE</x-primary-button>
             </form>
         </div>
     </div>
@@ -176,5 +176,29 @@
                 }
             }
         }
+
+        // ===== PENCEGAHAN DOUBLE SUBMISSION =====
+        let isSubmitting = false;
+        const form = document.getElementById('form-mutasi-keluar');
+        const submitBtn = document.getElementById('btn-submit-mutasi-keluar');
+
+        form.addEventListener('submit', function(e) {
+            if (isSubmitting) {
+                e.preventDefault();
+                return false;
+            }
+
+            isSubmitting = true;
+
+            // Disable tombol submit
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            submitBtn.innerHTML = '⏳ Sedang Memproses...';
+
+            // Disable semua input
+            form.querySelectorAll('input, select, button[type="button"]').forEach(el => {
+                el.disabled = true;
+            });
+        });
     });
 </script>
