@@ -203,28 +203,35 @@
             }
         }
 
-        // ===== PENCEGAHAN DOUBLE SUBMISSION =====
-        let isSubmitting = false;
-        const form = document.getElementById('form-mutasi-masuk');
+        // ===== PENCEGAHAN DOUBLE SUBMISSION (Anti Spam Klik) =====
+        const formMasuk = document.getElementById('form-mutasi-masuk');
         const submitBtn = document.getElementById('btn-submit-mutasi-masuk');
 
-        form.addEventListener('submit', function(e) {
-            if (isSubmitting) {
-                e.preventDefault();
-                return false;
-            }
+        if (formMasuk && submitBtn) {
+            let isSubmitting = false;
 
-            isSubmitting = true;
+            formMasuk.addEventListener('submit', function(e) {
+                // Jika form sedang disubmit, batalkan eksekusi klik berikutnya secara absolut
+                if (isSubmitting) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
 
-            // Disable tombol submit
-            submitBtn.disabled = true;
-            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            submitBtn.innerHTML = '⏳ Sedang Memproses...';
+                // Kunci gerbangnya
+                isSubmitting = true;
 
-            // Disable semua input
-            form.querySelectorAll('input, select, button[type="button"]').forEach(el => {
-                el.disabled = true;
+                // Ubah tampilan tombol agar pengguna tahu sedang memproses
+                submitBtn.innerHTML = 'MEMPROSES... ⏳';
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                submitBtn.style.pointerEvents = 'none';
+
+                // Trik setTimeout: Biarkan event submit HTML berjalan duluan selama 10ms,
+                // baru kemudian tombolnya dimatikan. Ini memastikan data berhasil terkirim ke Laravel.
+                setTimeout(() => {
+                    submitBtn.disabled = true;
+                }, 10);
             });
-        });
+        }
     });
 </script>

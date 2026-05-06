@@ -29,7 +29,8 @@
                 </div>
             @endif
 
-            <form action="{{ route('alokasi-gudang-etalase.store') }}" method="POST">
+            <!-- PERUBAHAN: Menambahkan id="form-alokasi" agar JavaScript tidak salah pilih form -->
+            <form id="form-alokasi" action="{{ route('alokasi-gudang-etalase.store') }}" method="POST">
                 @csrf
                 <div class="mb-6 bg-indigo-50 p-4 rounded-lg border border-indigo-200">
                     <p class="text-sm font-medium text-indigo-700">Mode: 🏭 Pemindahan Stok (Internal)</p>
@@ -86,7 +87,7 @@
             const readerDiv = document.getElementById('reader');
             const barcodeInput = document.getElementById('barcode');
             const selectMakanan = document.getElementById('id_makanan');
-            const jumlahInput = document.getElementById('jumlah'); // Tangkap elemen jumlah
+            const jumlahInput = document.getElementById('jumlah'); 
 
             let html5QrCode;
             let isScanning = false;
@@ -109,8 +110,6 @@
             barcodeInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-
-                    // Tambahkan jeda 200ms dan blok otomatis (select)
                     setTimeout(function() {
                         jumlahInput.focus();
                         jumlahInput.select();
@@ -162,7 +161,7 @@
                     (errorMessage) => {}
                 ).catch((err) => {
                     console.error("Error memulai kamera: ", err);
-                    alert("Kamera tidak dapat diakses. Pastikan Anda mengizinkan akses kamera.");
+                    alert("Kamera tidak dapat diakses. Pastikan Anda mengizinkan akses kamera dan menggunakan koneksi HTTPS atau localhost.");
 
                     readerDiv.style.display = 'none';
                     isScanning = false;
@@ -183,13 +182,11 @@
                 for (let option of selectMakanan.options) {
                     if (option.getAttribute('data-barcode') === barcode) {
                         selectMakanan.value = option.value;
-
                         selectMakanan.dispatchEvent(new Event('change'));
 
                         if (typeof jQuery !== 'undefined') {
                             jQuery(selectMakanan).trigger('change');
                         }
-
                         matchFound = true;
                         break;
                     }
@@ -199,6 +196,37 @@
                     selectMakanan.value = "";
                     if (typeof jQuery !== 'undefined') jQuery(selectMakanan).trigger('change');
                 }
+            }
+
+            // ===== PERBAIKAN: PENCEGAHAN SPAM KLIK YANG SPESIFIK =====
+            const formAlokasi = document.getElementById('form-alokasi');
+            
+            if (formAlokasi) {
+                let isSubmitting = false;
+                
+                formAlokasi.addEventListener('submit', function(e) {
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    
+                    // Jika form sedang disubmit, batalkan eksekusi berikutnya secara absolut
+                    if (isSubmitting) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+
+                    // Kunci gerbangnya
+                    isSubmitting = true;
+
+                    if (submitBtn) {
+                        submitBtn.innerHTML = 'MEMPROSES... ⏳';
+                        submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        submitBtn.style.pointerEvents = 'none'; // Tambahan CSS untuk cegah klik
+
+                        setTimeout(() => {
+                            submitBtn.disabled = true;
+                        }, 10);
+                    }
+                });
             }
         });
     </script>
