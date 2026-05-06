@@ -18,7 +18,8 @@
                 </div>
             @endif
 
-            <form action="{{ route('mutasi_keluar.store') }}" method="POST">
+            <!-- DITAMBAHKAN ID PADA FORM -->
+            <form id="form-mutasi-keluar" action="{{ route('mutasi_keluar.store') }}" method="POST">
                 @csrf
                 <div class="mb-6 bg-purple-50 p-4 rounded-lg border border-purple-200">
                     <p class="text-sm font-medium text-purple-700">Mode: 📦 Pengelolaan Stok Etalase</p>
@@ -81,7 +82,8 @@
                     </div>
                 </div>
 
-                <x-primary-button class="w-full justify-center py-3 text-lg bg-purple-600 hover:bg-purple-700">SIMPAN PENGELOLAAN STOK ETALASE</x-primary-button>
+                <!-- DITAMBAHKAN ID PADA TOMBOL SUBMIT -->
+                <x-primary-button id="btn-submit-mutasi-keluar" class="w-full justify-center py-3 text-lg bg-purple-600 hover:bg-purple-700">SIMPAN PENGELOLAAN STOK ETALASE</x-primary-button>
             </form>
         </div>
     </div>
@@ -166,35 +168,61 @@
         });
 
         function findMakananByBarcode(barcode) {
-            if (!barcode) return;
+            if (!barcode) {
+                selectMakanan.value = "";
+                if (typeof jQuery !== 'undefined') jQuery(selectMakanan).trigger('change');
+                return;
+            }
 
+            let matchFound = false;
             for (let option of selectMakanan.options) {
                 if (option.getAttribute('data-barcode') === barcode) {
                     selectMakanan.value = option.value;
                     selectMakanan.dispatchEvent(new Event('change'));
+
+                    if (typeof jQuery !== 'undefined') {
+                        jQuery(selectMakanan).trigger('change');
+                    }
+
+                    matchFound = true;
                     break;
                 }
             }
+
+            if (!matchFound) {
+                selectMakanan.value = "";
+                if (typeof jQuery !== 'undefined') jQuery(selectMakanan).trigger('change');
+            }
         }
 
-        // --- FITUR BARU: Mencegah Double Submit (Anti Spam Klik) ---
-        const form = document.querySelector('form');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                const submitBtn = this.querySelector('button[type="submit"]');
-                
-                if (submitBtn) {
-                    // Cek jika tombol sudah dilumpuhkan sebelumnya
-                    if (submitBtn.disabled) {
-                        e.preventDefault();
-                        return;
-                    }
+        // ===== PENCEGAHAN DOUBLE SUBMISSION (Anti Spam Klik) =====
+        const formKeluar = document.getElementById('form-mutasi-keluar');
+        const submitBtnKeluar = document.getElementById('btn-submit-mutasi-keluar');
 
-                    // Tampilkan indikator loading dan matikan tombol
-                    submitBtn.innerHTML = 'MEMPROSES... <span class="animate-spin inline-block ml-2">↻</span>';
-                    submitBtn.disabled = true;
-                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        if (formKeluar && submitBtnKeluar) {
+            let isSubmitting = false;
+
+            formKeluar.addEventListener('submit', function(e) {
+                // Jika form sedang disubmit, batalkan eksekusi klik berikutnya secara absolut
+                if (isSubmitting) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    return false;
                 }
+
+                // Kunci gerbangnya
+                isSubmitting = true;
+
+                // Ubah tampilan tombol agar pengguna tahu sedang memproses
+                submitBtnKeluar.innerHTML = 'MEMPROSES... ⏳';
+                submitBtnKeluar.classList.add('opacity-50', 'cursor-not-allowed');
+                submitBtnKeluar.style.pointerEvents = 'none';
+
+                // Trik setTimeout: Biarkan event submit HTML berjalan duluan selama 10ms,
+                // baru kemudian tombolnya dimatikan. Ini memastikan data berhasil terkirim ke Laravel.
+                setTimeout(() => {
+                    submitBtnKeluar.disabled = true;
+                }, 10);
             });
         }
     });

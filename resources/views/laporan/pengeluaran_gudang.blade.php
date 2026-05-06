@@ -6,8 +6,8 @@
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-6">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
 
-            <!-- Form Filter & Tombol PDF -->
-            <form method="GET" action="{{ route('laporan.pengeluaran_gudang') }}" class="mb-6 flex flex-wrap gap-4 items-end bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <!-- DITAMBAHKAN ID PADA FORM -->
+            <form id="form-filter-pengeluaran" method="GET" action="{{ route('laporan.pengeluaran_gudang') }}" class="mb-6 flex flex-wrap gap-4 items-end bg-gray-50 p-4 rounded-lg border border-gray-200">
                 <div>
                     <x-input-label for="nama_produk" value="Cari Nama Produk" />
                     <x-text-input id="nama_produk" type="text" name="nama_produk" value="{{ request('nama_produk') }}" placeholder="Contoh: Donat, Kopi..." class="block mt-1" />
@@ -29,7 +29,8 @@
                     </select>
                 </div>
                 <div class="flex gap-2">
-                    <x-primary-button type="submit" class="bg-indigo-600 hover:bg-indigo-700">🔍 Filter</x-primary-button>
+                    <!-- DITAMBAHKAN ID PADA TOMBOL SUBMIT -->
+                    <x-primary-button id="btn-submit-filter-pengeluaran" type="submit" class="bg-indigo-600 hover:bg-indigo-700 w-32 justify-center">🔍 Filter</x-primary-button>
 
                     <!-- Tombol Cetak PDF -->
                     <a href="{{ route('laporan.pengeluaran_gudang.pdf', ['nama_produk' => request('nama_produk'), 'start_date' => request('start_date'), 'end_date' => request('end_date'), 'sort' => request('sort')]) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 transition">
@@ -72,4 +73,40 @@
             </div>
         </div>
     </div>
+
+    <!-- ===== SCRIPT ANTI SPAM KLIK ===== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Format yang persis sama dengan file lainnya
+            const formFilter = document.getElementById('form-filter-pengeluaran');
+            const submitBtnFilter = document.getElementById('btn-submit-filter-pengeluaran');
+
+            if (formFilter && submitBtnFilter) {
+                let isSubmitting = false;
+
+                formFilter.addEventListener('submit', function(e) {
+                    // Jika form sedang disubmit, batalkan eksekusi klik berikutnya secara absolut
+                    if (isSubmitting) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
+
+                    // Kunci gerbangnya
+                    isSubmitting = true;
+
+                    // Ubah tampilan tombol agar pengguna tahu sedang memproses
+                    submitBtnFilter.innerHTML = 'MEMPROSES... ⏳';
+                    submitBtnFilter.classList.add('opacity-50', 'cursor-not-allowed');
+                    submitBtnFilter.style.pointerEvents = 'none';
+
+                    // Trik setTimeout: Biarkan event submit HTML berjalan duluan selama 10ms,
+                    // baru kemudian tombolnya dimatikan. Ini memastikan data berhasil terkirim ke Laravel.
+                    setTimeout(() => {
+                        submitBtnFilter.disabled = true;
+                    }, 10);
+                });
+            }
+        });
+    </script>
 </x-app-layout>

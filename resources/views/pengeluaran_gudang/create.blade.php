@@ -18,7 +18,8 @@
                 </div>
             @endif
 
-            <form action="{{ route('pengeluaran_gudang.store') }}" method="POST">
+            <!-- DITAMBAHKAN ID PADA FORM -->
+            <form id="form-pengeluaran-gudang" action="{{ route('pengeluaran_gudang.store') }}" method="POST">
                 @csrf
                 <div class="mb-6 bg-orange-50 p-4 rounded-lg border border-orange-200">
                     <p class="text-sm font-medium text-orange-700">Mode: 🏭 Pengeluaran Stok Gudang</p>
@@ -86,7 +87,8 @@
                     <textarea id="keterangan" name="keterangan" rows="3" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full" placeholder="Jelaskan detail kerusakan atau alasan pengeluaran... (contoh: Bungkus sobek, udara masuk, aroma berubah)"></textarea>
                 </div>
 
-                <x-primary-button class="w-full justify-center py-3 text-lg bg-orange-600 hover:bg-orange-700">SIMPAN PENGELUARAN GUDANG</x-primary-button>
+                <!-- DITAMBAHKAN ID PADA TOMBOL SUBMIT -->
+                <x-primary-button id="btn-submit-pengeluaran-gudang" class="w-full justify-center py-3 text-lg bg-orange-600 hover:bg-orange-700">SIMPAN PENGELUARAN GUDANG</x-primary-button>
             </form>
         </div>
     </div>
@@ -180,6 +182,37 @@
                     break;
                 }
             }
+        }
+
+        // ===== PENCEGAHAN DOUBLE SUBMISSION (Anti Spam Klik) =====
+        const formPengeluaranGudang = document.getElementById('form-pengeluaran-gudang');
+        const submitBtnPengeluaranGudang = document.getElementById('btn-submit-pengeluaran-gudang');
+
+        if (formPengeluaranGudang && submitBtnPengeluaranGudang) {
+            let isSubmitting = false;
+
+            formPengeluaranGudang.addEventListener('submit', function(e) {
+                // Jika form sedang disubmit, batalkan eksekusi klik berikutnya secara absolut
+                if (isSubmitting) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    return false;
+                }
+
+                // Kunci gerbangnya
+                isSubmitting = true;
+
+                // Ubah tampilan tombol agar pengguna tahu sedang memproses
+                submitBtnPengeluaranGudang.innerHTML = 'MEMPROSES... ⏳';
+                submitBtnPengeluaranGudang.classList.add('opacity-50', 'cursor-not-allowed');
+                submitBtnPengeluaranGudang.style.pointerEvents = 'none';
+
+                // Trik setTimeout: Biarkan event submit HTML berjalan duluan selama 10ms,
+                // baru kemudian tombolnya dimatikan. Ini memastikan data berhasil terkirim ke Laravel.
+                setTimeout(() => {
+                    submitBtnPengeluaranGudang.disabled = true;
+                }, 10);
+            });
         }
     });
 </script>
