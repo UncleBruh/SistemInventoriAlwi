@@ -20,14 +20,18 @@ class ReturController extends Controller
     }
 
     // 2. Menampilkan Halaman Form Input Retur
-    public function create()
+    public function create(Request $request)
     {
+        // Tangkap ID jika user mengakses dari halaman laporan penjualan
+        $selected_id = $request->query('id_penjualan');
+
         // Ambil data transaksi penjualan 30 hari terakhir agar tidak terlalu berat
         $penjualan = Penjualan::with('detail.makanan')
                     ->where('tgl_penjualan', '>=', now()->subDays(30))
                     ->latest()
                     ->get();
-        return view('retur.create', compact('penjualan'));
+                    
+        return view('retur.create', compact('penjualan', 'selected_id'));
     }
 
     // 3. Memproses Data Retur
@@ -42,7 +46,7 @@ class ReturController extends Controller
         ]);
 
         try {
-            DB::beginTransaction(); // Memulai transaksi database agar aman (jika gagal, semua dibatalkan)
+            DB::beginTransaction(); 
 
             $penjualan = Penjualan::findOrFail($request->id_penjualan);
             $makanan = Makanan::findOrFail($request->id_makanan);
@@ -82,16 +86,16 @@ class ReturController extends Controller
             $penjualan->total_harga -= $nominal_pengembalian;
             $penjualan->save();
 
-            // D. Kurangi jumlah di detail penjualan (Opsional, agar datanya akurat)
+            // D. Kurangi jumlah di detail penjualan
             $detailPenjualan->jumlah -= $request->jumlah_retur;
             $detailPenjualan->save();
 
-            DB::commit(); // Simpan permanen ke database
+            DB::commit();
 
             return redirect()->route('retur.index')->with('success', 'Retur berhasil! Stok etalase bertambah dan total penjualan telah dipotong otomatis.');
 
         } catch (\Exception $e) {
-            DB::rollback(); // Batalkan semua proses jika ada error
+            DB::rollback(); 
             return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
         }
     }
