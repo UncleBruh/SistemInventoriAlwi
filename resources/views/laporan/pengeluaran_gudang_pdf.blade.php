@@ -98,12 +98,12 @@
         }
     </style>
 </head>
-<body onload="window.print()">
+<body>
 
     <!-- Header -->
     <div class="pdf-header">
         <div>
-            <img src="{{ public_path('foto/logobimbel.png') }}" alt="Logo" />
+            <img src="file://{{ public_path('foto/logobimbel.png') }}" alt="Logo" />
         </div>
         <div class="pdf-header-text">
             <h1>BIMBEL ALWI COLLEGE</h1>

@@ -43,6 +43,10 @@
                     <a href="{{ route('penjualan.create') }}" class="{{ request()->routeIs('penjualan.create') ? $activeClass : $inactiveClass }} {{ $navClass }}">🛒 Mesin Kasir</a>
 
                     @if(Auth::user()->role === 'Pemilik' || Auth::user()->role === 'Admin')
+                        <a href="{{ route('retur.index') }}" class="{{ request()->routeIs('retur.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">↩️ Pengelolaan Retur</a>
+                    @endif
+
+                    @if(Auth::user()->role === 'Pemilik' || Auth::user()->role === 'Admin')
                         <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase">Laporan</div>
 
                         <a href="{{ route('penjualan.index') }}" class="{{ request()->routeIs('penjualan.*') && !request()->routeIs('penjualan.create') ? $activeClass : $inactiveClass }} {{ $navClass }}">💰 Laporan Penjualan</a>
@@ -93,6 +97,10 @@
             <!-- MENU BARU: TRANSAKSI / KASIR DI BAWAH MUTASI -->
             <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[10px] font-bold text-gray-400 uppercase">Transaksi</div>
             <a href="{{ route('penjualan.create') }}" class="{{ request()->routeIs('penjualan.create') ? $activeClass : $inactiveClass }} {{ $navClass }}">🛒 Mesin Kasir</a>
+
+            @if(Auth::user()->role === 'Pemilik' || Auth::user()->role === 'Admin')
+                <a href="{{ route('retur.index') }}" class="{{ request()->routeIs('retur.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">↩️ Pengelolaan Retur</a>
+            @endif
 
             @if(Auth::user()->role === 'Pemilik' || Auth::user()->role === 'Admin')
                 <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[10px] font-bold text-gray-400 uppercase">Laporan</div>
