@@ -25,7 +25,9 @@
                     <select id="id_penjualan" name="id_penjualan" class="border-gray-300 rounded-md shadow-sm w-full mt-1" required>
                         <option value="">-- Pilih Transaksi --</option>
                         @foreach($penjualan as $trx)
-                            <option value="{{ $trx->id_penjualan }}">
+                            <option value="{{ $trx->id_penjualan }}" 
+                                {{ (isset($selected_id) && $selected_id == $trx->id_penjualan) ? 'selected' : '' }}
+                                data-items='@json($trx->detail)'>
                                 {{ $trx->kode_transaksi }} | Tanggal: {{ \Carbon\Carbon::parse($trx->tgl_penjualan)->format('d M Y') }} | Total: Rp {{ number_format($trx->total_harga, 0, ',', '.') }}
                             </option>
                         @endforeach
@@ -36,9 +38,6 @@
                     <x-input-label for="id_makanan" value="2. Jajanan yang Diretur" />
                     <select id="id_makanan" name="id_makanan" class="border-gray-300 rounded-md shadow-sm w-full mt-1" required>
                         <option value="">-- Pilih Transaksi di atas terlebih dahulu --</option>
-                        @foreach(\App\Models\Makanan::all() as $item)
-                            <option value="{{ $item->id_makanan }}">{{ $item->barcode }} - {{ $item->nama_makanan }}</option>
-                        @endforeach
                     </select>
                 </div>
 
@@ -67,6 +66,42 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // --- LOGIKA FILTER BARANG BERDASARKAN TRANSAKSI ---
+            const selectTrx = document.getElementById('id_penjualan');
+            const selectMakanan = document.getElementById('id_makanan');
+
+            function updateMakanan() {
+                const selectedOption = selectTrx.options[selectTrx.selectedIndex];
+                
+                // Jika tidak ada transaksi yang dipilih, kosongkan dropdown barang
+                if (!selectedOption || !selectedOption.value) {
+                    selectMakanan.innerHTML = '<option value="">-- Pilih Transaksi di atas terlebih dahulu --</option>';
+                    return;
+                }
+                
+                // Ambil daftar barang dari atribut data-items
+                const items = JSON.parse(selectedOption.getAttribute('data-items') || '[]');
+                
+                // Reset dropdown barang
+                selectMakanan.innerHTML = '<option value="">-- Pilih Jajanan --</option>';
+                
+                // Isi dropdown dengan barang yang hanya dibeli pada transaksi tersebut
+                items.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.id_makanan;
+                    const namaMakanan = item.makanan ? item.makanan.nama_makanan : 'Produk Terhapus';
+                    opt.textContent = `${namaMakanan} (Dibeli: ${item.jumlah} pcs)`;
+                    selectMakanan.appendChild(opt);
+                });
+            }
+
+            // Panggil saat halaman pertama dimuat (berguna jika datang dari tombol Laporan)
+            if(selectTrx.value) updateMakanan();
+
+            // Panggil setiap kali user mengganti pilihan transaksi secara manual
+            selectTrx.addEventListener('change', updateMakanan);
+
+            // --- LOGIKA ANTI SPAM KLIK ---
             const form = document.getElementById('form-retur');
             let isSubmitting = false;
 

@@ -1,12 +1,18 @@
 <x-app-layout>
     <x-slot name="header">
-        {{ __('Laporan Penjualan') }}
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('Laporan Penjualan') }}
+            </h2>
+            <a href="{{ route('retur.index') }}" class="inline-flex items-center px-4 py-2 bg-orange-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-orange-700 transition shadow-sm">
+                📋 Riwayat Retur
+            </a>
+        </div>
     </x-slot>
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-6">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
 
-            <!-- Form Filter & Tombol PDF -->
             <form method="GET" action="{{ route('laporan.penjualan') }}" class="mb-6 flex flex-wrap gap-4 items-end bg-gray-50 p-4 rounded-lg border border-gray-200">
                 <div>
                     <x-input-label for="nama_produk" value="Cari Nama Produk" />
@@ -31,14 +37,12 @@
                 <div class="flex gap-2">
                     <x-primary-button type="submit" class="bg-indigo-600 hover:bg-indigo-700">🔍 Filter</x-primary-button>
 
-                    <!-- Tombol Cetak PDF -->
                     <a href="{{ route('laporan.penjualan.pdf', ['nama_produk' => request('nama_produk'), 'start_date' => request('start_date'), 'end_date' => request('end_date'), 'sort' => request('sort')]) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 transition">
                         🖨️ Cetak PDF
                     </a>
                 </div>
             </form>
 
-            <!-- Desktop Table View -->
             <div class="hidden md:block overflow-x-auto">
                 <table class="min-w-full bg-white border border-gray-200">
                     <thead class="bg-gray-100">
@@ -49,6 +53,7 @@
                             <th class="py-3 px-4 border-b text-left text-sm font-bold text-gray-700">Petugas</th>
                             <th class="py-3 px-4 border-b text-left text-sm font-bold text-gray-700">Detail Belanjaan</th>
                             <th class="py-3 px-4 border-b text-right text-sm font-bold text-gray-700">Total Bayar</th>
+                            <th class="py-3 px-4 border-b text-center text-sm font-bold text-gray-700">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -66,17 +71,21 @@
                                     </ul>
                                 </td>
                                 <td class="py-2 px-4 border-b text-right text-sm font-bold text-green-600">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
+                                <td class="py-2 px-4 border-b text-center text-sm">
+                                    <a href="{{ route('retur.create', ['id_penjualan' => $item->id_penjualan]) }}" class="inline-flex items-center px-3 py-1 bg-orange-100 text-orange-700 hover:bg-orange-200 border border-orange-300 rounded-md text-xs font-bold transition">
+                                        🔄 Retur
+                                    </a>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="py-6 px-4 text-center text-gray-500 italic">Tidak ada data penjualan untuk periode ini.</td>
+                                <td colspan="7" class="py-6 px-4 text-center text-gray-500 italic">Tidak ada data penjualan untuk periode ini.</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
 
-            <!-- Mobile Card View -->
             <div class="md:hidden space-y-3">
                 @forelse ($penjualan as $item)
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
@@ -97,6 +106,12 @@
                                 @endforeach
                             </ul>
                         </div>
+                        
+                        <div class="flex justify-end">
+                            <a href="{{ route('retur.create', ['id_penjualan' => $item->id_penjualan]) }}" class="inline-flex items-center px-4 py-2 bg-orange-100 text-orange-700 hover:bg-orange-200 border border-orange-300 rounded-md text-sm font-bold transition shadow-sm">
+                                🔄 Proses Retur Barang
+                            </a>
+                        </div>
                     </div>
                 @empty
                     <div class="text-center py-8">
@@ -105,7 +120,6 @@
                 @endforelse
             </div>
 
-            <!-- Total Penghasilan Per Tanggal -->
             @if($penjualan->count() > 0)
                 <div class="mt-8 pt-6 border-t border-gray-200">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">📊 Total Penghasilan Per Tanggal</h3>
@@ -114,11 +128,11 @@
                             <thead class="bg-yellow-100">
                                 <tr>
                                     <th class="py-3 px-4 border-b text-left text-sm font-bold text-gray-700">Tanggal</th>
-                                    <th class="py-3 px-4 border-b text-right text-sm font-bold text-gray-700">Total Penghasilan</th>
+                                    <th class="py-3 px-4 border-b text-right text-sm font-bold text-gray-700">Total Penghasilan (Setelah Potong Retur)</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($totalPerTanggal as $tanggal => $total)
+                                @foreach($totalPerTanggal ?? [] as $tanggal => $total)
                                     <tr class="hover:bg-yellow-50">
                                         <td class="py-2 px-4 border-b text-sm font-medium">{{ \Carbon\Carbon::parse($tanggal)->format('d M Y (l)') }}</td>
                                         <td class="py-2 px-4 border-b text-right text-sm font-bold text-green-600">Rp {{ number_format($total, 0, ',', '.') }}</td>
