@@ -103,7 +103,14 @@
     <!-- Header -->
     <div class="pdf-header">
         <div>
-            <img src="file://{{ public_path('foto/logobimbel.png') }}" alt="Logo" />
+            @php
+                $imagePath = public_path('foto/logobimbel.png');
+                if (file_exists($imagePath)) {
+                    $imageData = base64_encode(file_get_contents($imagePath));
+                    $imageMime = mime_content_type($imagePath);
+                    echo '<img src="data:' . $imageMime . ';base64,' . $imageData . '" alt="Logo" />';
+                }
+            @endphp
         </div>
         <div class="pdf-header-text">
             <h1>BIMBEL ALWI COLLEGE</h1>

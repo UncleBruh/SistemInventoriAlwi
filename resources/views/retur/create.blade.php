@@ -55,7 +55,7 @@
                     Pilih Item yang Diretur
                 </h3>
 
-                <form action="{{ route('retur.store') }}" method="POST" id="retur-form">
+                <form action="{{ route('retur.store') }}" method="POST" id="retur-form" onsubmit="validateFormBeforeSubmit(event)">
                     @csrf
 
                     <input type="hidden" name="id_penjualan" id="form-id_penjualan" />
@@ -69,7 +69,7 @@
                         <a href="{{ route('retur.index') }}" class="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium text-sm transition border border-gray-300">
                             ← Batal
                         </a>
-                        <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition">
+                        <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition" id="submit-btn">
                             ✅ Simpan Retur
                         </button>
                     </div>
@@ -85,6 +85,48 @@
                 loadTransactionDetails(id_penjualan);
             });
         });
+
+        function validateFormBeforeSubmit(event) {
+            event.preventDefault();
+            
+            const id_penjualan = document.getElementById('form-id_penjualan').value;
+            const checkedItems = document.querySelectorAll('.item-checkbox:checked');
+            
+            if (!id_penjualan) {
+                alert('❌ Pilih transaksi penjualan terlebih dahulu!');
+                return false;
+            }
+            
+            if (checkedItems.length === 0) {
+                alert('❌ Pilih minimal satu item untuk diretur!');
+                return false;
+            }
+            
+            // Validate setiap item yang dipilih
+            let valid = true;
+            checkedItems.forEach((checkbox) => {
+                const index = checkbox.value;
+                const jumlahInput = document.querySelector(`input[name="retur_items[${index}][jumlah_retur]"]`);
+                const alasanInput = document.querySelector(`select[name="retur_items[${index}][alasan_retur]"]`);
+                
+                if (!jumlahInput || !jumlahInput.value) {
+                    alert(`❌ Isi jumlah retur untuk item ke-${parseInt(index) + 1}!`);
+                    valid = false;
+                    return;
+                }
+                
+                if (!alasanInput || !alasanInput.value) {
+                    alert(`❌ Pilih alasan retur untuk item ke-${parseInt(index) + 1}!`);
+                    valid = false;
+                    return;
+                }
+            });
+            
+            if (!valid) return false;
+            
+            // Submit form
+            document.getElementById('retur-form').submit();
+        }
 
         function loadTransactionDetails(id_penjualan) {
             // Set form value
@@ -131,17 +173,20 @@
 
                             <div>
                                 <label class="text-sm font-medium text-gray-700">Jumlah Retur (Max: ${detail.jumlah})</label>
-                                <input type="number" name="retur_items[${index}][jumlah_retur]" min="1" max="${detail.jumlah}" value="1" class="mt-1 w-full border-gray-300 rounded-md shadow-sm px-3 py-2" required />
+                                <input type="number" name="retur_items[${index}][jumlah_retur]" min="1" max="${detail.jumlah}" value="1" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2" required />
                             </div>
 
                             <div>
-                                <label class="text-sm font-medium text-gray-700">Harga Satuan (Rp)</label>
-                                <input type="number" name="retur_items[${index}][harga_satuan]" value="${hargaSatuan}" min="0" class="mt-1 w-full border-gray-300 rounded-md shadow-sm px-3 py-2" required />
+                                <label class="text-sm font-medium text-gray-700">Harga Satuan (Rp) - Tidak Bisa Diubah</label>
+                                <div class="mt-1 w-full border-gray-300 border rounded-md shadow-sm px-3 py-2 bg-gray-100 text-gray-700">
+                                    Rp ${new Intl.NumberFormat('id-ID').format(hargaSatuan)}
+                                </div>
+                                <input type="hidden" name="retur_items[${index}][harga_satuan]" value="${hargaSatuan}" />
                             </div>
 
                             <div>
                                 <label class="text-sm font-medium text-gray-700">Alasan Retur *</label>
-                                <select name="retur_items[${index}][alasan_retur]" class="mt-1 w-full border-gray-300 rounded-md shadow-sm px-3 py-2" required>
+                                <select name="retur_items[${index}][alasan_retur]" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2" required>
                                     <option value="">-- Pilih Alasan --</option>
                                     <option value="rusak">Rusak</option>
                                     <option value="expired">Expired/Kadaluarsa</option>
@@ -153,7 +198,7 @@
 
                             <div>
                                 <label class="text-sm font-medium text-gray-700">Keterangan (Opsional)</label>
-                                <textarea name="retur_items[${index}][keterangan]" class="mt-1 w-full border-gray-300 rounded-md shadow-sm px-3 py-2 text-sm" rows="2" placeholder="Tambahkan catatan jika ada..."></textarea>
+                                <textarea name="retur_items[${index}][keterangan]" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 text-sm" rows="2" placeholder="Tambahkan catatan jika ada..."></textarea>
                             </div>
                         </div>
                     </div>
