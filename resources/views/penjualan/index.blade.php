@@ -45,7 +45,7 @@
                     <thead class="bg-gray-100">
                         <tr>
                             <th class="py-3 px-4 border-b text-left text-sm font-bold text-gray-700">No</th>
-                            <th class="py-3 px-4 border-b text-left text-sm font-bold text-gray-700">Kode Transaksi</th>
+                            <th class="py-3 px-4 border-b text-left text-sm font-bold text-gray-700">No Nota</th>
                             <th class="py-3 px-4 border-b text-left text-sm font-bold text-gray-700">Tanggal</th>
                             <th class="py-3 px-4 border-b text-left text-sm font-bold text-gray-700">Petugas</th>
                             <th class="py-3 px-4 border-b text-left text-sm font-bold text-gray-700">Detail Belanjaan</th>
@@ -57,7 +57,7 @@
                         @forelse ($penjualan as $index => $item)
                             <tr class="hover:bg-gray-50">
                                 <td class="py-2 px-4 border-b text-sm">{{ $index + 1 }}</td>
-                                <td class="py-2 px-4 border-b text-sm font-bold text-indigo-600">{{ $item->kode_transaksi ?? 'N/A' }}</td>
+                                <td class="py-2 px-4 border-b text-sm font-bold text-indigo-600">{{ $item->no_nota ?? 'N/A' }}</td>
                                 <td class="py-2 px-4 border-b text-sm">{{ \Carbon\Carbon::parse($item->tgl_penjualan)->format('d M Y') }}</td>
                                 <td class="py-2 px-4 border-b text-sm">{{ $item->pengguna->name ?? $item->pengguna->username ?? 'Admin' }}</td>
                                 <td class="py-2 px-4 border-b text-sm">
@@ -68,7 +68,7 @@
                                     </ul>
                                 </td>
                                 <td class="py-2 px-4 border-b text-right text-sm font-bold text-green-600">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
-                                
+
                                 <td class="py-2 px-4 border-b text-center text-sm">
                                     <a href="{{ route('retur.create', ['id_penjualan' => $item->id_penjualan]) }}" class="inline-flex items-center px-3 py-1 bg-orange-100 text-orange-700 hover:bg-orange-200 border border-orange-300 rounded-md text-xs font-bold transition">
                                         🔄 Retur
@@ -89,7 +89,7 @@
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                         <div class="flex justify-between items-start mb-3">
                             <div>
-                                <p class="font-bold text-indigo-600 text-base">{{ $item->kode_transaksi ?? 'N/A' }}</p>
+                                <p class="font-bold text-indigo-600 text-base">{{ $item->no_nota ?? 'N/A' }}</p>
                                 <p class="text-xs text-gray-600">{{ \Carbon\Carbon::parse($item->tgl_penjualan)->format('d M Y') }}</p>
                             </div>
                             <span class="text-green-600 font-bold text-lg">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</span>
@@ -104,7 +104,7 @@
                                 @endforeach
                             </ul>
                         </div>
-                        
+
                         <div class="flex justify-end">
                             <a href="{{ route('retur.create', ['id_penjualan' => $item->id_penjualan]) }}" class="inline-flex items-center px-4 py-2 bg-orange-100 text-orange-700 hover:bg-orange-200 border border-orange-300 rounded-md text-sm font-bold transition shadow-sm">
                                 🔄 Proses Retur Barang
