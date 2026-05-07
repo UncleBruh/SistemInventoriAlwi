@@ -72,10 +72,10 @@ Route::middleware('auth')->group(function () {
 
         // Laporan Penjualan (Hanya Pemilik)
         Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
-
+        
         // ---> INI RUTE BARU UNTUK CETAK PDF PENJUALAN <---
         Route::get('/penjualan/cetak-pdf', [PenjualanController::class, 'cetakPdf'])->name('penjualan.cetak.pdf');
-
+        
         Route::get('/laporan/penjualan', [LaporanController::class, 'laporanPenjualan'])->name('laporan.penjualan');
         Route::get('/laporan/penjualan/pdf', [LaporanController::class, 'cetakLaporanPenjualan'])->name('laporan.penjualan.pdf');
 
@@ -98,5 +98,5 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('retur', App\Http\Controllers\ReturController::class)->only(['index', 'create', 'store']);
 });
-#
+
 require __DIR__.'/auth.php';

@@ -10,7 +10,7 @@ class Retur extends Model
     use HasFactory;
 
     // Sesuaikan dengan nama tabel di migration Anda
-    protected $table = 'retur';
+    protected $table = 'retur'; 
     protected $primaryKey = 'id_retur';
 
     // Kolom yang boleh diisi

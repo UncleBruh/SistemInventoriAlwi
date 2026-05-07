@@ -32,17 +32,11 @@ class Penjualan extends Model
         return $this->hasMany(DetailPenjualan::class, 'id_penjualan', 'id_penjualan');
     }
 
-    // Relasi ke tabel retur
-    public function retur()
-    {
-        return $this->hasMany(Retur::class, 'id_penjualan', 'id_penjualan');
-    }
-
     public function pengguna()
     {
         return $this->belongsTo(User::class, 'id_pengguna', 'id_pengguna');
     }
-
+    
     public function makanan()
     {
         return $this->belongsTo(Makanan::class, 'id_makanan', 'id_makanan');

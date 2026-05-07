@@ -5,141 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laporan Pengeluaran Gudang</title>
     <style>
-        * { margin: 0; padding: 0; }
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: Arial, sans-serif;
             font-size: 12px;
             color: #333;
-            padding: 20px;
         }
-
-        /* Header Styles */
-        .pdf-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-align: left;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
             border-bottom: 2px solid #333;
-        }
-        .pdf-header img {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-        }
-        .pdf-header-text h1 {
-            margin: 0;
-            font-size: 20px;
-            font-weight: bold;
-            color: #1e3a8a;
-        }
-        .pdf-header-text p {
-            margin: 3px 0;
-            font-size: 11px;
-            color: #555;
-        }
-
-        /* Report Title and Info */
-        .report-title {
-            text-align: center;
-            margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
         }
-        .report-title h2 {
-            margin: 0 0 5px 0;
-            font-size: 16px;
-            color: #1e3a8a;
+        .header h2 {
+            margin: 0;
+            padding: 0;
+            font-size: 18px;
+            text-transform: uppercase;
         }
-        .report-info {
-            text-align: center;
-            font-size: 11px;
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 12px;
             color: #666;
         }
-        .report-info p {
-            margin: 2px 0;
-        }
-
-        /* Table Styles */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 10px;
         }
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px 10px;
+            border: 1px solid #999;
+            padding: 8px;
         }
         th {
-            background-color: #f3f4f6;
+            background-color: #f2f2f2;
             font-weight: bold;
-            color: #374151;
-            font-size: 12px;
         }
-        td { font-size: 11px; }
         .text-center { text-align: center; }
         .text-left { text-align: left; }
         .text-red { color: #d9534f; font-weight: bold; }
-
-        /* Signature Section */
-        .signature-section {
-            margin-top: 40px;
-            text-align: right;
-        }
-        .signature-section p {
-            margin: 5px 0;
-            font-size: 11px;
-        }
-
-        @media print {
-            body { padding: 0; }
-            @page { margin: 1cm; }
-        }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <div class="pdf-header">
-        <div>
-            @php
-                $imagePath = public_path('foto/logobimbel.png');
-                if (file_exists($imagePath)) {
-                    $imageData = base64_encode(file_get_contents($imagePath));
-                    $imageMime = mime_content_type($imagePath);
-                    echo '<img src="data:' . $imageMime . ';base64,' . $imageData . '" alt="Logo" />';
-                }
-            @endphp
-        </div>
-        <div class="pdf-header-text">
-            <h1>BIMBEL ALWI COLLEGE</h1>
-            <p>Jalan Kebun Manggis Gang Salam 619 CD RT 04</p>
-            <p>Kelurahan Kepandean Baru, Kecamatan Ilir Timur</p>
-            <p>📞 0899-4432-225</p>
-        </div>
+    <div class="header">
+        <h2>Laporan Pengeluaran Gudang</h2>
+        <p>Tanggal Cetak: {{ \Carbon\Carbon::now()->format('d M Y H:i') }}</p>
     </div>
 
-    <!-- Report Title -->
-    <div class="report-title">
-        <h2>LAPORAN PENGELUARAN GUDANG</h2>
-    </div>
-
-    <!-- Report Info -->
-    <div class="report-info">
-        <p>Dicetak pada: {{ \Carbon\Carbon::now()->format('d M Y, H:i') }} WIB</p>
-    </div>
-
-    <!-- Data Table -->
     <table>
         <thead>
             <tr>
-                <th class="text-center" width="5%">No</th>
-                <th class="text-left" width="15%">Tanggal Pengeluaran</th>
-                <th class="text-left" width="30%">Nama Jajanan</th>
-                <th class="text-left" width="15%">Alasan</th>
-                <th class="text-left" width="20%">Petugas</th>
-                <th class="text-center" width="15%">Jumlah</th>
+                <th class="text-center">No</th>
+                <th class="text-left">Tanggal Pengeluaran</th>
+                <th class="text-left">Nama Jajanan</th>
+                <th class="text-left">Alasan</th>
+                <th class="text-left">Petugas</th>
+                <th class="text-center">Jumlah</th>
             </tr>
         </thead>
         <tbody>
@@ -154,18 +75,15 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="text-center" style="padding: 20px;">Tidak ada data pengeluaran gudang.</td>
+                    <td colspan="6" class="text-center">Tidak ada data pengeluaran gudang.</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
 
-    <!-- Signature Section -->
-    <div class="signature-section">
-        <p>Mengetahui,</p>
-        <br><br><br>
-        <p><strong>( ______________________ )</strong></p>
-        <p>Pemilik Bimbel Alwi College</p>
+    <div style="margin-top: 30px; text-align: right;">
+        <p>Hormat,</p>
+        <p style="margin-top: 40px;">____________________</p>
     </div>
 
 </body>

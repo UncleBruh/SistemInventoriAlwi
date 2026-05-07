@@ -5,7 +5,7 @@
 
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-
+            
             @if(session('error'))
                 <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">{{ session('error') }}</div>
             @endif
@@ -28,7 +28,7 @@
                     <select id="id_penjualan" name="id_penjualan" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full mt-1" required>
                         <option value="">-- Pilih Transaksi --</option>
                         @foreach($penjualan as $trx)
-                            <option value="{{ $trx->id_penjualan }}"
+                            <option value="{{ $trx->id_penjualan }}" 
                                 {{ (isset($selected_id) && $selected_id == $trx->id_penjualan) ? 'selected' : '' }}
                                 data-items='@json($trx->detail)'>
                                 {{ $trx->kode_transaksi ?? 'N/A' }} | Tanggal: {{ \Carbon\Carbon::parse($trx->tanggal_penjualan)->format('d M Y') }} | Total: Rp {{ number_format($trx->total_harga, 0, ',', '.') }}
@@ -85,7 +85,7 @@
             const sectionBarang = document.getElementById('section-barang');
             const container = document.getElementById('list-makanan-container');
             const searchInput = document.getElementById('search-makanan');
-
+            
             const hiddenIdMakanan = document.getElementById('id_makanan_hidden');
             const hiddenJumlah = document.getElementById('jumlah_retur_hidden');
 
@@ -94,7 +94,7 @@
             // Render list UI
             function renderList(filterText = '') {
                 container.innerHTML = '';
-
+                
                 const filtered = currentItems.filter(item => {
                     const nama = item.makanan ? item.makanan.nama_makanan.toLowerCase() : 'produk terhapus';
                     return nama.includes(filterText.toLowerCase());
@@ -108,7 +108,7 @@
                 filtered.forEach(item => {
                     const nama = item.makanan ? item.makanan.nama_makanan : 'Produk Terhapus';
                     const hargaFmt = new Intl.NumberFormat('id-ID').format(item.harga_satuan);
-
+                    
                     const html = `
                         <div class="px-4 py-3 grid grid-cols-12 gap-4 items-center hover:bg-indigo-50 transition">
                             <div class="col-span-8">
@@ -116,11 +116,11 @@
                                 <p class="text-xs text-gray-500 mt-1">Harga: Rp ${hargaFmt} | Max Bisa Diretur: <span class="font-bold text-indigo-600">${item.jumlah} pcs</span></p>
                             </div>
                             <div class="col-span-4 flex justify-center">
-                                <input type="number"
-                                    class="input-qty border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-20 text-center text-sm"
-                                    data-id="${item.id_makanan}"
-                                    max="${item.jumlah}"
-                                    min="0"
+                                <input type="number" 
+                                    class="input-qty border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-20 text-center text-sm" 
+                                    data-id="${item.id_makanan}" 
+                                    max="${item.jumlah}" 
+                                    min="0" 
                                     placeholder="0">
                             </div>
                         </div>
@@ -134,7 +134,7 @@
                     input.addEventListener('input', function() {
                         const val = parseInt(this.value);
                         const max = parseInt(this.getAttribute('max'));
-
+                        
                         // Validasi agar tidak bisa retur melebihi yang dibeli
                         if (val > max) this.value = max;
                         if (val < 0) this.value = 0;
@@ -161,13 +161,13 @@
                 hiddenIdMakanan.value = '';
                 hiddenJumlah.value = '';
                 searchInput.value = '';
-
+                
                 if (!selectedOption || !selectedOption.value) {
                     sectionBarang.style.display = 'none';
                     currentItems = [];
                     return;
                 }
-
+                
                 sectionBarang.style.display = 'block';
                 currentItems = JSON.parse(selectedOption.getAttribute('data-items') || '[]');
                 renderList();

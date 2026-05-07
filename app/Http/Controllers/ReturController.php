@@ -30,7 +30,7 @@ class ReturController extends Controller
             ->where('tanggal_penjualan', '>=', now()->subDays(30))
             ->latest()
             ->get();
-
+                    
         return view('retur.create', compact('penjualan', 'selected_id'));
     }
 
@@ -46,11 +46,11 @@ class ReturController extends Controller
         ]);
 
         try {
-            DB::beginTransaction();
+            DB::beginTransaction(); 
 
             $penjualan = Penjualan::findOrFail($request->id_penjualan);
             $makanan = Makanan::findOrFail($request->id_makanan);
-
+            
             // Cari harga satuan saat barang itu dijual dulu
             $detailPenjualan = DetailPenjualan::where('id_penjualan', $request->id_penjualan)
                                               ->where('id_makanan', $request->id_makanan)
@@ -95,7 +95,7 @@ class ReturController extends Controller
             return redirect()->route('retur.index')->with('success', 'Retur berhasil! Stok etalase bertambah dan total penjualan telah dipotong otomatis.');
 
         } catch (\Exception $e) {
-            DB::rollback();
+            DB::rollback(); 
             return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
         }
     }

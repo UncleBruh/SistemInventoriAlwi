@@ -3,162 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Penjualan</title>
+    <title>Laporan Penjualan - Warung Biebie</title>
     <style>
-        * { margin: 0; padding: 0; }
-        body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            font-size: 12px;
-            color: #333;
-            padding: 20px;
-        }
-
-        /* Header Styles */
-        .pdf-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            text-align: left;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #333;
-        }
-        .pdf-header img {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-        }
-        .pdf-header-text h1 {
-            margin: 0;
-            font-size: 20px;
-            font-weight: bold;
-            color: #1e3a8a;
-        }
-        .pdf-header-text p {
-            margin: 3px 0;
-            font-size: 11px;
-            color: #555;
-        }
-
-        /* Report Title and Info */
-        .report-title {
-            text-align: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-        .report-title h2 {
-            margin: 0 0 5px 0;
-            font-size: 16px;
-            color: #1e3a8a;
-        }
-        .report-info {
-            text-align: center;
-            font-size: 11px;
-            color: #666;
-        }
-        .report-info p {
-            margin: 2px 0;
-        }
-
-        /* Table Styles */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px 10px;
-            text-align: left;
-            vertical-align: top;
-        }
-        th {
-            background-color: #f3f4f6;
-            font-weight: bold;
-            color: #374151;
-            font-size: 12px;
-        }
-        td { font-size: 11px; }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; color: #333; margin: 0; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 15px; }
+        .header h2 { margin: 0; font-size: 24px; color: #1e3a8a; }
+        .header p { margin: 5px 0 0; color: #555; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px 10px; text-align: left; vertical-align: top; }
+        th { background-color: #f3f4f6; font-weight: bold; color: #374151; font-size: 14px;}
         .text-right { text-align: right; }
         .text-center { text-align: center; }
-
-        .total-row th {
-            background-color: #e5e7eb;
-            font-size: 12px;
-            padding: 12px 10px;
-        }
-        .total-amount {
-            font-weight: bold;
-            color: #166534;
-            font-size: 13px;
-        }
-
-        ul.detail-list {
-            margin: 0;
-            padding-left: 15px;
-            font-size: 10px;
-        }
-        ul.detail-list li {
-            margin-bottom: 2px;
-        }
-
-        /* Signature Section */
-        .signature-section {
-            margin-top: 40px;
-            text-align: right;
-        }
-        .signature-section p {
-            margin: 5px 0;
-            font-size: 11px;
-        }
-
+        .total-row th { background-color: #e5e7eb; font-size: 15px; padding: 12px 10px; }
+        .text-green { color: #166534; }
+        ul.detail-list { margin: 0; padding-left: 15px; font-size: 12px; }
+        ul.detail-list li { margin-bottom: 3px; }
         @media print {
             body { padding: 0; }
-            @page { margin: 1cm; size: landscape; }
+            @page { margin: 1cm; size: landscape; } /* Diubah ke lanskap agar tabel luas tidak terpotong */
             .no-print { display: none; }
         }
     </style>
 </head>
-<body>
+<body onload="window.print()">
 
-    <!-- Header -->
-    <div class="pdf-header">
-        <div>
-            @php
-                $imagePath = public_path('foto/logobimbel.png');
-                if (file_exists($imagePath)) {
-                    $imageData = base64_encode(file_get_contents($imagePath));
-                    $imageMime = mime_content_type($imagePath);
-                    echo '<img src="data:' . $imageMime . ';base64,' . $imageData . '" alt="Logo" />';
-                }
-            @endphp
-        </div>
-        <div class="pdf-header-text">
-            <h1>BIMBEL ALWI COLLEGE</h1>
-            <p>Jalan Kebun Manggis Gang Salam 619 CD RT 04</p>
-            <p>Kelurahan Kepandean Baru, Kecamatan Ilir Timur</p>
-            <p>📞 0899-4432-225</p>
-        </div>
-    </div>
-
-    <!-- Report Title -->
-    <div class="report-title">
-        <h2>LAPORAN PENJUALAN</h2>
-    </div>
-
-    <!-- Report Info -->
-    <div class="report-info">
+    <div class="header">
+        <h2>LAPORAN PENJUALAN - WARUNG BIEBIE</h2>
         <p>
             <strong>Periode:</strong>
             {{ request('start_date') ? \Carbon\Carbon::parse(request('start_date'))->format('d M Y') : 'Semua Transaksi' }}
             s/d
             {{ request('end_date') ? \Carbon\Carbon::parse(request('end_date'))->format('d M Y') : 'Hari Ini' }}
         </p>
-        <p>Dicetak pada: {{ \Carbon\Carbon::now()->format('d M Y, H:i') }} WIB</p>
+        <p><small>Dicetak pada: {{ \Carbon\Carbon::now()->format('d M Y, H:i') }} WIB</small></p>
     </div>
 
-    <!-- Data Table -->
     <table>
         <thead>
             <tr>
@@ -176,10 +55,12 @@
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td>
                         <strong>{{ $item->no_nota ?? '-' }}</strong><br>
-                        <span style="font-size: 10px; color: #666;">{{ $item->kode_transaksi ?? '' }}</span>
+                        <span style="font-size: 11px; color: #666;">{{ $item->kode_transaksi ?? '' }}</span>
                     </td>
                     <td>{{ \Carbon\Carbon::parse($item->tanggal_penjualan)->format('d-m-Y H:i') }}</td>
                     <td>{{ $item->pengguna->name ?? $item->pengguna->username ?? 'Unknown' }}</td>
+
+                    <!-- Menampilkan Detail Barang -->
                     <td>
                         @if($item->detail && $item->detail->count() > 0)
                             <ul class="detail-list">
@@ -191,9 +72,10 @@
                                 @endforeach
                             </ul>
                         @else
-                            <span style="color: #9ca3af; font-style: italic;">Data format lama / Kosong</span>
+                            <span style="color: #9ca3af; font-style: italic; font-size: 12px;">Data format lama / Kosong</span>
                         @endif
                     </td>
+
                     <td class="text-right"><strong>Rp {{ number_format($item->total_harga, 0, ',', '.') }}</strong></td>
                 </tr>
             @empty
@@ -205,21 +87,17 @@
         <tfoot>
             <tr class="total-row">
                 <th colspan="5" class="text-right">TOTAL PENDAPATAN BERSIH :</th>
-                <th class="text-right total-amount">Rp {{ number_format($total_pendapatan, 0, ',', '.') }}</th>
+                <th class="text-right text-green">Rp {{ number_format($total_pendapatan, 0, ',', '.') }}</th>
             </tr>
         </tfoot>
     </table>
 
-    <!-- Signature Section -->
-    <div class="signature-section">
+    <div style="margin-top: 50px; text-align: right;">
         <p>Mengetahui,</p>
         <br><br><br>
         <p><strong>( ______________________ )</strong></p>
-        <p>Pemilik Bimbel Alwi College</p>
+        <p>Pemilik Warung Biebie</p>
     </div>
-
-</body>
-</html>
 
 </body>
 </html>
