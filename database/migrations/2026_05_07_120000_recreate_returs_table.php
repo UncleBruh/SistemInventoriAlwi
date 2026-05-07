@@ -8,6 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Drop tabel retur jika sudah ada
+        Schema::dropIfExists('retur');
+
         Schema::create('retur', function (Blueprint $table) {
             $table->id('id_retur');
             $table->unsignedBigInteger('id_penjualan'); // Transaksi yang diretur
