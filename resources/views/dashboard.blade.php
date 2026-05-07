@@ -4,10 +4,8 @@
             {{ __('Dashboard') }}
         </h2>
     </x-slot>
-
     <div class="py-6 sm:py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Charts Row 1 -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
                 <!-- Tren Penjualan Harian -->
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-4 sm:p-6">
