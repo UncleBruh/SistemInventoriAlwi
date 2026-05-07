@@ -4,9 +4,6 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Riwayat Retur Barang') }}
             </h2>
-            <a href="{{ route('retur.create') }}" class="px-4 py-2 bg-indigo-600 text-white font-bold rounded-md hover:bg-indigo-700 transition">
-                + Input Retur Baru
-            </a>
         </div>
     </x-slot>
 
