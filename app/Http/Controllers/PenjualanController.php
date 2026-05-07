@@ -162,18 +162,22 @@ class PenjualanController extends Controller
             $id_makanan_dummy = array_key_first($keranjang);
 
             // 1. Simpan ke tabel induk (penjualans)
+// app/Http/Controllers/PenjualanController.php (Di dalam method store)
+
+            // 1. Simpan ke tabel induk (penjualans)
             $penjualan = Penjualan::create([
                 'id_pengguna' => Auth::id(),
                 'total_harga' => $total_harga,
                 'bayar' => $bayar,
                 'kembalian' => $kembalian,
                 'no_nota' => $no_nota,
-                'tanggal_penjualan' => now(), // <--- Pastikan ini ada ya!
+                'tanggal_penjualan' => now(), 
+                'kode_transaksi' => $kode_transaksi, // <--- TAMBAHKAN BARIS INI
                 
                 // Kolom pensiun kita isi data dummy 0 agar database senang
                 'id_makanan' => $id_makanan_dummy, 
-                'jumlah_terjual' => 0,        // <--- UBAH JADI INI
-                'harga_per_unit' => 0         // <--- TAMBAH INI
+                'jumlah_terjual' => 0,        
+                'harga_per_unit' => 0         
             ]);
 
             $item_terjual = []; // Array untuk dikirim ke Log Aktivitas

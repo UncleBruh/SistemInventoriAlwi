@@ -117,6 +117,8 @@ Route::middleware('auth')->group(function () {
 
     // --- MANAJEMEN KATEGORI ---
     Route::resource('kategori', KategoriController::class)->only(['index', 'store', 'destroy']);
+
+    Route::resource('retur', App\Http\Controllers\ReturController::class)->only(['index', 'create', 'store']);
 });
 
 require __DIR__.'/auth.php';

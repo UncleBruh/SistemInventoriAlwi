@@ -13,7 +13,6 @@
 
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-4 sm:p-6 border border-gray-200">
 
-            <!-- Filter Section -->
             <div class="flex flex-col gap-4 mb-6">
                 <form action="{{ route('makanan.index') }}" method="GET" class="flex flex-col gap-3 w-full">
                     <div class="flex flex-col sm:flex-row gap-3">
@@ -48,9 +47,15 @@
                             <option value="etalase_asc" {{ request('sort') == 'etalase_asc' ? 'selected' : '' }}>Stok Etalase Tersedikit</option>
                         </select>
 
+                        <select name="filter_lokasi" class="border-gray-300 rounded-md shadow-sm w-full sm:flex-1 text-sm py-2 px-3">
+                            <option value="">Semua Lokasi</option>
+                            <option value="etalase" {{ request('filter_lokasi') == 'etalase' ? 'selected' : '' }}>🌟 Tersedia di Etalase</option>
+                            <option value="gudang" {{ request('filter_lokasi') == 'gudang' ? 'selected' : '' }}>📦 Tersedia di Gudang</option>
+                        </select>
+
                         <div class="flex gap-2">
                             <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap flex-1 sm:flex-none">Filter</button>
-                            @if($search || request('kategori') || request('lokasi'))
+                            @if($search || request('kategori'))
                                 <a href="{{ route('makanan.index') }}" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition text-center font-medium border border-gray-300 text-sm whitespace-nowrap">Reset</a>
                             @endif
                         </div>
@@ -62,7 +67,6 @@
                 </a>
             </div>
 
-            <!-- Desktop Table View -->
             <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
@@ -118,7 +122,6 @@
                 </table>
             </div>
 
-            <!-- Mobile Card View -->
             <div class="md:hidden space-y-4">
                 @forelse($makanan as $item)
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:shadow-md transition">

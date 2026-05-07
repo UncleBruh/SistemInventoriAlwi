@@ -15,6 +15,7 @@ class MakananController extends Controller
         $kategori_id = $request->input('kategori'); // Sekarang mencari berdasarkan ID
         $lokasi = $request->input('lokasi'); // Filter lokasi: gudang_only, etalase_only
         $sort = $request->input('sort', 'terbaru');
+        $filter_lokasi = $request->input('filter_lokasi'); // Menangkap input filter lokasi
 
         // Gunakan eager loading (with) agar tidak berat saat meload relasi nama kategori
         $query = Makanan::with('kategori');
@@ -39,52 +40,41 @@ class MakananController extends Controller
                   ->where('stok_gudang', '=', 0);
         }
 
-        // Fitur Sorting
-        if ($sort == 'terbaru') {
-            $query->latest();
-        } elseif ($sort == 'terlama') {
-            $query->oldest();
-        } elseif ($sort == 'stok_terbanyak') {
-            $query->orderBy('stok', 'desc');
-        } elseif ($sort == 'stok_sedikit') {
-            $query->orderBy('stok', 'asc');
+        // Fitur Filter Lokasi (Etalase / Gudang)
+        if ($filter_lokasi === 'etalase') {
+            $query->where('stok_etalase', '>', 0);
+        } elseif ($filter_lokasi === 'gudang') {
+            $query->where('stok_gudang', '>', 0);
         }
 
-// Fitur Sorting
-    switch ($sort) {
-        case 'terlama':
-            $query->oldest();
-            break;
-
-        case 'stok_terbanyak':
-            $query->orderBy('stok', 'desc');
-            break;
-
-        case 'stok_sedikit':
-            $query->orderBy('stok', 'asc');
-            break;
-
-        case 'gudang_asc':
-            $query->orderBy('stok_gudang', 'asc');
-            break;
-
-        case 'gudang_desc':
-            $query->orderBy('stok_gudang', 'desc');
-            break;
-
-        case 'etalase_asc':
-            $query->orderBy('stok_etalase', 'asc');
-            break;
-
-        case 'etalase_desc':
-            $query->orderBy('stok_etalase', 'desc');
-            break;
-
-        case 'terbaru':
-        default:
-            $query->latest();
-            break;
-    }
+        // Fitur Sorting
+        switch ($sort) {
+            case 'terlama':
+                $query->oldest();
+                break;
+            case 'stok_terbanyak':
+                $query->orderBy('stok', 'desc');
+                break;
+            case 'stok_sedikit':
+                $query->orderBy('stok', 'asc');
+                break;
+            case 'gudang_asc':
+                $query->orderBy('stok_gudang', 'asc');
+                break;
+            case 'gudang_desc':
+                $query->orderBy('stok_gudang', 'desc');
+                break;
+            case 'etalase_asc':
+                $query->orderBy('stok_etalase', 'asc');
+                break;
+            case 'etalase_desc':
+                $query->orderBy('stok_etalase', 'desc');
+                break;
+            case 'terbaru':
+            default:
+                $query->latest();
+                break;
+        }
 
         $makanan = $query->paginate(50)->appends($request->all());
 
@@ -92,7 +82,7 @@ class MakananController extends Controller
         $categories = Kategori::orderBy('nama_kategori', 'asc')->get();
         $kategori = $kategori_id;
 
-        return view('makanan.index', compact('makanan', 'search', 'kategori', 'categories', 'sort', 'lokasi'));
+        return view('makanan.index', compact('makanan', 'search', 'kategori', 'categories', 'sort'));
     }
 
     public function create()
