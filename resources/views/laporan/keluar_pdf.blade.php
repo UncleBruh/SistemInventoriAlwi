@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Barang Keluar</title>
+    <title>Laporan Pengelolaan Stok Etalase</title>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            font-size: 12px; 
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
             color: #333;
         }
-        .header { 
-            text-align: center; 
-            margin-bottom: 20px; 
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
             border-bottom: 2px solid #333;
             padding-bottom: 10px;
         }
-        .header h2 { 
-            margin: 0; 
-            padding: 0; 
+        .header h2 {
+            margin: 0;
+            padding: 0;
             font-size: 18px;
             text-transform: uppercase;
         }
@@ -27,17 +27,17 @@
             font-size: 12px;
             color: #666;
         }
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-top: 10px; 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
         }
-        th, td { 
-            border: 1px solid #999; 
-            padding: 8px; 
+        th, td {
+            border: 1px solid #999;
+            padding: 8px;
         }
-        th { 
-            background-color: #f2f2f2; 
+        th {
+            background-color: #f2f2f2;
             font-weight: bold;
         }
         .text-center { text-align: center; }
@@ -48,38 +48,43 @@
 <body>
 
     <div class="header">
-        <h2>Laporan Barang Keluar</h2>
-        <p>Sistem Inventori Alwi / Warung Biebie</p>
+        <h2>Laporan Pengelolaan Stok Etalase</h2>
+        <p>Tanggal Cetak: {{ \Carbon\Carbon::now()->format('d M Y H:i') }}</p>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th width="5%" class="text-center">No</th>
-                <th width="15%" class="text-left">Tanggal</th>
-                <th width="30%" class="text-left">Nama Jajanan</th>
-                <th width="15%" class="text-left">Alasan</th>
-                <th width="20%" class="text-left">Petugas</th>
-                <th width="15%" class="text-center">Jumlah Keluar</th>
+                <th class="text-center">No</th>
+                <th class="text-left">Tanggal Keluar</th>
+                <th class="text-left">Nama Jajanan</th>
+                <th class="text-left">Tipe Keluar</th>
+                <th class="text-left">Petugas</th>
+                <th class="text-center">Jumlah</th>
             </tr>
         </thead>
         <tbody>
             @forelse ($mutasiKeluar as $index => $item)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td>{{ \Carbon\Carbon::parse($item->tgl_mutasi)->format('d M Y') }}</td>
-                    <td>{{ $item->makanan->nama_makanan ?? '-' }}</td>
-                    <td>{{ $item->alasan ?? '-' }}</td>
-                    <td>{{ $item->pengguna->name ?? $item->pengguna->username ?? 'Admin' }}</td>
-                    <td class="text-center text-red">-{{ $item->jumlah_keluar ?? 0 }} Pcs</td>
+                    <td class="text-left">{{ \Carbon\Carbon::parse($item->tgl_mutasi)->format('d M Y') }}</td>
+                    <td class="text-left">{{ $item->makanan->nama_makanan ?? 'Data Terhapus' }}</td>
+                    <td class="text-left">{{ ucfirst(str_replace('_', ' ', $item->tipe_keluar)) ?? '-' }}</td>
+                    <td class="text-left">{{ $item->pengguna->name ?? $item->pengguna->username ?? 'Admin' }}</td>
+                    <td class="text-center text-red">-{{ $item->jumlah_perubahan ?? 0 }} Pcs</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="text-center" style="padding: 20px;">Tidak ada riwayat data transaksi barang keluar.</td>
+                    <td colspan="6" class="text-center">Tidak ada data pengelolaan stok etalase.</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
+
+    <div style="margin-top: 30px; text-align: right;">
+        <p>Hormat,</p>
+        <p style="margin-top: 40px;">____________________</p>
+    </div>
 
 </body>
 </html>
