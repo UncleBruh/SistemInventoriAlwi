@@ -71,6 +71,7 @@
                                     </ul>
                                 </td>
                                 <td class="py-2 px-4 border-b text-right text-sm font-bold text-green-600">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
+                                
                                 <td class="py-2 px-4 border-b text-center text-sm">
                                     <a href="{{ route('retur.create', ['id_penjualan' => $item->id_penjualan]) }}" class="inline-flex items-center px-3 py-1 bg-orange-100 text-orange-700 hover:bg-orange-200 border border-orange-300 rounded-md text-xs font-bold transition">
                                         🔄 Retur

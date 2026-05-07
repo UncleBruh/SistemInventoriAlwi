@@ -16,13 +16,14 @@ class Penjualan extends Model
     protected $fillable = [
         'id_makanan',
         'id_pengguna',
-        'jumlah_terjual',    // <--- UBAH JADI INI
-        'harga_per_unit',    // <--- TAMBAH INI
+        'jumlah_terjual',    
+        'harga_per_unit',    
         'total_harga',
-        'tanggal_penjualan', // <--- Wajib tetap ada!
+        'tanggal_penjualan', 
         'no_nota',
         'bayar',
-        'kembalian'
+        'kembalian',
+        'kode_transaksi' // <--- TAMBAHKAN BARIS INI
     ];
 
     // Relasi ke tabel detail (Anak)

@@ -27,9 +27,9 @@ class ReturController extends Controller
 
         // Ambil data transaksi penjualan 30 hari terakhir agar tidak terlalu berat
         $penjualan = Penjualan::with('detail.makanan')
-                    ->where('tgl_penjualan', '>=', now()->subDays(30))
-                    ->latest()
-                    ->get();
+            ->where('tanggal_penjualan', '>=', now()->subDays(30))
+            ->latest()
+            ->get();
                     
         return view('retur.create', compact('penjualan', 'selected_id'));
     }
