@@ -27,12 +27,6 @@
                                 </option>
                             @endforeach
                         </select>
-
-                        <select name="lokasi" class="border-gray-300 rounded-md shadow-sm w-full sm:w-1/4 text-sm py-2 px-3">
-                            <option value="">Semua Lokasi</option>
-                            <option value="gudang_only" {{ request('lokasi') == 'gudang_only' ? 'selected' : '' }}>Hanya Gudang</option>
-                            <option value="etalase_only" {{ request('lokasi') == 'etalase_only' ? 'selected' : '' }}>Hanya Etalase</option>
-                        </select>
                     </div>
 
                     <div class="flex flex-col sm:flex-row gap-3">
@@ -55,7 +49,7 @@
 
                         <div class="flex gap-2">
                             <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition font-medium text-sm whitespace-nowrap flex-1 sm:flex-none">Filter</button>
-                            @if($search || request('kategori'))
+                            @if($search || request('kategori') || request('filter_lokasi') || (request('sort') && request('sort') != 'terbaru'))
                                 <a href="{{ route('makanan.index') }}" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition text-center font-medium border border-gray-300 text-sm whitespace-nowrap">Reset</a>
                             @endif
                         </div>

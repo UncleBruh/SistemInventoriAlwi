@@ -9,34 +9,11 @@
             font-family: Arial, sans-serif;
             font-size: 12px;
             color: #333;
-            padding: 20px;
         }
         .header {
             text-align: center;
             margin-bottom: 20px;
             border-bottom: 2px solid #333;
-        }
-        .pdf-header img {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-        }
-        .pdf-header-text h1 {
-            margin: 0;
-            font-size: 20px;
-            font-weight: bold;
-            color: #1e3a8a;
-        }
-        .pdf-header-text p {
-            margin: 3px 0;
-            font-size: 11px;
-            color: #555;
-        }
-
-        /* Report Title and Info */
-        .report-title {
-            text-align: center;
-            margin-bottom: 15px;
             padding-bottom: 10px;
         }
         .header h2 {
@@ -45,9 +22,9 @@
             font-size: 18px;
             text-transform: uppercase;
         }
-        .report-info {
-            text-align: center;
-            font-size: 11px;
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 12px;
             color: #666;
         }
         table {
@@ -62,46 +39,28 @@
         th {
             background-color: #f2f2f2;
             font-weight: bold;
-            color: #374151;
-            font-size: 12px;
         }
-        td { font-size: 11px; }
         .text-center { text-align: center; }
+        .text-left { text-align: left; }
         .text-red { color: #d9534f; font-weight: bold; }
-
-        /* Signature Section */
-        .signature-section {
-            margin-top: 40px;
-            text-align: right;
-        }
-        .signature-section p {
-            margin: 5px 0;
-            font-size: 11px;
-        }
-
-        @media print {
-            body { padding: 0; }
-            @page { margin: 1cm; }
-        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h2>Laporan Barang Keluar</h2>
-        <p>Sistem Inventori Alwi / Warung Biebie</p>
+        <h2>Laporan Pengelolaan Stok Etalase</h2>
+        <p>Tanggal Cetak: {{ \Carbon\Carbon::now()->format('d M Y H:i') }}</p>
     </div>
 
-    <!-- Data Table -->
     <table>
         <thead>
             <tr>
-                <th width="5%" class="text-center">No</th>
-                <th width="15%" class="text-left">Tanggal</th>
-                <th width="30%" class="text-left">Nama Jajanan</th>
-                <th width="15%" class="text-left">Alasan</th>
-                <th width="20%" class="text-left">Petugas</th>
-                <th width="15%" class="text-center">Jumlah Keluar</th>
+                <th class="text-center">No</th>
+                <th class="text-left">Tanggal Keluar</th>
+                <th class="text-left">Nama Jajanan</th>
+                <th class="text-left">Tipe Keluar</th>
+                <th class="text-left">Petugas</th>
+                <th class="text-center">Jumlah</th>
             </tr>
         </thead>
         <tbody>
@@ -121,6 +80,11 @@
             @endforelse
         </tbody>
     </table>
+
+    <div style="margin-top: 30px; text-align: right;">
+        <p>Hormat,</p>
+        <p style="margin-top: 40px;">____________________</p>
+    </div>
 
 </body>
 </html>
