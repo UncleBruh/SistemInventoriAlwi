@@ -52,6 +52,17 @@ Route::middleware('auth')->group(function () {
     });
 
     // Pengelolaan Stok Etalase & Pengeluaran Gudang (Hanya Pemilik)
+    Route::middleware('role:Pemilik,Admin')->group(function () {
+        // Laporan Penjualan (Pemilik & Admin)
+        Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
+
+        // ---> INI RUTE UNTUK CETAK PDF PENJUALAN <---
+        Route::get('/penjualan/cetak-pdf', [PenjualanController::class, 'cetakPdf'])->name('penjualan.cetak.pdf');
+
+        Route::get('/laporan/penjualan', [LaporanController::class, 'laporanPenjualan'])->name('laporan.penjualan');
+        Route::get('/laporan/penjualan/pdf', [LaporanController::class, 'cetakLaporanPenjualan'])->name('laporan.penjualan.pdf');
+    });
+
     Route::middleware('role:Pemilik')->group(function () {
         // Pengelolaan Stok Etalase (Barang Keluar dari Etalase)
         Route::prefix('pengelolaan-stok-etalase')->group(function () {
@@ -70,15 +81,6 @@ Route::middleware('auth')->group(function () {
         // Hapus Alokasi
         Route::delete('/alokasi-gudang-etalase/{id}', [AlokasiGudangEtalaseController::class, 'destroy'])->name('alokasi-gudang-etalase.destroy');
 
-        // Laporan Penjualan (Hanya Pemilik)
-        Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
-        
-        // ---> INI RUTE BARU UNTUK CETAK PDF PENJUALAN <---
-        Route::get('/penjualan/cetak-pdf', [PenjualanController::class, 'cetakPdf'])->name('penjualan.cetak.pdf');
-        
-        Route::get('/laporan/penjualan', [LaporanController::class, 'laporanPenjualan'])->name('laporan.penjualan');
-        Route::get('/laporan/penjualan/pdf', [LaporanController::class, 'cetakLaporanPenjualan'])->name('laporan.penjualan.pdf');
-
         // Laporan Barang Masuk & Keluar (Hanya Pemilik)
         Route::get('/laporan/masuk', [LaporanController::class, 'mutasiMasuk'])->name('laporan.masuk');
         Route::get('/laporan/masuk/pdf', [LaporanController::class, 'cetakMutasiMasuk'])->name('laporan.masuk.pdf');
@@ -91,12 +93,18 @@ Route::middleware('auth')->group(function () {
 
         // Lihat Aktivitas Mutasi (Hanya Pemilik)
         Route::get('/lihat-aktivitas-mutasi', [LogController::class, 'index'])->name('log.aktivitas');
+        // Riwayat Retur (Pemilik & Admin dapat melihat)
+        Route::get('/retur', [App\Http\Controllers\ReturController::class, 'index'])->name('retur.index');
     });
 
     // --- MANAJEMEN KATEGORI ---
     Route::resource('kategori', KategoriController::class)->only(['index', 'store', 'destroy']);
 
-    Route::resource('retur', App\Http\Controllers\ReturController::class)->only(['index', 'create', 'store']);
+    // Proses Retur (Pemilik & Admin)
+    Route::middleware('role:Pemilik,Admin')->group(function () {
+        Route::get('/retur/tambah/{id_penjualan}', [App\Http\Controllers\ReturController::class, 'create'])->name('retur.create');
+        Route::post('/retur', [App\Http\Controllers\ReturController::class, 'store'])->name('retur.store');
+    });
 });
 
 require __DIR__.'/auth.php';
