@@ -11,7 +11,6 @@ use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PengeluaranGudangController;
-use App\Http\Controllers\ReturController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -92,27 +91,6 @@ Route::middleware('auth')->group(function () {
 
         // Lihat Aktivitas Mutasi (Hanya Pemilik)
         Route::get('/lihat-aktivitas-mutasi', [LogController::class, 'index'])->name('log.aktivitas');
-    });
-
-    // Pengelolaan Retur (Pemilik & Admin - tapi hanya Pemilik yang bisa edit/delete)
-    Route::middleware('role:Pemilik,Admin')->group(function () {
-        Route::prefix('retur')->group(function () {
-            Route::get('/', [ReturController::class, 'index'])->name('retur.index');
-            Route::get('/tambah', [ReturController::class, 'create'])->name('retur.create');
-            Route::post('/tambah', [ReturController::class, 'store'])->name('retur.store');
-            Route::get('/{id}', [ReturController::class, 'show'])->name('retur.show');
-            Route::get('/get-detail/{id_penjualan}', [ReturController::class, 'getDetailPenjualan']); // AJAX endpoint
-
-            // Hanya Pemilik yang bisa edit dan delete
-            Route::middleware('role:Pemilik')->group(function () {
-                Route::get('/{id}/edit', [ReturController::class, 'edit'])->name('retur.edit');
-                Route::put('/{id}', [ReturController::class, 'update'])->name('retur.update');
-                Route::delete('/{id}', [ReturController::class, 'destroy'])->name('retur.destroy');
-            });
-        });
-    });
-
-    Route::middleware('role:Pemilik')->group(function () {
     });
 
     // --- MANAJEMEN KATEGORI ---
