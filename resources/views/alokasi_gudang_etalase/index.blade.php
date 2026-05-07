@@ -87,143 +87,151 @@
             </div>
 
             @if($data->count() > 0)
-                <div class="grid grid-cols-1 gap-3 sm:gap-4">
+                <!-- Desktop Table View -->
+                <div class="hidden md:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+                                <tr>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Produk</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Jumlah Dialokasi</th>
+                                    <th colspan="2" class="px-4 py-3 text-center font-semibold text-gray-700">📦 GUDANG</th>
+                                    <th colspan="2" class="px-4 py-3 text-center font-semibold text-gray-700">🏪 ETALASE</th>
+                                    <th class="px-4 py-3 text-center font-semibold text-gray-700">Petugas</th>
+                                    <th class="px-4 py-3 text-center font-semibold text-gray-700">Tanggal</th>
+                                    <th class="px-4 py-3 text-center font-semibold text-gray-700">AKSI</th>
+                                </tr>
+                                <tr class="bg-gray-50 border-b border-gray-200">
+                                    <th class="px-4 py-2 text-left font-medium text-gray-600 text-xs"></th>
+                                    <th class="px-4 py-2 text-left font-medium text-gray-600 text-xs"></th>
+                                    <th class="px-4 py-2 text-center font-medium text-gray-600 text-xs">SEBELUM</th>
+                                    <th class="px-4 py-2 text-center font-medium text-gray-600 text-xs">SESUDAH</th>
+                                    <th class="px-4 py-2 text-center font-medium text-gray-600 text-xs">SEBELUM</th>
+                                    <th class="px-4 py-2 text-center font-medium text-gray-600 text-xs">SESUDAH</th>
+                                    <th class="px-4 py-2 text-center font-medium text-gray-600 text-xs"></th>
+                                    <th class="px-4 py-2 text-center font-medium text-gray-600 text-xs"></th>
+                                    <th class="px-4 py-2 text-center font-medium text-gray-600 text-xs"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                @foreach($data as $row)
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-4 py-3 font-medium text-gray-800">
+                                        {{ $row->makanan->nama_makanan ?? 'N/A' }}
+                                        @if(!$row->makanan)
+                                            <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded ml-2">Produk tidak ada</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-3 text-center">
+                                        <span class="inline-flex items-center justify-center w-8 h-8 bg-blue-100 text-blue-800 rounded-full font-bold text-sm">
+                                            {{ $row->jumlah_dialokasi }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-center font-medium text-gray-700">{{ $row->stok_gudang_sebelum }}</td>
+                                    <td class="px-4 py-3 text-center">
+                                        <span class="inline-flex items-center px-2 py-1 bg-red-100 text-red-800 rounded font-semibold text-sm">
+                                            {{ $row->stok_gudang_sesudah }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-center font-medium text-gray-700">{{ $row->stok_etalase_sebelum }}</td>
+                                    <td class="px-4 py-3 text-center">
+                                        <span class="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 rounded font-semibold text-sm">
+                                            {{ $row->stok_etalase_sesudah }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-sm text-gray-600">
+                                        {{ $row->pengguna->username ?? '-' }}
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-sm text-gray-600">
+                                        {{ $row->tgl_alokasi->format('d M Y H:i') }}
+                                    </td>
+                                    <td class="px-4 py-3 text-center space-x-2">
+                                        <a href="{{ route('alokasi-gudang-etalase.show', $row->id_alokasi) }}" class="inline-flex items-center gap-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-xs font-medium transition">
+                                            👁️ Detail
+                                        </a>
+                                        @if(Auth::user()->role === 'Pemilik')
+                                            <form action="{{ route('alokasi-gudang-etalase.destroy', $row->id_alokasi) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan alokasi ini?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="inline-flex items-center gap-1 bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-xs font-medium transition">
+                                                    ↩️ Batal
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Mobile Card View -->
+                <div class="md:hidden grid grid-cols-1 gap-3 sm:gap-4">
                     @foreach($data as $row)
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition">
-                        <!-- Header Card -->
-                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
-                            <div class="flex justify-between items-start gap-3 sm:gap-4">
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-2">
-                                        <h3 class="text-base sm:text-lg font-bold text-gray-800 truncate">
-                                            {{ $row->makanan->nama_makanan ?? 'N/A' }}
-                                        </h3>
-                                        @if(!$row->makanan)
-                                            <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded whitespace-nowrap">Produk tidak ada lagi</span>
-                                        @endif
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-1">Alokasi #{{ $loop->iteration }} • {{ $row->tgl_alokasi->format('d M Y H:i') }}</p>
-                                </div>
-                                <div class="text-right flex-shrink-0">
-                                    <div class="text-2xl sm:text-3xl font-bold text-blue-600">{{ $row->jumlah_dialokasi }}</div>
-                                    <p class="text-xs text-gray-600 mt-1">pcs dialokasi</p>
-                                </div>
-                            </div>
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3 border-b border-gray-200">
+                            <h3 class="font-bold text-gray-800 mb-1">{{ $row->makanan->nama_makanan ?? 'N/A' }}</h3>
+                            <p class="text-xs text-gray-500">{{ $row->tgl_alokasi->format('d M Y H:i') }} • Petugas: {{ $row->pengguna->username ?? '-' }}</p>
                         </div>
-
-                        <!-- Content Card -->
-                        <div class="px-4 sm:px-6 py-3 sm:py-4">
-                            <!-- Mobile Layout (stack vertically) -->
-                            <div class="md:hidden space-y-4">
-                                <!-- Gudang Section -->
-                                <div class="space-y-2 pb-4 border-b border-gray-200">
-                                    <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">📦 Gudang</p>
-                                    <div class="grid grid-cols-3 gap-2 items-end">
-                                        <div class="flex-1">
-                                            <p class="text-xs text-gray-500">Sebelum</p>
-                                            <p class="text-xl font-bold text-gray-700">{{ $row->stok_gudang_sebelum }}</p>
-                                        </div>
-                                        <div class="text-center">
-                                            <p class="text-red-500 text-lg flex-shrink-0">➖</p>
-                                        </div>
-                                        <div class="flex-1">
-                                            <p class="text-xs text-gray-500">Sesudah</p>
-                                            <div class="text-xl font-bold text-red-600 bg-red-50 px-2 py-1 rounded text-center">{{ $row->stok_gudang_sesudah }}</div>
-                                        </div>
+                        <div class="px-4 py-4 space-y-4">
+                            <!-- Gudang Section -->
+                            <div class="space-y-2">
+                                <p class="text-xs font-semibold text-gray-600 uppercase">📦 GUDANG</p>
+                                <div class="grid grid-cols-3 gap-2 items-center">
+                                    <div class="text-center">
+                                        <p class="text-xs text-gray-500">Sebelum</p>
+                                        <p class="text-lg font-bold text-gray-700">{{ $row->stok_gudang_sebelum }}</p>
                                     </div>
-                                </div>
-
-                                <!-- Arrow untuk mobile -->
-                                <div class="flex justify-center py-2">
-                                    <div class="text-2xl text-blue-400">⬇️</div>
-                                </div>
-
-                                <!-- Etalase Section -->
-                                <div class="space-y-2">
-                                    <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">🏪 Etalase</p>
-                                    <div class="grid grid-cols-3 gap-2 items-end">
-                                        <div class="flex-1">
-                                            <p class="text-xs text-gray-500">Sebelum</p>
-                                            <p class="text-xl font-bold text-gray-700">{{ $row->stok_etalase_sebelum }}</p>
-                                        </div>
-                                        <div class="text-center">
-                                            <p class="text-green-500 text-lg flex-shrink-0">➕</p>
-                                        </div>
-                                        <div class="flex-1">
-                                            <p class="text-xs text-gray-500">Sesudah</p>
-                                            <div class="text-xl font-bold text-green-600 bg-green-50 px-2 py-1 rounded text-center">{{ $row->stok_etalase_sesudah }}</div>
-                                        </div>
+                                    <div class="text-center text-red-500">➖</div>
+                                    <div class="text-center">
+                                        <p class="text-xs text-gray-500">Sesudah</p>
+                                        <p class="text-lg font-bold text-red-600 bg-red-50 px-2 py-1 rounded">{{ $row->stok_gudang_sesudah }}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Desktop Layout (3 columns) -->
-                            <div class="hidden md:grid grid-cols-3 gap-2 sm:gap-4 md:gap-6">
-                                <!-- Gudang Section -->
-                                <div class="space-y-2">
-                                    <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">📦 Gudang</p>
-                                    <div class="flex items-center justify-between gap-1 sm:gap-2">
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-xs text-gray-500">Sebelum</p>
-                                            <p class="text-lg sm:text-2xl font-bold text-gray-700">{{ $row->stok_gudang_sebelum }}</p>
-                                        </div>
-                                        <div class="text-red-500 text-base sm:text-xl flex-shrink-0">➖</div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-xs text-gray-500">Sesudah</p>
-                                            <div class="text-lg sm:text-2xl font-bold text-red-600 bg-red-50 px-2 sm:px-3 py-1 rounded">{{ $row->stok_gudang_sesudah }}</div>
-                                        </div>
+                            <!-- Arrow -->
+                            <div class="text-center text-blue-400 text-2xl">⬇️</div>
+
+                            <!-- Etalase Section -->
+                            <div class="space-y-2">
+                                <p class="text-xs font-semibold text-gray-600 uppercase">🏪 ETALASE</p>
+                                <div class="grid grid-cols-3 gap-2 items-center">
+                                    <div class="text-center">
+                                        <p class="text-xs text-gray-500">Sebelum</p>
+                                        <p class="text-lg font-bold text-gray-700">{{ $row->stok_etalase_sebelum }}</p>
                                     </div>
-                                </div>
-
-                                <!-- Arrow -->
-                                <div class="flex items-center justify-center">
-                                    <div class="text-3xl text-blue-400 text-center">🔄</div>
-                                </div>
-
-                                <!-- Etalase Section -->
-                                <div class="space-y-2">
-                                    <p class="text-xs font-semibold text-gray-600 uppercase tracking-wide">🏪 Etalase</p>
-                                    <div class="flex items-center justify-between gap-1 sm:gap-2">
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-xs text-gray-500">Sebelum</p>
-                                            <p class="text-lg sm:text-2xl font-bold text-gray-700">{{ $row->stok_etalase_sebelum }}</p>
-                                        </div>
-                                        <div class="text-green-500 text-base sm:text-xl flex-shrink-0">➕</div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-xs text-gray-500">Sesudah</p>
-                                            <div class="text-lg sm:text-2xl font-bold text-green-600 bg-green-50 px-2 sm:px-3 py-1 rounded">{{ $row->stok_etalase_sesudah }}</div>
-                                        </div>
+                                    <div class="text-center text-green-500">➕</div>
+                                    <div class="text-center">
+                                        <p class="text-xs text-gray-500">Sesudah</p>
+                                        <p class="text-lg font-bold text-green-600 bg-green-50 px-2 py-1 rounded">{{ $row->stok_etalase_sesudah }}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Footer -->
-                            <div class="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                                <div class="text-xs sm:text-sm text-gray-600">
-                                    <span class="font-medium">Petugas:</span>
-                                    @if($row->pengguna)
-                                        {{ $row->pengguna->username }}
-                                    @else
-                                        <span class="text-gray-400 italic">-</span>
-                                    @endif
-                                    @if($row->keterangan)
-                                    <p class="text-xs text-gray-500 mt-1">Catatan: {{ $row->keterangan }}</p>
-                                    @endif
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ route('alokasi-gudang-etalase.show', $row->id_alokasi) }}" class="inline-flex items-center gap-1 sm:gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition whitespace-nowrap">
-                                        👁️ Detail
-                                    </a>
-                                    @if(Auth::user()->role === 'Pemilik')
-                                        <form action="{{ route('alokasi-gudang-etalase.destroy', $row->id_alokasi) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan alokasi ini? Stok akan dikembalikan ke gudang.');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="inline-flex items-center gap-1 sm:gap-2 bg-orange-600 hover:bg-orange-700 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition whitespace-nowrap">
-                                                ↩️ Batal
-                                            </button>
-                                        </form>
-                                    @endif
-                                </div>
+                            <!-- Additional Info -->
+                            <div class="text-xs text-gray-600 pt-2 border-t border-gray-200">
+                                <p><strong>Jumlah Dialokasi:</strong> {{ $row->jumlah_dialokasi }} pcs</p>
+                                @if($row->keterangan)
+                                    <p><strong>Catatan:</strong> {{ $row->keterangan }}</p>
+                                @endif
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="flex gap-2 pt-3 border-t border-gray-200">
+                                <a href="{{ route('alokasi-gudang-etalase.show', $row->id_alokasi) }}" class="flex-1 text-center bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded text-xs font-medium transition">
+                                    👁️ Detail
+                                </a>
+                                @if(Auth::user()->role === 'Pemilik')
+                                    <form action="{{ route('alokasi-gudang-etalase.destroy', $row->id_alokasi) }}" method="POST" class="flex-1" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan alokasi ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white px-3 py-2 rounded text-xs font-medium transition">
+                                            ↩️ Batal
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </div>
                     </div>

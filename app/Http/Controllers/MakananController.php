@@ -13,6 +13,7 @@ class MakananController extends Controller
     {
         $search = $request->input('search');
         $kategori_id = $request->input('kategori'); // Sekarang mencari berdasarkan ID
+        $lokasi = $request->input('lokasi'); // Filter lokasi: gudang_only, etalase_only
         $sort = $request->input('sort', 'terbaru');
 
         // Gunakan eager loading (with) agar tidak berat saat meload relasi nama kategori
@@ -27,6 +28,15 @@ class MakananController extends Controller
         // Fitur Filter Kategori
         if ($kategori_id) {
             $query->where('id_kategori', $kategori_id);
+        }
+
+        // Fitur Filter Lokasi
+        if ($lokasi === 'gudang_only') {
+            $query->where('stok_gudang', '>', 0)
+                  ->where('stok_etalase', '=', 0);
+        } elseif ($lokasi === 'etalase_only') {
+            $query->where('stok_etalase', '>', 0)
+                  ->where('stok_gudang', '=', 0);
         }
 
         // Fitur Sorting
@@ -82,7 +92,7 @@ class MakananController extends Controller
         $categories = Kategori::orderBy('nama_kategori', 'asc')->get();
         $kategori = $kategori_id;
 
-        return view('makanan.index', compact('makanan', 'search', 'kategori', 'categories', 'sort'));
+        return view('makanan.index', compact('makanan', 'search', 'kategori', 'categories', 'sort', 'lokasi'));
     }
 
     public function create()
