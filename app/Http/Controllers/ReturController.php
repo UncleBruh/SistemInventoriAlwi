@@ -37,7 +37,7 @@ class ReturController extends Controller
                 $query->orderBy('tgl_retur', 'desc');
             }
         } else {
-            $query->latest('tgl_retur');
+            $query->orderBy('tgl_retur', 'desc');
         }
 
         $retur = $query->get();
@@ -46,8 +46,7 @@ class ReturController extends Controller
         $total_pengembalian = $retur->sum('nominal_pengembalian');
 
         return view('retur.index', compact('retur', 'total_pengembalian'));
-
-    // 2. Menampilkan Halaman Form Input Retur
+    }
     public function create(Request $request)
     {
         // Tangkap ID jika user mengakses dari halaman laporan penjualan
@@ -106,8 +105,9 @@ class ReturController extends Controller
                 'tgl_retur' => $request->tgl_retur,
             ]);
 
-            // B. Kembalikan stok fisik ke ETALASE
-            $makanan->stok_etalase += $request->jumlah_retur;
+            // B. Kembalikan stok barang (karena retur = barang dikembalikan ke etalase)
+            $makanan->stok += $request->jumlah_retur;          // Tambah stok total
+            $makanan->stok_etalase += $request->jumlah_retur;  // Tambah stok etalase
             $makanan->save();
 
             // C. Potong Total Bayar (Pendapatan) di tabel Penjualan

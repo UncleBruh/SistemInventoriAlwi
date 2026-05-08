@@ -34,21 +34,22 @@ class DashboardController extends Controller
 
             // Top 5 Makanan Paling Laris (30 hari terakhir) - From DetailPenjualan
             $topMakananData = DetailPenjualan::join('penjualans', 'detail_penjualans.id_penjualan', '=', 'penjualans.id_penjualan')
+                ->join('makanan', 'detail_penjualans.id_makanan', '=', 'makanan.id_makanan')
                 ->whereDate('penjualans.tanggal_penjualan', '>=', Carbon::now()->subDays(30))
-                ->with('makanan')
+                ->select('detail_penjualans.id_makanan', 'makanan.nama_makanan', DB::raw('SUM(detail_penjualans.jumlah) as total_qty'))
+                ->groupBy('detail_penjualans.id_makanan', 'makanan.nama_makanan')
+                ->orderByDesc('total_qty')
                 ->get();
 
             $topMakanan = [];
             if ($topMakananData->count() > 0) {
                 $topMakanan = $topMakananData
-                    ->groupBy('id_makanan')
-                    ->map(function ($group) {
+                    ->map(function ($item) {
                         return [
-                            'nama' => $group->first()->makanan->nama_makanan ?? 'N/A',
-                            'total_qty' => $group->sum('jumlah'),
+                            'nama' => $item->nama_makanan ?? 'N/A',
+                            'total_qty' => $item->total_qty,
                         ];
                     })
-                    ->sortByDesc('total_qty')
                     ->take(5);
             }
 

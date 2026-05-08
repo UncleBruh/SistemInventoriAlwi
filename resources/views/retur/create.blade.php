@@ -17,7 +17,8 @@
                 @csrf
                 <div class="mb-6 bg-orange-50 p-4 rounded-lg border border-orange-200">
                     <p class="text-sm font-bold text-orange-700">⚠️ Perhatian Mode Retur!</p>
-                    <ul class="text-xs text-orange-600 mt-2 list-disc list-inside">
+                    <ul class="text-xs text-orange-600 mt-2 list-disc list-inside space-y-1">
+                        <li>Retur hanya berlaku untuk barang yang <strong>RUSAK, EXPIRED, atau KEMASAN TERBUKA</strong> sejak dari saat pengiriman/penjualan.</li>
                         <li>Stok barang yang diretur akan dikembalikan otomatis ke <strong>ETALASE</strong>.</li>
                         <li>Total pendapatan pada Transaksi Penjualan terkait akan <strong>dipotong otomatis</strong>.</li>
                     </ul>
@@ -69,7 +70,7 @@
 
                 <div class="mb-6">
                     <x-input-label for="alasan" value="4. Alasan Retur" />
-                    <textarea id="alasan" name="alasan" rows="3" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full mt-1" placeholder="Contoh: Salah beli, barang cacat dari kasir..." required></textarea>
+                    <textarea id="alasan" name="alasan" rows="3" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full mt-1" placeholder="Contoh: Barang rusak, sudah expired, kemasan terbuka..." required></textarea>
                 </div>
 
                 <x-primary-button id="btn-submit-retur" class="w-full justify-center py-3 bg-orange-600 hover:bg-orange-700 text-lg">
