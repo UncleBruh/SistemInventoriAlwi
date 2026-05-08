@@ -93,12 +93,17 @@ Route::middleware('auth')->group(function () {
 
         // Lihat Aktivitas Mutasi (Hanya Pemilik)
         Route::get('/lihat-aktivitas-mutasi', [LogController::class, 'index'])->name('log.aktivitas');
-        // Riwayat Retur (Pemilik & Admin dapat melihat)
-        Route::get('/retur', [App\Http\Controllers\ReturController::class, 'index'])->name('retur.index');
     });
 
-    // --- MANAJEMEN KATEGORI ---
-    Route::resource('kategori', KategoriController::class)->only(['index', 'store', 'destroy']);
+    Route::middleware('role:Pemilik')->group(function () {
+        // Manajemen Kategori (Hanya Pemilik)
+        Route::resource('kategori', KategoriController::class)->only(['index', 'store', 'destroy']);
+    });
+
+    // Laporan Penjualan & Riwayat Retur (Pemilik & Admin)
+    Route::middleware('role:Pemilik,Admin')->group(function () {
+        Route::get('/retur', [App\Http\Controllers\ReturController::class, 'index'])->name('retur.index');
+    });
 
     // Proses Retur (Pemilik & Admin)
     Route::middleware('role:Pemilik,Admin')->group(function () {

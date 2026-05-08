@@ -20,7 +20,9 @@
 
                     <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase">Database</div>
 
-                    <a href="{{ route('kategori.index') }}" class="{{ request()->routeIs('kategori.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏷️ Kategori Barang</a>
+                    @if(Auth::user()->role === 'Pemilik')
+                        <a href="{{ route('kategori.index') }}" class="{{ request()->routeIs('kategori.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏷️ Kategori Barang</a>
+                    @endif
                     <a href="{{ route('makanan.index') }}" class="{{ request()->routeIs('makanan.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">📦 Data Jajanan</a>
 
                     <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase">Mutasi</div>
@@ -40,12 +42,13 @@
                     <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase">Transaksi</div>
                     <a href="{{ route('penjualan.create') }}" class="{{ request()->routeIs('penjualan.create') ? $activeClass : $inactiveClass }} {{ $navClass }}">🛒 Mesin Kasir</a>
 
-                    @if(Auth::user()->role === 'Pemilik')
+                    @if(Auth::user()->role === 'Pemilik' || Auth::user()->role === 'Admin')
                         <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase">Laporan</div>
 
                         <a href="{{ route('penjualan.index') }}" class="{{ request()->routeIs('penjualan.*') && !request()->routeIs('penjualan.create') ? $activeClass : $inactiveClass }} {{ $navClass }}">💰 Laporan Penjualan</a>
                         <a href="{{ route('retur.index') }}" class="{{ request()->routeIs('retur.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🔄 Riwayat Retur</a>
 
+                    @if(Auth::user()->role === 'Pemilik')
                         <a href="{{ route('laporan.masuk') }}" class="{{ request()->routeIs('laporan.masuk') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Barang Masuk</a>
                         <a href="{{ route('laporan.keluar') }}" class="{{ request()->routeIs('laporan.keluar') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Barang Keluar dari Etalase</a>
                         <a href="{{ route('laporan.pengeluaran_gudang') }}" class="{{ request()->routeIs('laporan.pengeluaran_gudang') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Pengeluaran Gudang</a>
@@ -72,7 +75,9 @@
 
             <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[10px] font-bold text-gray-400 uppercase">Database</div>
 
-            <a href="{{ route('kategori.index') }}" class="{{ request()->routeIs('kategori.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏷️ Kategori Barang</a>
+            @if(Auth::user()->role === 'Pemilik')
+                <a href="{{ route('kategori.index') }}" class="{{ request()->routeIs('kategori.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🏷️ Kategori Barang</a>
+            @endif
             <a href="{{ route('makanan.index') }}" class="{{ request()->routeIs('makanan.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">📦 Data Jajanan</a>
 
             <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[10px] font-bold text-gray-400 uppercase">Mutasi</div>
@@ -92,19 +97,21 @@
             <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[10px] font-bold text-gray-400 uppercase">Transaksi</div>
             <a href="{{ route('penjualan.create') }}" class="{{ request()->routeIs('penjualan.create') ? $activeClass : $inactiveClass }} {{ $navClass }}">🛒 Mesin Kasir</a>
 
-            @if(Auth::user()->role === 'Pemilik')
+            @if(Auth::user()->role === 'Pemilik' || Auth::user()->role === 'Admin')
                 <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[10px] font-bold text-gray-400 uppercase">Laporan</div>
 
                 <a href="{{ route('penjualan.index') }}" class="{{ request()->routeIs('penjualan.*') && !request()->routeIs('penjualan.create') ? $activeClass : $inactiveClass }} {{ $navClass }}">💰 Laporan Penjualan</a>
                 <a href="{{ route('retur.index') }}" class="{{ request()->routeIs('retur.*') ? $activeClass : $inactiveClass }} {{ $navClass }}">🔄 Riwayat Retur</a>
 
-                <a href="{{ route('laporan.masuk') }}" class="{{ request()->routeIs('laporan.masuk') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Barang Masuk</a>
-                <a href="{{ route('laporan.keluar') }}" class="{{ request()->routeIs('laporan.keluar') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Barang Keluar dari Etalase</a>
-                <a href="{{ route('laporan.pengeluaran_gudang') }}" class="{{ request()->routeIs('laporan.pengeluaran_gudang') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Pengeluaran Gudang</a>
+                @if(Auth::user()->role === 'Pemilik')
+                    <a href="{{ route('laporan.masuk') }}" class="{{ request()->routeIs('laporan.masuk') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Barang Masuk</a>
+                    <a href="{{ route('laporan.keluar') }}" class="{{ request()->routeIs('laporan.keluar') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Barang Keluar dari Etalase</a>
+                    <a href="{{ route('laporan.pengeluaran_gudang') }}" class="{{ request()->routeIs('laporan.pengeluaran_gudang') ? $activeClass : $inactiveClass }} {{ $navClass }}">📄 Laporan Pengeluaran Gudang</a>
 
-                <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[10px] font-bold text-gray-400 uppercase">Admin</div>
+                    <div class="pt-3 sm:pt-4 pb-2 px-3 sm:px-4 text-[10px] font-bold text-gray-400 uppercase">Admin</div>
 
-                <a href="{{ route('register') }}" class="{{ request()->routeIs('register') ? $activeClass : $inactiveClass }} {{ $navClass }}">👤 Tambah Pengguna</a>
+                    <a href="{{ route('register') }}" class="{{ request()->routeIs('register') ? $activeClass : $inactiveClass }} {{ $navClass }}">👤 Tambah Pengguna</a>
+                @endif
             @endif
         </div>
     </nav>
