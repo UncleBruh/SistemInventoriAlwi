@@ -58,7 +58,7 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="py-2 px-4 border-b text-sm">{{ $index + 1 }}</td>
                                 <td class="py-2 px-4 border-b text-sm font-bold text-indigo-600">{{ $item->no_nota ?? 'N/A' }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ \Carbon\Carbon::parse($item->tgl_penjualan)->format('d M Y') }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ \Carbon\Carbon::parse($item->tanggal_penjualan)->format('d M Y H:i:s') }}</td>
                                 <td class="py-2 px-4 border-b text-sm">{{ $item->pengguna->name ?? $item->pengguna->username ?? 'Admin' }}</td>
                                 <td class="py-2 px-4 border-b text-sm">
                                     <ul class="list-disc list-inside">
@@ -90,7 +90,7 @@
                         <div class="flex justify-between items-start mb-3">
                             <div>
                                 <p class="font-bold text-indigo-600 text-base">{{ $item->no_nota ?? 'N/A' }}</p>
-                                <p class="text-xs text-gray-600">{{ \Carbon\Carbon::parse($item->tgl_penjualan)->format('d M Y') }}</p>
+                                <p class="text-xs text-gray-600">{{ \Carbon\Carbon::parse($item->tanggal_penjualan)->format('d M Y H:i:s') }}</p>
                             </div>
                             <span class="text-green-600 font-bold text-lg">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</span>
                         </div>

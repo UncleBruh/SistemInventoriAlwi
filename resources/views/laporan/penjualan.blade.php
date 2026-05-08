@@ -61,7 +61,7 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="py-2 px-4 border-b text-sm">{{ $index + 1 }}</td>
                                 <td class="py-2 px-4 border-b text-sm font-bold text-indigo-600">{{ $item->kode_transaksi ?? 'N/A' }}</td>
-                                <td class="py-2 px-4 border-b text-sm">{{ \Carbon\Carbon::parse($item->tgl_penjualan)->format('d M Y') }}</td>
+                                <td class="py-2 px-4 border-b text-sm">{{ \Carbon\Carbon::parse($item->tanggal_penjualan)->format('d M Y H:i:s') }}</td>
                                 <td class="py-2 px-4 border-b text-sm">{{ $item->pengguna->name ?? $item->pengguna->username ?? 'Admin' }}</td>
                                 <td class="py-2 px-4 border-b text-sm">
                                     <ul class="list-disc list-inside">
@@ -71,7 +71,7 @@
                                     </ul>
                                 </td>
                                 <td class="py-2 px-4 border-b text-right text-sm font-bold text-green-600">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
-                                
+
                                 <td class="py-2 px-4 border-b text-center text-sm">
                                     <a href="{{ route('retur.create', ['id_penjualan' => $item->id_penjualan]) }}" class="inline-flex items-center px-3 py-1 bg-orange-100 text-orange-700 hover:bg-orange-200 border border-orange-300 rounded-md text-xs font-bold transition">
                                         🔄 Retur
@@ -93,7 +93,7 @@
                         <div class="flex justify-between items-start mb-3">
                             <div>
                                 <p class="font-bold text-indigo-600 text-base">{{ $item->kode_transaksi ?? 'N/A' }}</p>
-                                <p class="text-xs text-gray-600">{{ \Carbon\Carbon::parse($item->tgl_penjualan)->format('d M Y') }}</p>
+                                <p class="text-xs text-gray-600">{{ \Carbon\Carbon::parse($item->tanggal_penjualan)->format('d M Y H:i:s') }}</p>
                             </div>
                             <span class="text-green-600 font-bold text-lg">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</span>
                         </div>
@@ -107,7 +107,7 @@
                                 @endforeach
                             </ul>
                         </div>
-                        
+
                         <div class="flex justify-end">
                             <a href="{{ route('retur.create', ['id_penjualan' => $item->id_penjualan]) }}" class="inline-flex items-center px-4 py-2 bg-orange-100 text-orange-700 hover:bg-orange-200 border border-orange-300 rounded-md text-sm font-bold transition shadow-sm">
                                 🔄 Proses Retur Barang

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Makanan;
 use App\Models\MutasiKeluar;
+use App\Models\DetailPenjualan;
+use App\Models\Penjualan;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -13,21 +15,16 @@ class DashboardController extends Controller
     public function index()
     {
         try {
-            // Total Pendapatan Bulan Ini
-            $bulanIni = MutasiKeluar::whereMonth('tgl_mutasi', Carbon::now()->month)
-                ->whereYear('tgl_mutasi', Carbon::now()->year)
-                ->where('alasan', 'Penjualan')
-                ->with('makanan')
-                ->get()
-                ->sum(function ($item) {
-                    return $item->jumlah_keluar * ($item->makanan->harga ?? 0);
-                });
+            // Total Pendapatan Bulan Ini - From Penjualan table
+            $bulanIni = Penjualan::whereMonth('tanggal_penjualan', Carbon::now()->month)
+                ->whereYear('tanggal_penjualan', Carbon::now()->year)
+                ->sum('total_harga');
 
-            // Total Unit Terjual Bulan Ini
-            $unitBulanIni = MutasiKeluar::whereMonth('tgl_mutasi', Carbon::now()->month)
-                ->whereYear('tgl_mutasi', Carbon::now()->year)
-                ->where('alasan', 'Penjualan')
-                ->sum('jumlah_keluar');
+            // Total Unit Terjual Bulan Ini - From DetailPenjualan
+            $unitBulanIni = DetailPenjualan::join('penjualans', 'detail_penjualans.id_penjualan', '=', 'penjualans.id_penjualan')
+                ->whereMonth('penjualans.tanggal_penjualan', Carbon::now()->month)
+                ->whereYear('penjualans.tanggal_penjualan', Carbon::now()->year)
+                ->sum('detail_penjualans.jumlah');
 
             // Total Stok Barang (Inventory Count)
             $totalStok = Makanan::sum('stok') ?? 0;
@@ -35,9 +32,9 @@ class DashboardController extends Controller
             // Jumlah Item di Inventory
             $jumlahItem = Makanan::count() ?? 0;
 
-            // Top 5 Makanan Paling Laris (7 hari terakhir)
-            $topMakananData = MutasiKeluar::whereDate('tgl_mutasi', '>=', Carbon::now()->subDays(7))
-                ->where('alasan', 'Penjualan')
+            // Top 5 Makanan Paling Laris (7 hari terakhir) - From DetailPenjualan
+            $topMakananData = DetailPenjualan::join('penjualans', 'detail_penjualans.id_penjualan', '=', 'penjualans.id_penjualan')
+                ->whereDate('penjualans.tanggal_penjualan', '>=', Carbon::now()->subDays(7))
                 ->with('makanan')
                 ->get();
 
@@ -48,7 +45,7 @@ class DashboardController extends Controller
                     ->map(function ($group) {
                         return [
                             'nama' => $group->first()->makanan->nama_makanan ?? 'N/A',
-                            'total_qty' => $group->sum('jumlah_keluar'),
+                            'total_qty' => $group->sum('jumlah'),
                         ];
                     })
                     ->sortByDesc('total_qty')
@@ -61,13 +58,8 @@ class DashboardController extends Controller
                 $date = Carbon::now()->subDays($i)->format('Y-m-d');
                 $tanggal = Carbon::parse($date)->format('d M');
 
-                $total = MutasiKeluar::whereDate('tgl_mutasi', $date)
-                    ->where('alasan', 'Penjualan')
-                    ->with('makanan')
-                    ->get()
-                    ->sum(function ($item) {
-                        return $item->jumlah_keluar * ($item->makanan->harga ?? 0);
-                    });
+                $total = Penjualan::whereDate('tanggal_penjualan', $date)
+                    ->sum('total_harga');
 
                 $trendPenjualan[] = [
                     'tanggal' => $tanggal,
