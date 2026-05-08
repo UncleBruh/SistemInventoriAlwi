@@ -110,6 +110,7 @@ class AlokasiGudangEtalaseController extends Controller
             $makanan->update([
                 'stok_gudang' => $stok_gudang_sesudah,
                 'stok_etalase' => $stok_etalase_sesudah,
+                'stok' => $stok_gudang_sesudah + $stok_etalase_sesudah,  // Sinkronisasi stok total
             ]);
 
             DB::commit();
@@ -169,10 +170,13 @@ class AlokasiGudangEtalaseController extends Controller
 
             if ($jumlah_untuk_dikembalikan > 0) {
                 // Kembalikan hanya stok yang belum terjual ke gudang
+                $stok_gudang_baru = $makanan->stok_gudang + $jumlah_untuk_dikembalikan;
+                $stok_etalase_baru = $makanan->stok_etalase - $jumlah_untuk_dikembalikan;
+
                 $makanan->update([
-                    'stok_gudang' => $makanan->stok_gudang + $jumlah_untuk_dikembalikan,
-                    'stok_etalase' => $makanan->stok_etalase - $jumlah_untuk_dikembalikan,
-                    'stok' => $makanan->stok - 0, // Total stok tidak berubah (hanya dipindah dalam alokasi)
+                    'stok_gudang' => $stok_gudang_baru,
+                    'stok_etalase' => $stok_etalase_baru,
+                    'stok' => $stok_gudang_baru + $stok_etalase_baru,  // Sinkronisasi stok total
                 ]);
 
                 $pesan = 'Alokasi berhasil dihapus. ' . $jumlah_untuk_dikembalikan . ' pcs dikembalikan ke gudang. ' .

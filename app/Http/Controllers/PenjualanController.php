@@ -185,10 +185,11 @@ class PenjualanController extends Controller
                     'subtotal' => $item['subtotal']
                 ]);
 
-                // Update stok makanan (potong stok etalase & stok utama)
+                // Update stok makanan (potong stok etalase saja)
+                // Catatan: stok total akan otomatis = stok_gudang + stok_etalase
                 $makanan = Makanan::find($id_makanan);
                 $makanan->stok_etalase -= $item['jumlah'];
-                $makanan->stok -= $item['jumlah'];
+                $makanan->stok = $makanan->stok_gudang + $makanan->stok_etalase;  // Sinkronisasi stok total
                 $makanan->save();
 
                 $item_terjual[] = "{$item['jumlah']}x {$item['nama_makanan']}";

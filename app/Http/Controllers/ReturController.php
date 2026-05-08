@@ -106,8 +106,9 @@ class ReturController extends Controller
             ]);
 
             // B. Kembalikan stok barang (karena retur = barang dikembalikan ke etalase)
-            $makanan->stok += $request->jumlah_retur;          // Tambah stok total
+            // Catatan: stok total akan otomatis = stok_gudang + stok_etalase
             $makanan->stok_etalase += $request->jumlah_retur;  // Tambah stok etalase
+            $makanan->stok = $makanan->stok_gudang + $makanan->stok_etalase;  // Sinkronisasi stok total
             $makanan->save();
 
             // C. Potong Total Bayar (Pendapatan) di tabel Penjualan
