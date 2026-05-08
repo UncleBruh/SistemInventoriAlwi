@@ -15,7 +15,7 @@
 
                 <!-- Top 5 Makanan Paling Laris -->
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-4 sm:p-6">
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-4">🏆 Top 5 Produk Terlaris</h3>
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-800 mb-4">🏆 Top 5 Produk Terlaris (30 Hari Terakhir)</h3>
                     <canvas id="topMakananChart"></canvas>
                 </div>
             </div>

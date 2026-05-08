@@ -32,9 +32,9 @@ class DashboardController extends Controller
             // Jumlah Item di Inventory
             $jumlahItem = Makanan::count() ?? 0;
 
-            // Top 5 Makanan Paling Laris (7 hari terakhir) - From DetailPenjualan
+            // Top 5 Makanan Paling Laris (30 hari terakhir) - From DetailPenjualan
             $topMakananData = DetailPenjualan::join('penjualans', 'detail_penjualans.id_penjualan', '=', 'penjualans.id_penjualan')
-                ->whereDate('penjualans.tanggal_penjualan', '>=', Carbon::now()->subDays(7))
+                ->whereDate('penjualans.tanggal_penjualan', '>=', Carbon::now()->subDays(30))
                 ->with('makanan')
                 ->get();
 

@@ -123,7 +123,7 @@ class LaporanController extends Controller
 
         // Filter rentang tanggal
         if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('tanggal_penjualan', [$request->start_date, $request->end_date]);
+            $query->whereBetween('tanggal_penjualan', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
         }
 
         // Filter berdasarkan nama produk
@@ -156,7 +156,7 @@ class LaporanController extends Controller
 
         // Filter rentang tanggal
         if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('tanggal_penjualan', [$request->start_date, $request->end_date]);
+            $query->whereBetween('tanggal_penjualan', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
         }
 
         // Filter berdasarkan nama produk

@@ -40,8 +40,8 @@
                             <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3">Informasi Transaksi</h3>
                             <div class="space-y-3 text-sm">
                                 <div>
-                                    <p class="text-gray-600">Kode Transaksi</p>
-                                    <p class="font-mono font-bold text-gray-800">{{ $retur->penjualan->kode_transaksi ?? '-' }}</p>
+                                    <p class="text-gray-600">No Nota</p>
+                                    <p class="font-mono font-bold text-gray-800">{{ $retur->penjualan->no_nota ?? '-' }}</p>
                                 </div>
                                 <div>
                                     <p class="text-gray-600">Tanggal Penjualan</p>

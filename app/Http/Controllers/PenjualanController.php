@@ -31,7 +31,7 @@ class PenjualanController extends Controller
 
         // Eksekusi query: urutkan dari yang paling baru
         $penjualan = $query->latest('tanggal_penjualan')->get();
-        
+
         // Hitung total pendapatan dari hasil filter
         $total_pendapatan = $penjualan->sum('total_harga');
 
@@ -153,16 +153,10 @@ class PenjualanController extends Controller
         // Membuat nomor nota unik (Contoh: INV-X7B9A-167812)
         $no_nota = 'INV-' . strtoupper(Str::random(5)) . '-' . time();
 
-        // Membuat kode transaksi unik untuk laporan penjualan (Contoh: TRX-20260430-001)
-        $kode_transaksi = 'TRX-' . now()->format('Ymd') . '-' . str_pad(random_int(1, 999), 3, '0', STR_PAD_LEFT);
-
         DB::beginTransaction();
         try {
             // Ambil salah satu ID Makanan dari keranjang sebagai data "dummy" untuk kolom lama yang pensiun
             $id_makanan_dummy = array_key_first($keranjang);
-
-            // 1. Simpan ke tabel induk (penjualans)
-// app/Http/Controllers/PenjualanController.php (Di dalam method store)
 
             // 1. Simpan ke tabel induk (penjualans)
             $penjualan = Penjualan::create([
@@ -171,13 +165,12 @@ class PenjualanController extends Controller
                 'bayar' => $bayar,
                 'kembalian' => $kembalian,
                 'no_nota' => $no_nota,
-                'tanggal_penjualan' => now(), 
-                'kode_transaksi' => $kode_transaksi, // <--- TAMBAHKAN BARIS INI
-                
+                'tanggal_penjualan' => now(),
+
                 // Kolom pensiun kita isi data dummy 0 agar database senang
-                'id_makanan' => $id_makanan_dummy, 
-                'jumlah_terjual' => 0,        
-                'harga_per_unit' => 0         
+                'id_makanan' => $id_makanan_dummy,
+                'jumlah_terjual' => 0,
+                'harga_per_unit' => 0
             ]);
 
             $item_terjual = []; // Array untuk dikirim ke Log Aktivitas
@@ -203,7 +196,7 @@ class PenjualanController extends Controller
 
             // 3. Catat ke Log Aktivitas (Terintegrasi)
             $detail_log = implode(', ', $item_terjual);
-            LogController::recordLog('Penjualan Kasir', "Kode: {$kode_transaksi} | Nota {$no_nota}: {$detail_log} (Total: Rp " . number_format($total_harga, 0, ',', '.') . ")");
+            LogController::recordLog('Penjualan Kasir', "Nota {$no_nota}: {$detail_log} (Total: Rp " . number_format($total_harga, 0, ',', '.') . ")");
 
             DB::commit();
 

@@ -1,13 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Laporan Penjualan') }}
-            </h2>
-            <a href="{{ route('retur.index') }}" class="inline-flex items-center px-4 py-2 bg-orange-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-orange-700 transition shadow-sm">
-                📋 Riwayat Retur
-            </a>
-        </div>
+        <h2 class="font-semibold text-lg sm:text-xl text-gray-800 leading-tight">
+            {{ __('Laporan Penjualan') }}
+        </h2>
     </x-slot>
 
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-6">
@@ -60,7 +55,7 @@
                         @forelse ($penjualan as $index => $item)
                             <tr class="hover:bg-gray-50">
                                 <td class="py-2 px-4 border-b text-sm">{{ $index + 1 }}</td>
-                                <td class="py-2 px-4 border-b text-sm font-bold text-indigo-600">{{ $item->kode_transaksi ?? 'N/A' }}</td>
+                                <td class="py-2 px-4 border-b text-sm font-bold text-indigo-600">{{ $item->no_nota ?? 'N/A' }}</td>
                                 <td class="py-2 px-4 border-b text-sm">{{ \Carbon\Carbon::parse($item->tanggal_penjualan)->format('d M Y H:i:s') }}</td>
                                 <td class="py-2 px-4 border-b text-sm">{{ $item->pengguna->name ?? $item->pengguna->username ?? 'Admin' }}</td>
                                 <td class="py-2 px-4 border-b text-sm">
@@ -92,7 +87,7 @@
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                         <div class="flex justify-between items-start mb-3">
                             <div>
-                                <p class="font-bold text-indigo-600 text-base">{{ $item->kode_transaksi ?? 'N/A' }}</p>
+                                <p class="font-bold text-indigo-600 text-base">{{ $item->no_nota ?? 'N/A' }}</p>
                                 <p class="text-xs text-gray-600">{{ \Carbon\Carbon::parse($item->tanggal_penjualan)->format('d M Y H:i:s') }}</p>
                             </div>
                             <span class="text-green-600 font-bold text-lg">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</span>

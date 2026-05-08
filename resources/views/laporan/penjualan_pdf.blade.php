@@ -54,8 +54,7 @@
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
                     <td>
-                        <strong>{{ $item->no_nota ?? '-' }}</strong><br>
-                        <span style="font-size: 11px; color: #666;">{{ $item->kode_transaksi ?? '' }}</span>
+                        <strong>{{ $item->no_nota ?? '-' }}</strong>
                     </td>
                     <td>{{ \Carbon\Carbon::parse($item->tanggal_penjualan)->format('d-m-Y H:i') }}</td>
                     <td>{{ $item->pengguna->name ?? $item->pengguna->username ?? 'Unknown' }}</td>

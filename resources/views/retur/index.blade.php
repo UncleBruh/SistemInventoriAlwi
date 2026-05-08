@@ -13,6 +13,32 @@
         @endif
 
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+            <!-- Form Filter -->
+            <form method="GET" action="{{ route('retur.index') }}" class="mb-6 flex flex-wrap gap-4 items-end bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div>
+                    <x-input-label for="nama_produk" value="Cari Nama Produk" />
+                    <x-text-input id="nama_produk" type="text" name="nama_produk" value="{{ request('nama_produk') }}" placeholder="Contoh: Donat, Kopi..." class="block mt-1" />
+                </div>
+                <div>
+                    <x-input-label for="start_date" value="Dari Tanggal" />
+                    <x-text-input id="start_date" type="date" name="start_date" value="{{ request('start_date') }}" class="block mt-1" />
+                </div>
+                <div>
+                    <x-input-label for="end_date" value="Sampai Tanggal" />
+                    <x-text-input id="end_date" type="date" name="end_date" value="{{ request('end_date') }}" class="block mt-1" />
+                </div>
+                <div>
+                    <x-input-label for="sort" value="Sortir" />
+                    <select id="sort" name="sort" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1">
+                        <option value="">Pilih...</option>
+                        <option value="terbaru" @selected(request('sort') === 'terbaru')>Terbaru</option>
+                        <option value="terlama" @selected(request('sort') === 'terlama')>Terlama</option>
+                    </select>
+                </div>
+                <div class="flex gap-2">
+                    <x-primary-button type="submit" class="bg-indigo-600 hover:bg-indigo-700">🔍 Filter</x-primary-button>
+                </div>
+            </form>
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-white border border-gray-200">
                     <thead class="bg-orange-100 border-b-2 border-orange-300">
@@ -41,6 +67,17 @@
                     </tbody>
                 </table>
             </div>
+
+            @if($retur->count() > 0)
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <div class="flex justify-end">
+                        <div class="text-right">
+                            <p class="text-lg font-bold text-gray-800 mb-2">Total Potongan Laporan:</p>
+                            <p class="text-3xl font-black text-red-600">-Rp {{ number_format($total_pengembalian, 0, ',', '.') }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </x-app-layout>
