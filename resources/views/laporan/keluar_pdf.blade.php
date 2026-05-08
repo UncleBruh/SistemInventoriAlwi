@@ -48,7 +48,7 @@
 <body>
 
     <div class="header">
-        <h2>Laporan Pengelolaan Stok Etalase</h2>
+        <h2>Laporan Barang Keluar Etalase</h2>
         <p>Tanggal Cetak: {{ \Carbon\Carbon::now()->format('d M Y H:i') }}</p>
     </div>
 
@@ -71,7 +71,7 @@
                     <td class="text-left">{{ $item->makanan->nama_makanan ?? 'Data Terhapus' }}</td>
                     <td class="text-left">{{ ucfirst(str_replace('_', ' ', $item->tipe_keluar)) ?? '-' }}</td>
                     <td class="text-left">{{ $item->pengguna->name ?? $item->pengguna->username ?? 'Admin' }}</td>
-                    <td class="text-center text-red">-{{ $item->jumlah_perubahan ?? 0 }} Pcs</td>
+                    <td class="text-center text-red">-{{ $item->jumlah_keluar ?? 0 }} Pcs</td>
                 </tr>
             @empty
                 <tr>

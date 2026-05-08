@@ -71,7 +71,7 @@
                     <td class="text-left">{{ $item->makanan->nama_makanan ?? 'Data Terhapus' }}</td>
                     <td class="text-left">{{ ucfirst($item->lokasi_tujuan) ?? 'Gudang' }}</td>
                     <td class="text-left">{{ $item->pengguna->name ?? $item->pengguna->username ?? 'Admin' }}</td>
-                    <td class="text-center text-green">+{{ $item->jumlah_perubahan ?? 0 }} Pcs</td>
+                    <td class="text-center text-green">+{{ $item->jumlah_masuk ?? 0 }} Pcs</td>
                 </tr>
             @empty
                 <tr>
