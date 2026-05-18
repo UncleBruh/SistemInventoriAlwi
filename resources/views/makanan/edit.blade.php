@@ -42,9 +42,11 @@
                         <x-input-error :messages="$errors->get('harga')" class="mt-2" />
                     </div>
                     <div>
-                        <x-input-label for="stok" value="Stok Saat Ini" />
-                        <x-text-input id="stok" class="block mt-1 w-full font-bold text-indigo-700 text-sm" type="number" name="stok" value="{{ old('stok', $makanan->stok) }}" required min="0" />
-                        <x-input-error :messages="$errors->get('stok')" class="mt-2" />
+                        <x-input-label for="stok" value="Stok Saat Ini (Read-only)" />
+                        <div id="stok" class="block mt-1 w-full font-bold text-indigo-700 text-sm px-3 py-2 border border-gray-300 rounded-md bg-gray-50">
+                            {{ $makanan->stok }} unit
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Ubah stok melalui menu Mutasi atau Penjualan</p>
                     </div>
                 </div>
 
