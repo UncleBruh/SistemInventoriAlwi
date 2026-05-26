@@ -42,7 +42,7 @@
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-3 gap-3">
                         <div>
                             <x-input-label value="2. Cari Barang & Input Jumlah" />
-                            <span class="text-xs text-gray-500 font-medium">(Pilih dan isi jumlah pada salah satu barang)</span>
+                            <span class="text-xs text-gray-500 font-medium">(Pilih dan isi jumlah pada barang yang ingin diretur)</span>
                         </div>
                         <div class="w-full sm:w-1/2 relative">
                             <input type="text" id="search-makanan" class="pl-9 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full text-sm" placeholder="Ketik nama barang di sini...">
@@ -55,12 +55,10 @@
                             <div class="col-span-4 text-center">Jml Retur</div>
                         </div>
                         <div id="list-makanan-container" class="max-h-64 overflow-y-auto divide-y divide-gray-100">
-                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <input type="hidden" id="id_makanan_hidden" name="id_makanan" required>
-                <input type="hidden" id="jumlah_retur_hidden" name="jumlah_retur" required>
                 <div class="grid grid-cols-1 mb-4">
                     <div>
                         <x-input-label for="tgl_retur" value="3. Tanggal Retur" />
@@ -87,12 +85,8 @@
             const container = document.getElementById('list-makanan-container');
             const searchInput = document.getElementById('search-makanan');
 
-            const hiddenIdMakanan = document.getElementById('id_makanan_hidden');
-            const hiddenJumlah = document.getElementById('jumlah_retur_hidden');
-
             let currentItems = [];
 
-            // Render list UI
             function renderList(filterText = '') {
                 container.innerHTML = '';
 
@@ -129,38 +123,20 @@
                     container.insertAdjacentHTML('beforeend', html);
                 });
 
-                // Logic input: Cegah error form ganda, sync ke Hidden Input
                 const inputs = container.querySelectorAll('.input-qty');
                 inputs.forEach(input => {
                     input.addEventListener('input', function() {
                         const val = parseInt(this.value);
                         const max = parseInt(this.getAttribute('max'));
 
-                        // Validasi agar tidak bisa retur melebihi yang dibeli
                         if (val > max) this.value = max;
                         if (val < 0) this.value = 0;
-
-                        if (this.value > 0) {
-                            // Kosongkan form barang lain agar Controller tidak bingung
-                            inputs.forEach(other => {
-                                if (other !== this) other.value = '';
-                            });
-                            // Masukkan data ke input yang sesungguhnya
-                            hiddenIdMakanan.value = this.getAttribute('data-id');
-                            hiddenJumlah.value = this.value;
-                        } else {
-                            hiddenIdMakanan.value = '';
-                            hiddenJumlah.value = '';
-                        }
                     });
                 });
             }
 
-            // Memicu Update List Saat Kode Transaksi Terpilih
             function updateMakanan() {
                 const selectedOption = selectTrx.options[selectTrx.selectedIndex];
-                hiddenIdMakanan.value = '';
-                hiddenJumlah.value = '';
                 searchInput.value = '';
 
                 if (!selectedOption || !selectedOption.value) {
@@ -174,22 +150,45 @@
                 renderList();
             }
 
-            // Jalankan fungsi saat halaman load (Misal jika user me-klik dari laporan)
             if(selectTrx.value) updateMakanan();
 
-            // Interaksi manual user
             selectTrx.addEventListener('change', updateMakanan);
             searchInput.addEventListener('input', (e) => renderList(e.target.value));
 
-            // Logic Submit & Cegah Spam Klik
             const form = document.getElementById('form-retur');
             let isSubmitting = false;
 
             if(form) {
                 form.addEventListener('submit', function(e) {
-                    if (!hiddenIdMakanan.value || !hiddenJumlah.value) {
+                    document.querySelectorAll('.dynamic-hidden').forEach(el => el.remove());
+
+                    let adaBarang = false;
+                    const inputs = document.querySelectorAll('.input-qty');
+
+                    inputs.forEach(input => {
+                        const val = parseInt(input.value);
+                        if (val > 0) {
+                            adaBarang = true;
+
+                            const inputId = document.createElement('input');
+                            inputId.type = 'hidden';
+                            inputId.name = 'id_makanan[]';
+                            inputId.value = input.getAttribute('data-id');
+                            inputId.className = 'dynamic-hidden';
+                            form.appendChild(inputId);
+
+                            const inputJml = document.createElement('input');
+                            inputJml.type = 'hidden';
+                            inputJml.name = 'jumlah_retur[]';
+                            inputJml.value = val;
+                            inputJml.className = 'dynamic-hidden';
+                            form.appendChild(inputJml);
+                        }
+                    });
+
+                    if (!adaBarang) {
                         e.preventDefault();
-                        alert('Silakan isi angka pada kolom Jml Retur di salah satu barang!');
+                        alert('Silakan isi angka pada kolom Jml Retur minimal pada satu barang!');
                         return false;
                     }
 
@@ -198,6 +197,7 @@
                         e.stopImmediatePropagation();
                         return false;
                     }
+
                     isSubmitting = true;
                     const btn = document.getElementById('btn-submit-retur');
                     btn.innerHTML = 'MEMPROSES... ⏳';
