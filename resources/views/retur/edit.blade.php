@@ -10,7 +10,6 @@
                 ← Kembali ke Detail
             </a>
 
-            <!-- Form Card -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <!-- Header -->
                 <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 sm:px-6 py-4 border-b border-gray-200">

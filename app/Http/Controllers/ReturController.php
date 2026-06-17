@@ -12,24 +12,20 @@ use Illuminate\Support\Facades\Auth;
 
 class ReturController extends Controller
 {
-    // 1. Menampilkan Halaman Riwayat Retur dengan Filter
     public function index(Request $request)
     {
         $query = Retur::with(['penjualan', 'makanan', 'pengguna']);
 
-        // Filter rentang tanggal
         if ($request->filled('start_date') && $request->filled('end_date')) {
             $query->whereBetween('tgl_retur', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
         }
 
-        // Filter berdasarkan nama produk
         if ($request->filled('nama_produk')) {
             $query->whereHas('makanan', function($q) use ($request) {
                 $q->where('nama_makanan', 'like', '%' . $request->nama_produk . '%');
             });
         }
 
-        // Filter sortir (terbaru/terlama)
         if ($request->filled('sort')) {
             if ($request->sort === 'terlama') {
                 $query->orderBy('tgl_retur', 'asc');
@@ -42,17 +38,15 @@ class ReturController extends Controller
 
         $retur = $query->get();
 
-        // Hitung total nominal pengembalian dari hasil filter
         $total_pengembalian = $retur->sum('nominal_pengembalian');
 
         return view('retur.index', compact('retur', 'total_pengembalian'));
     }
-    public function create(Request $request)
-    {
-        // Tangkap ID jika user mengakses dari halaman laporan penjualan
-        $selected_id = $request->query('id_penjualan');
 
-        // Ambil data transaksi penjualan 30 hari terakhir agar tidak terlalu berat
+    public function create($id_penjualan)
+    {
+        $selected_id = $id_penjualan;
+
         $penjualan = Penjualan::with('detail.makanan')
             ->where('tanggal_penjualan', '>=', now()->subDays(30))
             ->latest()
@@ -61,13 +55,14 @@ class ReturController extends Controller
         return view('retur.create', compact('penjualan', 'selected_id'));
     }
 
-    // 3. Memproses Data Retur
     public function store(Request $request)
     {
         $request->validate([
             'id_penjualan' => 'required|exists:penjualans,id_penjualan',
-            'id_makanan' => 'required|exists:makanan,id_makanan',
-            'jumlah_retur' => 'required|integer|min:1',
+            'id_makanan' => 'required|array',
+            'id_makanan.*' => 'exists:makanan,id_makanan',
+            'jumlah_retur' => 'required|array',
+            'jumlah_retur.*' => 'integer|min:1',
             'alasan' => 'required|string',
             'tgl_retur' => 'required|date',
         ]);
@@ -76,52 +71,52 @@ class ReturController extends Controller
             DB::beginTransaction();
 
             $penjualan = Penjualan::findOrFail($request->id_penjualan);
-            $makanan = Makanan::findOrFail($request->id_makanan);
 
-            // Cari harga satuan saat barang itu dijual dulu
-            $detailPenjualan = DetailPenjualan::where('id_penjualan', $request->id_penjualan)
-                                              ->where('id_makanan', $request->id_makanan)
-                                              ->first();
+            foreach ($request->id_makanan as $index => $id_makanan) {
+                $jumlah_retur = $request->jumlah_retur[$index];
+                $makanan = Makanan::findOrFail($id_makanan);
 
-            if (!$detailPenjualan) {
-                return back()->with('error', 'Barang ini tidak ditemukan dalam kode transaksi tersebut!');
+                $detailPenjualan = DetailPenjualan::where('id_penjualan', $request->id_penjualan)
+                                                  ->where('id_makanan', $id_makanan)
+                                                  ->first();
+
+                if (!$detailPenjualan) {
+                    DB::rollback();
+                    return back()->with('error', 'Barang ' . $makanan->nama_makanan . ' tidak ditemukan dalam kode transaksi tersebut!');
+                }
+
+                if ($jumlah_retur > $detailPenjualan->jumlah) {
+                    DB::rollback();
+                    return back()->with('error', 'Jumlah retur ' . $makanan->nama_makanan . ' melebihi jumlah barang yang dibeli!');
+                }
+
+                $nominal_pengembalian = $jumlah_retur * $detailPenjualan->harga_satuan;
+
+                Retur::create([
+                    'id_penjualan' => $request->id_penjualan,
+                    'id_makanan' => $id_makanan,
+                    'id_pengguna' => Auth::id() ?? 1,
+                    'jumlah_retur' => $jumlah_retur,
+                    'nominal_pengembalian' => $nominal_pengembalian,
+                    'alasan' => $request->alasan,
+                    'tgl_retur' => $request->tgl_retur,
+                ]);
+
+                $makanan->stok_etalase += $jumlah_retur;
+                $makanan->stok = $makanan->stok_gudang + $makanan->stok_etalase;
+                $makanan->save();
+
+                $penjualan->total_harga -= $nominal_pengembalian;
+
+                $detailPenjualan->jumlah -= $jumlah_retur;
+                $detailPenjualan->save();
             }
 
-            if ($request->jumlah_retur > $detailPenjualan->jumlah) {
-                return back()->with('error', 'Jumlah retur melebihi jumlah barang yang dibeli!');
-            }
-
-            // Hitung nominal uang yang harus dipotong dari laporan penjualan
-            $nominal_pengembalian = $request->jumlah_retur * $detailPenjualan->harga_satuan;
-
-            // A. Simpan data Retur ke tabel
-            Retur::create([
-                'id_penjualan' => $request->id_penjualan,
-                'id_makanan' => $request->id_makanan,
-                'id_pengguna' => Auth::id() ?? 1, // id kasir
-                'jumlah_retur' => $request->jumlah_retur,
-                'nominal_pengembalian' => $nominal_pengembalian,
-                'alasan' => $request->alasan,
-                'tgl_retur' => $request->tgl_retur,
-            ]);
-
-            // B. Kembalikan stok barang (karena retur = barang dikembalikan ke etalase)
-            // Catatan: stok total akan otomatis = stok_gudang + stok_etalase
-            $makanan->stok_etalase += $request->jumlah_retur;  // Tambah stok etalase
-            $makanan->stok = $makanan->stok_gudang + $makanan->stok_etalase;  // Sinkronisasi stok total
-            $makanan->save();
-
-            // C. Potong Total Bayar (Pendapatan) di tabel Penjualan
-            $penjualan->total_harga -= $nominal_pengembalian;
             $penjualan->save();
-
-            // D. Kurangi jumlah di detail penjualan
-            $detailPenjualan->jumlah -= $request->jumlah_retur;
-            $detailPenjualan->save();
 
             DB::commit();
 
-            return redirect()->route('retur.index')->with('success', 'Retur berhasil! Stok etalase bertambah dan total penjualan telah dipotong otomatis.');
+            return redirect()->route('retur.index')->with('success', 'Retur barang berhasil! Stok etalase bertambah dan total penjualan telah dipotong otomatis.');
 
         } catch (\Exception $e) {
             DB::rollback();
