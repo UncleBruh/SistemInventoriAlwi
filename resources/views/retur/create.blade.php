@@ -160,33 +160,7 @@
 
             if(form) {
                 form.addEventListener('submit', function(e) {
-                    document.querySelectorAll('.dynamic-hidden').forEach(el => el.remove());
-
-                    let adaBarang = false;
-                    const inputs = document.querySelectorAll('.input-qty');
-                    
-                    inputs.forEach(input => {
-                        const val = parseInt(input.value);
-                        if (val > 0) {
-                            adaBarang = true;
-                            
-                            const inputId = document.createElement('input');
-                            inputId.type = 'hidden';
-                            inputId.name = 'id_makanan[]';
-                            inputId.value = input.getAttribute('data-id');
-                            inputId.className = 'dynamic-hidden';
-                            form.appendChild(inputId);
-
-                            const inputJml = document.createElement('input');
-                            inputJml.type = 'hidden';
-                            inputJml.name = 'jumlah_retur[]';
-                            inputJml.value = val;
-                            inputJml.className = 'dynamic-hidden';
-                            form.appendChild(inputJml);
-                        }
-                    });
-
-                    if (!adaBarang) {
+                    if (!hiddenIdMakanan.value || !hiddenJumlah.value) {
                         e.preventDefault();
                         alert('Silakan isi angka pada kolom Jml Retur minimal pada satu barang!');
                         return false;
@@ -197,7 +171,6 @@
                         e.stopImmediatePropagation();
                         return false;
                     }
-                    
                     isSubmitting = true;
                     const btn = document.getElementById('btn-submit-retur');
                     btn.innerHTML = 'MEMPROSES... ⏳';

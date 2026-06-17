@@ -118,12 +118,18 @@ class MakananController extends Controller
             'id_kategori' => 'required|exists:kategori,id_kategori',
             'barcode' => 'nullable|string|max:255|unique:makanan,barcode,' . $makanan->id_makanan . ',id_makanan',
             'harga' => 'required|integer|min:0',
-            'stok' => 'required|integer|min:0',
         ]);
 
-        $makanan->update($request->all());
+        // Update hanya data yang diperbolehkan (tidak termasuk stok)
+        // Stok hanya bisa diubah melalui Mutasi atau Penjualan
+        $makanan->nama_makanan = $request->nama_makanan;
+        $makanan->id_kategori = $request->id_kategori;
+        $makanan->barcode = $request->barcode;
+        $makanan->harga = $request->harga;
 
-        return redirect()->route('makanan.index')->with('success', 'Data jajanan berhasil diperbarui.');
+        $makanan->save();
+
+        return redirect()->route('makanan.index')->with('success', 'Data jajanan berhasil diperbarui. Stok hanya bisa diubah melalui Mutasi atau Penjualan.');
     }
 
     public function destroy($id)
